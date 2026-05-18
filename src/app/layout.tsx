@@ -1,15 +1,16 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Exo_2 } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({
+const exo2 = Exo_2({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-exo2',
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
-  title: 'Marketplace Comodoro',
-  description: 'Comprá y vendé vehículos en Comodoro Rivadavia',
+  title: 'AUTODUX — Conectamos lo que buscas, con lo que se vende',
+  description: 'Marketplace de vehículos en Comodoro Rivadavia y la región patagónica.',
 }
 
 export default function RootLayout({
@@ -18,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} h-full antialiased`}>
+    <html lang="es" className={`${exo2.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   )

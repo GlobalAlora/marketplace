@@ -1,13 +1,13 @@
 import MainLayout from '@/components/layout/MainLayout'
+import Hero from '@/components/vehiculos/Hero'
+import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
+import { vehiculosMock } from '@/lib/utils/mock-data'
 
 export default function Home() {
   return (
     <MainLayout>
-      <div className="bg-surface flex items-center justify-center py-24 px-4 min-h-screen">
-        <h1 className="text-3xl font-semibold text-gray-900 text-center">
-          Bienvenido a Marketplace Comodoro
-        </h1>
-      </div>
+      <Hero />
+      <GrillaVehiculos vehiculos={vehiculosMock} />
     </MainLayout>
   )
 }

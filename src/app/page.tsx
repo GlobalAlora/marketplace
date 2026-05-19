@@ -8,6 +8,10 @@ import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 
 const destacados = MOCK_VEHICULOS.filter(v => v.destacado)
 
+const ultimosPublicados = [...MOCK_VEHICULOS]
+  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  .slice(0, 4)
+
 export default function Home() {
   return (
     <MainLayout>
@@ -31,6 +35,25 @@ export default function Home() {
             </Link>
           </div>
           <GrillaVehiculos vehiculos={destacados} />
+        </div>
+      </section>
+
+      {/* Últimos publicados */}
+      <section className="bg-[#F5F6FA] py-10 sm:py-14">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-extrabold text-[#0D0F14]">Últimos publicados</h2>
+              <p className="text-sm text-gray-500 mt-1">Recién agregados</p>
+            </div>
+            <Link
+              href="/vehiculos"
+              className="text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
+            >
+              Ver todos →
+            </Link>
+          </div>
+          <GrillaVehiculos vehiculos={ultimosPublicados} />
         </div>
       </section>
 

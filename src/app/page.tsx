@@ -3,6 +3,7 @@ import MainLayout from '@/components/layout/MainLayout'
 import Hero from '@/components/vehiculos/Hero'
 import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
+import PanelLoginHero from '@/components/auth/PanelLoginHero'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 
 const destacados = MOCK_VEHICULOS.filter(v => v.destacado)
@@ -10,7 +11,7 @@ const destacados = MOCK_VEHICULOS.filter(v => v.destacado)
 export default function Home() {
   return (
     <MainLayout>
-      <Hero />
+      <Hero panelLogin={<PanelLoginHero />} />
 
       {/* Autos destacados */}
       <section className="bg-white py-10 sm:py-14">

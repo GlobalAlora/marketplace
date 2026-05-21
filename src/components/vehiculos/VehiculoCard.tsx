@@ -21,6 +21,9 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
   const vendedor = vehiculo.profiles?.nombre_agencia ??
     `${vehiculo.profiles?.nombre ?? ''} ${vehiculo.profiles?.apellido ?? ''}`.trim()
 
+  const role = vehiculo.profiles?.role
+  const esAgencia = role === 'agencia_premium' || role === 'agencia_basica'
+
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
@@ -70,6 +73,27 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
             <span className="text-xs text-gray-400 truncate max-w-[100px]">{vendedor}</span>
           )}
         </div>
+
+        {/* Badge vendedor */}
+        {role && (
+          <div className="pt-1">
+            {esAgencia ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#282F8F] text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                  <path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                </svg>
+                Agencia verificada
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                  <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                </svg>
+                Particular
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   )

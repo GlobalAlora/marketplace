@@ -58,6 +58,24 @@ export default function SeccionBeneficios() {
           </p>
         </div>
 
+        {/* Métricas / Social proof */}
+        <div className="flex flex-wrap justify-center gap-8 mb-12">
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-3xl font-extrabold text-[#282F8F]">8+</span>
+            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Autos publicados</span>
+          </div>
+          <div className="w-px bg-gray-200 hidden sm:block" />
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-3xl font-extrabold text-[#282F8F]">2</span>
+            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Agencias verificadas</span>
+          </div>
+          <div className="w-px bg-gray-200 hidden sm:block" />
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-3xl font-extrabold text-[#FFC107]">100%</span>
+            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Zona Comodoro</span>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {BENEFICIOS.map((b) => (
             <div

@@ -3,6 +3,7 @@ import MainLayout from '@/components/layout/MainLayout'
 import Hero from '@/components/vehiculos/Hero'
 import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
+import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
 import PanelLoginHero from '@/components/auth/PanelLoginHero'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 
@@ -15,62 +16,73 @@ const ultimosPublicados = [...MOCK_VEHICULOS]
 export default function Home() {
   return (
     <MainLayout>
+      {/* Hero: headline + login panel */}
       <Hero panelLogin={<PanelLoginHero />} />
 
-      {/* Autos destacados */}
-      <section className="bg-white py-10 sm:py-14">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-extrabold text-[#0D0F14]">Autos destacados</h2>
-              <span className="bg-[#FFC107] text-[#0D0F14] text-xs font-extrabold px-2.5 py-1 rounded-full">
-                ★ Selección
-              </span>
-            </div>
-            <Link
-              href="/vehiculos"
-              className="text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
-            >
-              Ver todos →
-            </Link>
-          </div>
-          <GrillaVehiculos vehiculos={destacados} />
-        </div>
-      </section>
+      {/* Main area: sidebar + content sections */}
+      <div className="bg-[#F5F6FA]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="flex gap-8 items-start">
 
-      {/* Últimos publicados */}
-      <section className="bg-[#F5F6FA] py-10 sm:py-14">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-extrabold text-[#0D0F14]">Últimos publicados</h2>
-              <p className="text-sm text-gray-500 mt-1">Recién agregados</p>
+            {/* Sticky sidebar — visible only on lg+ */}
+            <SidebarFiltros />
+
+            {/* Content columns */}
+            <div className="flex-1 min-w-0 flex flex-col gap-10">
+
+              {/* Autos destacados */}
+              <section>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-xl font-extrabold text-[#0D0F14]">Autos destacados</h2>
+                    <span className="bg-[#FFC107] text-[#0D0F14] text-xs font-extrabold px-2.5 py-1 rounded-full">
+                      ★ Selección
+                    </span>
+                  </div>
+                  <Link
+                    href="/vehiculos"
+                    className="text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
+                  >
+                    Ver todos →
+                  </Link>
+                </div>
+                <GrillaVehiculos vehiculos={destacados} />
+              </section>
+
+              {/* Últimos publicados */}
+              <section>
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h2 className="text-xl font-extrabold text-[#0D0F14]">Últimos publicados</h2>
+                    <p className="text-sm text-gray-500 mt-0.5">Recién agregados</p>
+                  </div>
+                  <Link
+                    href="/vehiculos"
+                    className="text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
+                  >
+                    Ver todos →
+                  </Link>
+                </div>
+                <GrillaVehiculos vehiculos={ultimosPublicados} />
+              </section>
+
+              {/* Todos los vehículos */}
+              <section>
+                <div className="mb-5">
+                  <h2 className="text-xl font-extrabold text-[#0D0F14]">Todos los vehículos</h2>
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {MOCK_VEHICULOS.length} publicaciones disponibles
+                  </p>
+                </div>
+                <GrillaVehiculos vehiculos={MOCK_VEHICULOS} />
+              </section>
+
             </div>
-            <Link
-              href="/vehiculos"
-              className="text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
-            >
-              Ver todos →
-            </Link>
           </div>
-          <GrillaVehiculos vehiculos={ultimosPublicados} />
         </div>
-      </section>
+      </div>
 
       <SeccionBeneficios />
-
-      {/* Todos los vehículos */}
-      <section className="bg-[#F5F6FA] py-10 sm:py-14">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <h2 className="text-2xl font-extrabold text-[#0D0F14]">Todos los vehículos</h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {MOCK_VEHICULOS.length} publicaciones disponibles
-            </p>
-          </div>
-          <GrillaVehiculos vehiculos={MOCK_VEHICULOS} />
-        </div>
-      </section>
     </MainLayout>
   )
 }

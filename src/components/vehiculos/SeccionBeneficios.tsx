@@ -48,7 +48,7 @@ const BENEFICIOS = [
 export default function SeccionBeneficios() {
   return (
     <section className="bg-white py-12 sm:py-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0D0F14]">
             ¿Por qué usar AUTODUX?

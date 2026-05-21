@@ -100,8 +100,8 @@ export default function SidebarFiltros() {
   }
 
   return (
-    <aside className="hidden lg:block w-[260px] shrink-0">
-      <div className="sticky top-20 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <aside className="hidden lg:block w-[260px] shrink-0 h-fit">
+      <div className="sticky top-20 overflow-y-auto max-h-[calc(100vh-5rem)] bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">

@@ -12,7 +12,7 @@ export default function Hero({ panelLogin }: HeroProps) {
       />
       <div className="absolute inset-0 bg-[#0D0F14]/80" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <div className="relative z-10 max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10 sm:py-14">
         <div className="flex flex-col lg:flex-row gap-8 lg:items-center">
           <div className="flex-1 min-w-0">
             <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight">

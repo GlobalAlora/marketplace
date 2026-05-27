@@ -27,14 +27,35 @@ const IconSearch = ({ className }: { className?: string }) => (
   </svg>
 )
 
+// ─── Mock auth types ─────────────────────────────────────────────────────────
+// TODO: Replace with real Supabase auth context when connecting backend.
+// To test the logged-in state, change the useState initial value below:
+//   useState<MockUser | null>({ nombre: 'Juan', apellido: 'Pérez', email: 'juan@mail.com' })
+interface MockUser {
+  nombre: string
+  apellido: string
+  email: string
+}
+
+function getInitials(user: MockUser): string {
+  return `${user.nombre[0] ?? ''}${user.apellido[0] ?? ''}`.toUpperCase()
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [query, setQuery] = useState('')
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const router = useRouter()
+  const [menuOpen, setMenuOpen]               = useState(false)
+  const [searchOpen, setSearchOpen]           = useState(false)
+  const [query, setQuery]                     = useState('')
+  const [dropdownOpen, setDropdownOpen]       = useState(false)
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false)
+
+  // TODO: Replace with real Supabase auth context when connecting backend.
+  const [user, setUser] = useState<MockUser | null>(null)
+
+  const router           = useRouter()
   const desktopSearchRef = useRef<HTMLDivElement>(null)
-  const mobileInputRef = useRef<HTMLInputElement>(null)
+  const userDropdownRef  = useRef<HTMLDivElement>(null)
+  const mobileInputRef   = useRef<HTMLInputElement>(null)
 
   const suggestions = query.trim().length > 1
     ? SUGERENCIAS.filter(s =>
@@ -60,11 +81,28 @@ export default function Header() {
     }
   }
 
-  // Close dropdown when clicking outside desktop search
+  function handleSignOut() {
+    setUser(null)
+    setUserDropdownOpen(false)
+    setMenuOpen(false)
+  }
+
+  // Close search dropdown when clicking outside desktop search
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (desktopSearchRef.current && !desktopSearchRef.current.contains(e.target as Node)) {
         setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false)
       }
     }
     document.addEventListener('mousedown', handler)
@@ -142,13 +180,70 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Desktop: Ingresar */}
-          <Link
-            href="/auth/login"
-            className="hidden md:block text-sm font-bold px-5 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors ml-2"
-          >
-            Ingresar
-          </Link>
+          {/* Desktop: auth area */}
+          {user ? (
+            /* Logged in — avatar + dropdown */
+            <div ref={userDropdownRef} className="hidden md:block relative ml-2">
+              <button
+                type="button"
+                onClick={() => setUserDropdownOpen(v => !v)}
+                className="flex items-center gap-2 py-1 pl-1 pr-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                aria-expanded={userDropdownOpen}
+                aria-label="Menú de usuario"
+              >
+                {/* Avatar */}
+                <span className="w-7 h-7 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                  {getInitials(user)}
+                </span>
+                <span className="text-sm font-semibold text-white leading-none">{user.nombre}</span>
+                <svg
+                  className={`w-3.5 h-3.5 text-gray-400 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`}
+                  fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+
+              {/* Dropdown */}
+              {userDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-52 bg-[#16182a] border border-white/15 rounded-xl shadow-2xl overflow-hidden z-50">
+                  {/* User info */}
+                  <div className="px-4 py-3 border-b border-white/10">
+                    <p className="text-xs font-bold text-white truncate">{user.nombre} {user.apellido}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                  <Link
+                    href="/panel"
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                    onClick={() => setUserDropdownOpen(false)}
+                  >
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
+                    Mi panel
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+                  >
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                    </svg>
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Not logged in — Ingresar button */
+            <Link
+              href="/auth/login"
+              className="hidden md:block text-sm font-bold px-5 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors ml-2"
+            >
+              Ingresar
+            </Link>
+          )}
 
           {/* Mobile: search icon + hamburger */}
           <div className="md:hidden flex items-center gap-1 ml-auto">
@@ -229,13 +324,52 @@ export default function Header() {
                 {label}
               </Link>
             ))}
-            <Link
-              href="/auth/login"
-              className="mt-2 text-sm font-bold px-4 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors text-center"
-              onClick={() => setMenuOpen(false)}
-            >
-              Ingresar
-            </Link>
+
+            {user ? (
+              /* Mobile: logged in */
+              <>
+                <div className="mt-2 pt-2 border-t border-white/10">
+                  <div className="flex items-center gap-2.5 py-2">
+                    <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                      {getInitials(user)}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{user.nombre} {user.apellido}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/panel"
+                    className="flex items-center gap-2 py-2.5 text-sm text-gray-300 hover:text-[#FFC107] transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
+                    Mi panel
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-2 py-2.5 text-sm text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                    </svg>
+                    Cerrar sesión
+                  </button>
+                </div>
+              </>
+            ) : (
+              /* Mobile: not logged in */
+              <Link
+                href="/auth/login"
+                className="mt-2 text-sm font-bold px-4 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors text-center"
+                onClick={() => setMenuOpen(false)}
+              >
+                Ingresar
+              </Link>
+            )}
           </nav>
         </div>
       )}

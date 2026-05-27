@@ -1,14 +1,18 @@
 import Link from 'next/link'
+import LogoAutodux from '@/components/auth/LogoAutodux'
 
 export default function Footer() {
   return (
     <footer className="bg-[#0D0F14]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col items-center sm:items-start gap-1">
-            <span className="font-extrabold text-lg tracking-tight text-white">
-              AUTO<span className="text-[#FFC107]">DUX</span>
-            </span>
+          <div className="flex flex-col items-center sm:items-start gap-2">
+            <div className="flex items-center gap-2.5">
+              <LogoAutodux size={22} />
+              <span className="font-extrabold text-lg tracking-tight text-white">
+                AUTO<span className="text-[#FFC107]">DUX</span>
+              </span>
+            </div>
             <span className="text-xs text-gray-400">Conectamos lo que buscas, con lo que se vende</span>
           </div>
           <nav className="flex items-center gap-6 text-sm text-gray-400" aria-label="Links del pie de página">

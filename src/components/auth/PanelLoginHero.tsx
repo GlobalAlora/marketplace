@@ -49,7 +49,7 @@ export default function PanelLoginHero() {
             <input type="checkbox" className="w-3.5 h-3.5 rounded accent-[#FFC107]" />
             Recordarme
           </label>
-          <Link href="/auth/reset" className="text-xs text-gray-400 hover:text-[#FFC107] transition-colors">
+          <Link href="/auth/recuperar" className="text-xs text-gray-400 hover:text-[#FFC107] transition-colors">
             ¿Olvidaste tu contraseña?
           </Link>
         </div>
@@ -87,7 +87,7 @@ export default function PanelLoginHero() {
       {/* Registrate */}
       <p className="mt-4 text-center text-xs text-gray-400">
         ¿No tenés cuenta?{' '}
-        <Link href="/auth/register" className="text-white font-semibold hover:text-[#FFC107] transition-colors">
+        <Link href="/auth/registro" className="text-white font-semibold hover:text-[#FFC107] transition-colors">
           Registrate
         </Link>
       </p>

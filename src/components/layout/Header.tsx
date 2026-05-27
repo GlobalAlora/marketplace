@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
+import LogoAutodux from '@/components/auth/LogoAutodux'
 
 const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
@@ -123,8 +124,9 @@ export default function Header() {
         <div className="flex items-center h-16 gap-4">
 
           {/* Logo */}
-          <Link href="/" className="shrink-0">
-            <span className="font-extrabold text-xl tracking-tight text-white">
+          <Link href="/" className="shrink-0 flex items-center gap-2.5 group">
+            <LogoAutodux size={26} />
+            <span className="font-extrabold text-xl tracking-tight text-white group-hover:opacity-90 transition-opacity">
               AUTO<span className="text-[#FFC107]">DUX</span>
             </span>
           </Link>

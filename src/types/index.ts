@@ -33,6 +33,13 @@ export type Vehiculo = {
   created_at: string
   updated_at: string
   profiles?: Profile
+  // Campos técnicos opcionales
+  transmision?: 'manual' | 'automatica'
+  combustible?: 'nafta' | 'diesel' | 'gnc' | 'hibrido' | 'electrico'
+  puertas?: number
+  color?: string
+  // Trust signal (mock: campo estático; prod: RPC increment en Supabase)
+  vistas?: number
 }
 
 export type MetricaVehiculo = {

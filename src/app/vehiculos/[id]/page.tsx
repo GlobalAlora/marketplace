@@ -45,8 +45,8 @@ export default async function VehiculoPage({ params }: PageProps) {
     )
     .slice(0, 3)
 
-  const nombreVendedor = vehiculo.profiles?.nombre_agencia ??
-    `${vehiculo.profiles?.nombre ?? ''} ${vehiculo.profiles?.apellido ?? ''}`.trim() ||
+  const nombreVendedor = (vehiculo.profiles?.nombre_agencia ??
+    `${vehiculo.profiles?.nombre ?? ''} ${vehiculo.profiles?.apellido ?? ''}`.trim()) ||
     'este vendedor'
 
   return (

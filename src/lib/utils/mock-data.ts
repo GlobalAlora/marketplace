@@ -1,5 +1,9 @@
 import type { Vehiculo } from '@/types'
 
+// ADMIN ONLY: El campo `destacado: true` es un producto comercial.
+// Solo puede ser activado por un usuario con role === 'admin'.
+// En producción: RPC Supabase con check de role en server-side.
+// En este mock solo 3 vehículos tienen destacado: true.
 export const MOCK_VEHICULOS: Vehiculo[] = [
   {
     id: '1',

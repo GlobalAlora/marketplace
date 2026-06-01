@@ -28,6 +28,8 @@ export type Vehiculo = {
   ubicacion: string
   imagenes: string[]
   activo: boolean
+  // ADMIN ONLY: solo un usuario con role === 'admin' puede cambiar este campo.
+  // No exponer en formularios de particulares ni agencias.
   destacado: boolean
   vendido: boolean
   created_at: string

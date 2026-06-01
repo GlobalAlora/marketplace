@@ -2,7 +2,7 @@ import Link from 'next/link'
 import MainLayout from '@/components/layout/MainLayout'
 import Hero from '@/components/vehiculos/Hero'
 import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
-import CardDestacado from '@/components/vehiculos/CardDestacado'
+import SliderDestacados from '@/components/vehiculos/SliderDestacados'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
 import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
 import PanelLoginHero from '@/components/auth/PanelLoginHero'
@@ -24,37 +24,8 @@ export default function Home() {
       {/* Hero: headline + login panel */}
       <Hero panelLogin={<PanelLoginHero />} />
 
-      {/* Sección Destacados — fondo oscuro propio, fuera del área principal */}
-      <section className="bg-gradient-to-br from-[#0D0F14] to-[#1a1a2e]">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-14">
-
-          {/* Encabezado de sección */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
-            <div>
-              <h2 className="text-2xl lg:text-3xl font-extrabold text-white leading-tight">
-                ⭐ Autos Destacados
-              </h2>
-              <p className="text-gray-400 text-sm mt-1">
-                Seleccionados por el equipo AUTODUX
-              </p>
-            </div>
-            <Link
-              href="/vehiculos"
-              className="text-sm font-semibold text-[#FFC107] hover:text-yellow-300 transition-colors shrink-0"
-            >
-              Ver todos →
-            </Link>
-          </div>
-
-          {/* Cards destacados — apiladas verticalmente */}
-          <div className="flex flex-col gap-5">
-            {destacados.map(v => (
-              <CardDestacado key={v.id} vehiculo={v} />
-            ))}
-          </div>
-
-        </div>
-      </section>
+      {/* Slider Destacados — sección full-width con fondo oscuro propio */}
+      <SliderDestacados vehiculos={destacados} />
 
       {/* Main area: sidebar + content sections */}
       <div className="bg-[#F5F6FA]">

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import MainLayout from '@/components/layout/MainLayout'
 import Hero from '@/components/vehiculos/Hero'
 import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
+import SeccionDestacados from '@/components/vehiculos/SeccionDestacados'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
 import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
 import PanelLoginHero from '@/components/auth/PanelLoginHero'
@@ -27,24 +28,8 @@ export default function Home() {
       {/* Hero: headline + login panel */}
       <Hero panelLogin={<PanelLoginHero />} />
 
-      {/* Sección Autos Destacados — fondo oscuro diferenciado, max 3 cards */}
-      <section className="bg-[#111318]">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-extrabold text-white">⭐ Autos Destacados</h2>
-              <p className="text-sm text-gray-400 mt-0.5">Seleccionados por AUTODUX</p>
-            </div>
-            <Link
-              href="/vehiculos"
-              className="text-sm font-semibold text-[#FFC107] hover:text-yellow-300 transition-colors shrink-0"
-            >
-              Ver todos →
-            </Link>
-          </div>
-          <GrillaVehiculos vehiculos={destacados} />
-        </div>
-      </section>
+      {/* Sección Autos Destacados — bento editorial, fondo blanco */}
+      <SeccionDestacados vehiculos={destacados} />
 
       {/* Main area: sidebar + content sections */}
       <div className="bg-[#F5F6FA]">

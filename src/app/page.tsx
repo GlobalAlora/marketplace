@@ -6,9 +6,10 @@ import SeccionDestacados from '@/components/vehiculos/SeccionDestacados'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
 import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
+import BannerPopupMobile from '@/components/ui/BannerPopupMobile'
 import PanelLoginHero from '@/components/auth/PanelLoginHero'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
-import { MOCK_BANNER } from '@/lib/utils/mock-banner'
+import { MOCK_BANNERS } from '@/lib/utils/mock-banner'
 
 const byDate = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -30,24 +31,35 @@ export default function Home() {
       {/* Hero: headline + login panel */}
       <Hero panelLogin={<PanelLoginHero />} />
 
+      {/* Banner mobile top — solo mobile, debajo del hero (lg:hidden inside component) */}
+      <div className="px-4 sm:px-8 py-2 bg-white lg:hidden">
+        <BannerPublicitario banner={MOCK_BANNERS.mobile_top} />
+      </div>
+
       {/* Sección Autos Destacados — bento editorial, fondo blanco */}
       <SeccionDestacados vehiculos={destacados} />
 
+      {/* Banner horizontal top — debajo de destacados, ancho completo */}
+      <div className="bg-[#F5F6FA]">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
+          <BannerPublicitario banner={MOCK_BANNERS.horizontal_top} />
+        </div>
+      </div>
+
       {/* Main area: sidebar + content sections */}
       <div className="bg-[#F5F6FA]">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 pt-4 pb-10">
           {/*
-            Sin items-start — los flex children usan align-self: stretch (default).
-            Esto hace que el aside del sidebar tenga la misma altura que la columna
-            de contenido, lo que permite que position: sticky funcione correctamente.
+            Sin items-start — align-self: stretch (default) hace que el aside izquierdo
+            tenga la misma altura que la columna de contenido, permitiendo sticky.
           */}
           <div className="flex flex-col lg:flex-row gap-6">
 
-            {/* Columna izquierda: filtros + banner publicitario, ambos sticky como unidad */}
+            {/* Columna izquierda: filtros + banner sidebar, sticky como unidad */}
             <aside className="w-[260px] shrink-0 hidden lg:block">
               <div className="sticky top-20 flex flex-col gap-4">
                 <SidebarFiltros />
-                <BannerPublicitario banner={MOCK_BANNER} />
+                <BannerPublicitario banner={MOCK_BANNERS.sidebar} />
               </div>
             </aside>
 
@@ -71,6 +83,9 @@ export default function Home() {
                 <GrillaVehiculos vehiculos={ultimosPublicados} />
               </section>
 
+              {/* Banner horizontal mid — entre "Últimos publicados" y "Todos los vehículos" */}
+              <BannerPublicitario banner={MOCK_BANNERS.horizontal_mid} />
+
               {/* Todos los vehículos — destacados al tope */}
               <section>
                 <div className="mb-5">
@@ -88,6 +103,9 @@ export default function Home() {
       </div>
 
       <SeccionBeneficios />
+
+      {/* Banner popup mobile — barra fija inferior, solo mobile, dismissable */}
+      <BannerPopupMobile banner={MOCK_BANNERS.mobile_popup} />
     </MainLayout>
   )
 }

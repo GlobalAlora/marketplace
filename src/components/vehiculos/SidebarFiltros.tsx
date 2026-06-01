@@ -156,7 +156,6 @@ export default function SidebarFiltros() {
         >
           Buscar autos
         </button>
-      </div>
     </div>
   )
 }

@@ -105,7 +105,7 @@ export default function ListadoVehiculos() {
       {/* Main content area */}
       <div className="bg-[#F5F6FA]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-8">
-          <div className="flex gap-6 items-start">
+          <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
 
             {/* Sticky sidebar — reuses the same component as the home page */}
             <SidebarFiltros />

@@ -6,7 +6,8 @@ interface BotonWhatsAppProps {
 }
 
 export default function BotonWhatsApp({ telefono, marca, modelo, año }: BotonWhatsAppProps) {
-  const numero = `54${telefono}`
+  // Argentina mobile WhatsApp: país 54 + 9 + número (sin 0 ni 15)
+  const numero = `549${telefono}`
   const mensaje = `Hola, vi tu auto ${marca} ${modelo} ${año} en AUTODUX y me interesa. ¿Está disponible?`
   const href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
 

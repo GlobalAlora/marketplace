@@ -22,9 +22,9 @@ export default function Home() {
       {/* Main area: sidebar + content sections */}
       <div className="bg-[#F5F6FA]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
-          <div className="flex gap-6 items-start">
+          <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
 
-            {/* Sticky sidebar — visible only on lg+ */}
+            {/* Sidebar filtros — colapsable en mobile, sticky en desktop */}
             <SidebarFiltros />
 
             {/* Content columns */}

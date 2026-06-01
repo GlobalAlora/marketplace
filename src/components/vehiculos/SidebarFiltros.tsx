@@ -82,6 +82,7 @@ function FilterGroup({ label, id, value, onChange, children }: FilterGroupProps)
 
 export default function SidebarFiltros() {
   const [filters, setFilters] = useState<Filters>(EMPTY)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const router = useRouter()
 
   const set = (key: keyof Filters) =>
@@ -100,8 +101,31 @@ export default function SidebarFiltros() {
   }
 
   return (
-    <aside className="hidden lg:sticky lg:top-20 lg:block w-[260px] shrink-0">
-      <div className="overflow-y-auto max-h-[calc(100vh-5rem)] bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="w-full lg:w-[260px] lg:shrink-0">
+      {/* Mobile toggle button */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(v => !v)}
+        className="lg:hidden w-full flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-[#0D0F14] mb-2 shadow-sm"
+        aria-expanded={mobileOpen}
+      >
+        <span className="flex items-center gap-2">
+          <svg className="w-4 h-4 text-[#282F8F]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+          </svg>
+          Filtrar vehículos
+          {hasFilters && <span className="w-2 h-2 rounded-full bg-[#FFC107] shrink-0" />}
+        </span>
+        <svg
+          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${mobileOpen ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+    <aside className={`lg:sticky lg:top-20 ${mobileOpen ? 'block' : 'hidden lg:block'}`}>
+      <div className="overflow-y-auto lg:max-h-[calc(100vh-5rem)] bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -156,5 +180,6 @@ export default function SidebarFiltros() {
         </button>
       </div>
     </aside>
+    </div>
   )
 }

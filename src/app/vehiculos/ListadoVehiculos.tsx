@@ -4,7 +4,9 @@ import { useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
 import VehiculoCard from '@/components/vehiculos/VehiculoCard'
+import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
+import { MOCK_BANNER } from '@/lib/utils/mock-banner'
 
 const SORT_OPTIONS = [
   { label: 'Más recientes', value: 'reciente' },
@@ -112,10 +114,12 @@ export default function ListadoVehiculos() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-8">
           <div className="flex flex-col lg:flex-row gap-6">
 
-            {/* Sidebar — solo desktop; sticky funciona porque el aside se estira
-                al alto total de la fila flex (align-self: stretch default) */}
+            {/* Columna izquierda: filtros + banner publicitario, ambos sticky como unidad */}
             <aside className="w-[260px] shrink-0 hidden lg:block">
-              <SidebarFiltros />
+              <div className="sticky top-20 flex flex-col gap-4">
+                <SidebarFiltros />
+                <BannerPublicitario banner={MOCK_BANNER} />
+              </div>
             </aside>
 
             {/* Listings column */}

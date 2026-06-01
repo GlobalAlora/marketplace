@@ -99,11 +99,11 @@ export default function SidebarFiltros() {
     router.push('/vehiculos')
   }
 
-  // sticky top-20 funciona porque el aside wrapper en page.tsx usa align-self: stretch
-  // (el flex container no tiene items-start), dando altura suficiente al contenedor.
+  // sticky top-20 es responsabilidad del wrapper en page.tsx y ListadoVehiculos.tsx.
+  // Este componente renderiza solo el panel de contenido sin posicionamiento propio,
+  // para que pueda coexistir en el mismo contenedor sticky junto al BannerPublicitario.
   return (
-    <aside className="sticky top-20">
-      <div className="overflow-y-auto max-h-[calc(100vh-5rem)] bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="overflow-y-auto max-h-[calc(100vh-5rem)] bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -157,6 +157,6 @@ export default function SidebarFiltros() {
           Buscar autos
         </button>
       </div>
-    </aside>
+    </div>
   )
 }

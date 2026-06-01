@@ -5,8 +5,10 @@ import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
 import SeccionDestacados from '@/components/vehiculos/SeccionDestacados'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
 import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
+import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import PanelLoginHero from '@/components/auth/PanelLoginHero'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
+import { MOCK_BANNER } from '@/lib/utils/mock-banner'
 
 const byDate = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -41,10 +43,12 @@ export default function Home() {
           */}
           <div className="flex flex-col lg:flex-row gap-6">
 
-            {/* Sidebar filtros — solo desktop; sticky funciona porque el aside
-                se estira al alto total de la fila flex (align-self: stretch) */}
+            {/* Columna izquierda: filtros + banner publicitario, ambos sticky como unidad */}
             <aside className="w-[260px] shrink-0 hidden lg:block">
-              <SidebarFiltros />
+              <div className="sticky top-20 flex flex-col gap-4">
+                <SidebarFiltros />
+                <BannerPublicitario banner={MOCK_BANNER} />
+              </div>
             </aside>
 
             {/* Content columns */}

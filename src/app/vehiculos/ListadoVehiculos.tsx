@@ -46,10 +46,15 @@ export default function ListadoVehiculos() {
         return [...result].sort((a, b) => b.precio - a.precio)
       case 'km_asc':
         return [...result].sort((a, b) => a.kilometraje - b.kilometraje)
-      default:
-        return [...result].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
+      default: {
+        // Destacados primero (por fecha), luego el resto (por fecha).
+        const byDate = (a: { created_at: string }, b: { created_at: string }) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        return [
+          ...result.filter(v => v.destacado).sort(byDate),
+          ...result.filter(v => !v.destacado).sort(byDate),
+        ]
+      }
     }
   }, [q, marca, precioMax, añoDesde, kmMax, ubicacion, sort])
 

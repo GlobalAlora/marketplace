@@ -110,10 +110,13 @@ export default function ListadoVehiculos() {
       {/* Main content area */}
       <div className="bg-[#F5F6FA]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-8">
-          <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
+          <div className="flex flex-col lg:flex-row gap-6">
 
-            {/* Sticky sidebar — reuses the same component as the home page */}
-            <SidebarFiltros />
+            {/* Sidebar — solo desktop; sticky funciona porque el aside se estira
+                al alto total de la fila flex (align-self: stretch default) */}
+            <aside className="w-[260px] shrink-0 hidden lg:block">
+              <SidebarFiltros />
+            </aside>
 
             {/* Listings column */}
             <div className="flex-1 min-w-0">

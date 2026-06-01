@@ -10,8 +10,10 @@ import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 const byDate = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 
-// Destacados primero (por fecha), luego el resto (por fecha).
 // ADMIN ONLY: solo role === 'admin' puede marcar un vehículo como destacado.
+const destacados = MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate).slice(0, 3)
+
+// Destacados primero (por fecha), luego el resto (por fecha).
 const vehiculosOrdenados = [
   ...MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate),
   ...MOCK_VEHICULOS.filter(v => !v.destacado).sort(byDate),
@@ -25,13 +27,40 @@ export default function Home() {
       {/* Hero: headline + login panel */}
       <Hero panelLogin={<PanelLoginHero />} />
 
+      {/* Sección Autos Destacados — fondo oscuro diferenciado, max 3 cards */}
+      <section className="bg-[#111318]">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-extrabold text-white">⭐ Autos Destacados</h2>
+              <p className="text-sm text-gray-400 mt-0.5">Seleccionados por AUTODUX</p>
+            </div>
+            <Link
+              href="/vehiculos"
+              className="text-sm font-semibold text-[#FFC107] hover:text-yellow-300 transition-colors shrink-0"
+            >
+              Ver todos →
+            </Link>
+          </div>
+          <GrillaVehiculos vehiculos={destacados} />
+        </div>
+      </section>
+
       {/* Main area: sidebar + content sections */}
       <div className="bg-[#F5F6FA]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
-          <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
+          {/*
+            Sin items-start — los flex children usan align-self: stretch (default).
+            Esto hace que el aside del sidebar tenga la misma altura que la columna
+            de contenido, lo que permite que position: sticky funcione correctamente.
+          */}
+          <div className="flex flex-col lg:flex-row gap-6">
 
-            {/* Sidebar filtros — colapsable en mobile, sticky en desktop */}
-            <SidebarFiltros />
+            {/* Sidebar filtros — solo desktop; sticky funciona porque el aside
+                se estira al alto total de la fila flex (align-self: stretch) */}
+            <aside className="w-[260px] shrink-0 hidden lg:block">
+              <SidebarFiltros />
+            </aside>
 
             {/* Content columns */}
             <div className="flex-1 min-w-0 flex flex-col gap-10">

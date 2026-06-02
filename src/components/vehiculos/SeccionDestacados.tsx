@@ -52,7 +52,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-lg hover:shadow-xl hover:shadow-[#FFC107]/10 transition-all duration-300 min-h-[260px]"
+      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-lg hover:shadow-xl hover:shadow-[#FFC107]/10 transition-shadow duration-300 min-h-[260px]"
     >
       {/* Imagen */}
       <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto sm:min-h-[260px] shrink-0 overflow-hidden bg-gray-100">
@@ -142,7 +142,7 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-md hover:shadow-lg hover:shadow-[#FFC107]/10 transition-all duration-300 flex-1 min-h-[130px]"
+      className="group flex flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-md hover:shadow-lg hover:shadow-[#FFC107]/10 transition-shadow duration-300 min-h-[130px]"
     >
       {/* Imagen */}
       <div className="relative w-[42%] min-h-[130px] shrink-0 overflow-hidden bg-gray-100">
@@ -235,7 +235,7 @@ export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps)
           </div>
 
           {resto.length > 0 && (
-            <div className="flex flex-col gap-5 h-full">
+            <div className="flex flex-col gap-5">
               {resto.map(v => (
                 <CardPequeña key={v.id} vehiculo={v} />
               ))}

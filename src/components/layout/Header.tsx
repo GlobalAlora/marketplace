@@ -118,7 +118,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-[#0D0F14] border-b border-white/10 transition-all duration-300">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
-        <div className={`flex items-center gap-4 transition-all duration-300 ${scrolled ? 'h-12' : 'h-16'}`}>
+        <div className="flex items-center gap-4 h-16">
 
           {/* Logo — shrinks on scroll */}
           <Link href="/" className="shrink-0 flex items-center gap-2.5 group">

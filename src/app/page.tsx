@@ -22,8 +22,8 @@ const todosOrdenados = [
   ...MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate),
   ...MOCK_VEHICULOS.filter(v => !v.destacado).sort(byDate),
 ]
-const todosPreviewA = todosOrdenados.slice(0, 6)   // fila 1 y 2
-const todosPreviewB = todosOrdenados.slice(6, 12)  // fila 3 y 4
+const todosPreviewA = todosOrdenados.slice(0, 8)    // 2 filas completas de 4
+const todosPreviewB = todosOrdenados.slice(8, 12)   // 1 fila completa de 4
 
 export default function Home() {
   return (

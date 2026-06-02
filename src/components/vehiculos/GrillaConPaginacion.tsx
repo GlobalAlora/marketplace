@@ -34,7 +34,7 @@ export default function GrillaConPaginacion({
   // Divide el listado visible en dos mitades para insertar el banner en el medio
   const firstSlice = shown.slice(0, midBannerAfter)
   const restSlice = shown.slice(midBannerAfter)
-  const showMidBanner = !!midBanner && shown.length > midBannerAfter
+  const showMidBanner = !!midBanner && shown.length > 0
 
   const gridCols =
     cols === 2

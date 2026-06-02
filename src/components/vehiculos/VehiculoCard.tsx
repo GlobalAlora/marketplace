@@ -80,7 +80,7 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
           {vehiculo.titulo}
         </h3>
 
-        <div className={`flex items-center gap-3 text-xs ${d ? 'text-gray-500' : 'text-gray-400'}`}>
+        <div className={`flex items-center gap-3 text-xs ${d ? 'text-gray-500' : 'text-gray-300'}`}>
           <span>{vehiculo.año}</span>
           <span>·</span>
           <span>{formatKm(vehiculo.kilometraje)}</span>
@@ -100,7 +100,7 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
             </span>
           )}
           {vendedor && (
-            <span className={`text-xs truncate max-w-[100px] ${d ? 'text-gray-400' : 'text-gray-500'}`}>
+            <span className={`text-xs truncate max-w-[100px] ${d ? 'text-gray-400' : 'text-gray-200'}`}>
               {vendedor}
             </span>
           )}
@@ -132,7 +132,7 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
               </span>
             ) : (
               <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                d ? 'bg-gray-100 text-gray-500' : 'bg-white/8 text-gray-400'
+                d ? 'bg-gray-100 text-gray-500' : 'bg-white/10 text-gray-200'
               }`}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
                   <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />

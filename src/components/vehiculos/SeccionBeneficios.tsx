@@ -1,12 +1,12 @@
 const BENEFICIOS = [
   {
-    titulo: 'Solo autos de la zona',
-    descripcion: 'Vehículos de Comodoro, Rada Tilly y la región. Sin publicaciones de afuera.',
+    titulo: 'Perfil profesional',
+    descripcion: 'Mostrá tu agencia, tu stock y tu identidad comercial en un solo espacio.',
     bg: '#282F8F',
     iconColor: 'white',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-        <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.076 3.218-4.688 3.218-7.327 0-5.19-4.054-9-9-9s-9 3.81-9 9c0 2.639 1.274 5.251 3.218 7.327a19.579 19.579 0 002.682 2.282 16.944 16.944 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+        <path fillRule="evenodd" d="M4.5 2.25a.75.75 0 000 1.5v16.5h-.75a.75.75 0 000 1.5h16.5a.75.75 0 000-1.5h-.75V3.75a.75.75 0 000-1.5h-15zM9 6a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H9zm-.75 3.75A.75.75 0 019 9h1.5a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM9 12a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H9zm3.75-5.25A.75.75 0 0113.5 6H15a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM13.5 9a.75.75 0 000 1.5H15A.75.75 0 0015 9h-1.5zm-.75 3.75a.75.75 0 01.75-.75H15a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM9 19.5v-2.25a.75.75 0 01.75-.75h4.5a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-4.5A.75.75 0 019 19.5z" clipRule="evenodd" />
       </svg>
     ),
   },
@@ -72,7 +72,7 @@ export default function SeccionBeneficios() {
           <div className="w-px bg-gray-200 hidden sm:block" />
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-3xl font-extrabold text-[#FFC107]">100%</span>
-            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Zona Comodoro</span>
+            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Contacto Directo</span>
           </div>
         </div>
 

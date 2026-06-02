@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 import LogoAutodux from '@/components/auth/LogoAutodux'
+import { useAuth, type MockUser } from '@/lib/mock-auth'
 
 const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
@@ -28,20 +29,9 @@ const IconSearch = ({ className }: { className?: string }) => (
   </svg>
 )
 
-// ─── Mock auth types ─────────────────────────────────────────────────────────
-// TODO: Replace with real Supabase auth context when connecting backend.
-// To test the logged-in state, change the useState initial value below:
-//   useState<MockUser | null>({ nombre: 'Juan', apellido: 'Pérez', email: 'juan@mail.com' })
-interface MockUser {
-  nombre: string
-  apellido: string
-  email: string
-}
-
 function getInitials(user: MockUser): string {
   return `${user.nombre[0] ?? ''}${user.apellido[0] ?? ''}`.toUpperCase()
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
 export default function Header() {
   const [menuOpen, setMenuOpen]               = useState(false)
@@ -49,9 +39,9 @@ export default function Header() {
   const [query, setQuery]                     = useState('')
   const [dropdownOpen, setDropdownOpen]       = useState(false)
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
+  const [scrolled, setScrolled]               = useState(false)
 
-  // TODO: Replace with real Supabase auth context when connecting backend.
-  const [user, setUser] = useState<MockUser | null>(null)
+  const { user, setUser } = useAuth()
 
   const router           = useRouter()
   const desktopSearchRef = useRef<HTMLDivElement>(null)
@@ -118,15 +108,22 @@ export default function Header() {
     }
   }, [searchOpen])
 
-  return (
-    <header className="sticky top-0 z-50 bg-[#0D0F14] border-b border-white/10">
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
-        <div className="flex items-center h-16 gap-4">
+  // Scroll shrink effect
+  useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 40) }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
-          {/* Logo */}
+  return (
+    <header className="sticky top-0 z-50 bg-[#0D0F14] border-b border-white/10 transition-all duration-300">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
+        <div className={`flex items-center gap-4 transition-all duration-300 ${scrolled ? 'h-12' : 'h-16'}`}>
+
+          {/* Logo — shrinks on scroll */}
           <Link href="/" className="shrink-0 flex items-center gap-2.5 group">
-            <LogoAutodux size={26} />
-            <span className="font-extrabold text-xl tracking-tight text-white group-hover:opacity-90 transition-opacity">
+            <LogoAutodux size={scrolled ? 20 : 26} />
+            <span className={`font-extrabold tracking-tight text-white group-hover:opacity-90 transition-all duration-300 ${scrolled ? 'text-lg' : 'text-xl'}`}>
               AUTO<span className="text-[#FFC107]">DUX</span>
             </span>
           </Link>

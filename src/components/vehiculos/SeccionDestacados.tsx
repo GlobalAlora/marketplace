@@ -17,22 +17,29 @@ function formatKm(km: number): string {
   return new Intl.NumberFormat('es-AR').format(km) + ' km'
 }
 
-/** Clases de acento izquierdo dorado para el panel info (siempre horizontal) */
-const ACENTO_IZQUIERDO = 'border-l-[3px] border-l-[#FFC107]'
+/** Ícono propio Vitrina — diamante/gema 4 puntas representando exclusividad y premium */
+function IconVitrina({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12 2L14.2 9.8H22L15.9 14.4L18.1 22L12 17.4L5.9 22L8.1 14.4L2 9.8H9.8L12 2Z" />
+    </svg>
+  )
+}
 
 function BadgeDestacado({ small = false }: { small?: boolean }) {
   return (
     <span
-      className={`font-extrabold tracking-[0.18em] text-[#FFC107] uppercase leading-none ${
+      className={`inline-flex items-center gap-1 font-extrabold tracking-[0.16em] text-[#FFC107] uppercase leading-none ${
         small ? 'text-[9px]' : 'text-[10px]'
       }`}
     >
-      ★ Destacado
+      <IconVitrina className="w-2.5 h-2.5" />
+      Destacado
     </span>
   )
 }
 
-/** Card principal — 2/3 del ancho en desktop, horizontal */
+/** Card principal — 2/3 del ancho en desktop */
 function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   const vendedor =
     vehiculo.profiles?.nombre_agencia ??
@@ -41,9 +48,9 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow duration-300 h-full"
+      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-lg hover:shadow-xl hover:shadow-[#FFC107]/10 transition-all duration-300 h-full"
     >
-      {/* Imagen — 55% en sm+ */}
+      {/* Imagen */}
       <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto shrink-0 overflow-hidden bg-gray-100">
         {vehiculo.imagenes[0] ? (
           <img
@@ -58,10 +65,15 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
             </svg>
           </div>
         )}
+        {/* Badge vitrina sobre imagen */}
+        <div className="absolute top-3 left-3 bg-[#FFC107] text-[#0D0F14] text-[9px] font-extrabold tracking-widest px-2.5 py-1 rounded-full uppercase flex items-center gap-1">
+          <IconVitrina className="w-2.5 h-2.5" />
+          Vitrina
+        </div>
       </div>
 
-      {/* Info — top accent en mobile (layout vertical), left accent en sm+ (layout horizontal) */}
-      <div className="flex flex-col justify-between p-6 lg:p-8 flex-1 min-w-0 border-t-[3px] border-t-[#FFC107] sm:border-t-0 sm:border-l-[3px] sm:border-l-[#FFC107]">
+      {/* Info */}
+      <div className="flex flex-col justify-between p-6 lg:p-8 flex-1 min-w-0">
         <div className="flex flex-col gap-3">
           <BadgeDestacado />
           <h3 className="text-xl lg:text-2xl font-bold text-[#0D0F14] leading-tight group-hover:text-[#282F8F] transition-colors">
@@ -92,7 +104,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
             {formatPrecio(vehiculo.precio)}
           </p>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="inline-flex items-center gap-2 bg-[#282F8F] text-white text-sm font-bold px-5 py-2.5 rounded-xl group-hover:bg-[#1f2570] transition-colors">
+            <span className="inline-flex items-center gap-2 bg-[#FFC107] text-[#0D0F14] text-sm font-bold px-5 py-2.5 rounded-xl group-hover:bg-yellow-400 transition-colors">
               Ver vehículo →
             </span>
             {vendedor && (
@@ -105,14 +117,14 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   )
 }
 
-/** Cards secundarias — 1/3 del ancho, stacked, layout horizontal compacto */
+/** Cards secundarias */
 function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-row rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex-1 min-h-[130px]"
+      className="group flex flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-md hover:shadow-lg hover:shadow-[#FFC107]/10 transition-all duration-300 flex-1 min-h-[130px]"
     >
-      {/* Imagen — se estira al alto del contenido (absolute fill) */}
+      {/* Imagen */}
       <div className="relative w-[42%] shrink-0 overflow-hidden bg-gray-100">
         {vehiculo.imagenes[0] ? (
           <img
@@ -130,7 +142,7 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
       </div>
 
       {/* Info */}
-      <div className={`flex flex-col justify-between p-4 flex-1 min-w-0 ${ACENTO_IZQUIERDO}`}>
+      <div className="flex flex-col justify-between p-4 flex-1 min-w-0 border-l-4 border-l-[#FFC107]">
         <div className="flex flex-col gap-1.5">
           <BadgeDestacado small />
           <h3 className="text-sm font-bold text-[#0D0F14] leading-snug line-clamp-2 group-hover:text-[#282F8F] transition-colors">
@@ -156,37 +168,38 @@ export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps)
   const [principal, ...resto] = vehiculos
 
   return (
-    // Fondo blanco — inversión deliberada después del hero oscuro
-    <section className="bg-white border-b border-gray-100">
+    <section className="bg-[#071526] border-b border-white/8">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
 
         {/* Header de sección */}
         <div className="flex items-end justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-extrabold text-[#0D0F14]">
-              Autos Destacados
-            </h2>
-            <p className="text-sm text-gray-400 mt-0.5">
-              Selección del equipo AUTODUX
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#FFC107] flex items-center justify-center shrink-0">
+              <IconVitrina className="w-5 h-5 text-[#0D0F14]" />
+            </div>
+            <div>
+              <h2 className="text-xl font-extrabold text-white">
+                Vitrina AUTODUX
+              </h2>
+              <p className="text-sm text-gray-400 mt-0.5">
+                Descubrí las oportunidades más interesantes de la Patagonia.
+              </p>
+            </div>
           </div>
           <Link
             href="/vehiculos"
-            className="text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors shrink-0"
+            className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0"
           >
             Ver todos →
           </Link>
         </div>
 
-        {/* Bento grid: card grande col-span-2, pequeñas col-span-1 */}
+        {/* Bento grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-          {/* Card grande — ocupa 2 de 3 columnas si hay cards secundarias */}
           <div className={resto.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}>
             <CardGrande vehiculo={principal} />
           </div>
 
-          {/* Cards secundarias stacked — se ajustan al alto de la card grande */}
           {resto.length > 0 && (
             <div className="flex flex-col gap-5 h-full">
               {resto.map(v => (
@@ -194,7 +207,6 @@ export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps)
               ))}
             </div>
           )}
-
         </div>
       </div>
     </section>

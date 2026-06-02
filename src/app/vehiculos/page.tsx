@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function VehiculosPage() {
   return (
     <MainLayout>
-      <Suspense fallback={<div className="min-h-screen bg-[#F5F6FA]" />}>
+      <Suspense fallback={<div className="min-h-screen bg-[#071526]" />}>
         <ListadoVehiculos />
       </Suspense>
     </MainLayout>

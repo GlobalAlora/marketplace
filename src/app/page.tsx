@@ -4,20 +4,18 @@ import Hero from '@/components/vehiculos/Hero'
 import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
 import SeccionDestacados from '@/components/vehiculos/SeccionDestacados'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
-import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
+import FiltrosHorizontales from '@/components/vehiculos/FiltrosHorizontales'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import BannerPopupMobile from '@/components/ui/BannerPopupMobile'
-import PanelLoginHero from '@/components/auth/PanelLoginHero'
+import RevealSection from '@/components/ui/RevealSection'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 import { MOCK_BANNERS } from '@/lib/utils/mock-banner'
 
 const byDate = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 
-// ADMIN ONLY: solo role === 'admin' puede marcar un vehículo como destacado.
 const destacados = MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate).slice(0, 3)
 
-// Destacados primero (por fecha), luego el resto (por fecha).
 const vehiculosOrdenados = [
   ...MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate),
   ...MOCK_VEHICULOS.filter(v => !v.destacado).sort(byDate),
@@ -28,83 +26,94 @@ const ultimosPublicados = [...MOCK_VEHICULOS].sort(byDate).slice(0, 4)
 export default function Home() {
   return (
     <MainLayout>
-      {/* Hero: headline + login panel */}
-      <Hero panelLogin={<PanelLoginHero />} />
+      {/* Hero: headline + animated subtitle + 3 user-type cards */}
+      <Hero />
 
-      {/* Banner mobile top — solo mobile, debajo del hero (lg:hidden inside component) */}
-      <div className="px-4 sm:px-8 py-2 bg-white lg:hidden">
+      {/* Banner mobile top — solo mobile, debajo del hero */}
+      <div className="px-4 sm:px-8 py-2 bg-[#071526] lg:hidden">
         <BannerPublicitario banner={MOCK_BANNERS.mobile_top} />
       </div>
 
-      {/* Sección Autos Destacados — bento editorial, fondo blanco */}
-      <SeccionDestacados vehiculos={destacados} />
+      {/* Vitrina AUTODUX — fondo azul oscuro */}
+      <RevealSection>
+        <SeccionDestacados vehiculos={destacados} />
+      </RevealSection>
 
-      {/* Banner horizontal top — debajo de destacados, ancho completo */}
-      <div className="bg-[#F5F6FA]">
+      {/* Banner horizontal top */}
+      <div className="bg-[#071526]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
           <BannerPublicitario banner={MOCK_BANNERS.horizontal_top} />
         </div>
       </div>
 
-      {/* Main area: sidebar + content sections */}
-      <div className="bg-[#F5F6FA]">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 pt-4 pb-10">
-          {/*
-            Sin items-start — align-self: stretch (default) hace que el aside izquierdo
-            tenga la misma altura que la columna de contenido, permitiendo sticky.
-          */}
-          <div className="flex flex-col lg:flex-row gap-6">
+      {/* Filtros horizontales */}
+      <div className="bg-[#071526] border-b border-white/8">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
+          <FiltrosHorizontales />
+        </div>
+      </div>
 
-            {/* Columna izquierda: filtros + banner sidebar, sticky como unidad */}
-            <aside className="w-[260px] shrink-0 hidden lg:block">
-              <div className="sticky top-20 flex flex-col gap-4">
-                <SidebarFiltros />
-                <BannerPublicitario banner={MOCK_BANNERS.sidebar} />
-              </div>
-            </aside>
+      {/* Main area: content + right banner */}
+      <div className="bg-[#071526]">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 pt-6 pb-10">
+          <div className="flex flex-col lg:flex-row gap-6">
 
             {/* Content columns */}
             <div className="flex-1 min-w-0 flex flex-col gap-10">
 
               {/* Últimos publicados */}
-              <section>
-                <div className="flex items-center justify-between mb-5">
-                  <div>
-                    <h2 className="text-xl font-extrabold text-[#0D0F14]">Últimos publicados</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">Recién agregados</p>
+              <RevealSection>
+                <section>
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <h2 className="text-xl font-extrabold text-white">Últimos publicados</h2>
+                      <p className="text-sm text-gray-400 mt-0.5">Recién agregados</p>
+                    </div>
+                    <Link
+                      href="/vehiculos"
+                      className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors"
+                    >
+                      Ver todos →
+                    </Link>
                   </div>
-                  <Link
-                    href="/vehiculos"
-                    className="text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
-                  >
-                    Ver todos →
-                  </Link>
-                </div>
-                <GrillaVehiculos vehiculos={ultimosPublicados} />
-              </section>
+                  <GrillaVehiculos vehiculos={ultimosPublicados} />
+                </section>
+              </RevealSection>
 
-              {/* Banner horizontal mid — entre "Últimos publicados" y "Todos los vehículos" */}
+              {/* Banner horizontal mid */}
               <BannerPublicitario banner={MOCK_BANNERS.horizontal_mid} />
 
-              {/* Todos los vehículos — destacados al tope */}
-              <section>
-                <div className="mb-5">
-                  <h2 className="text-xl font-extrabold text-[#0D0F14]">Todos los vehículos</h2>
-                  <p className="text-sm text-gray-500 mt-0.5">
-                    {MOCK_VEHICULOS.length} publicaciones disponibles
-                  </p>
-                </div>
-                <GrillaVehiculos vehiculos={vehiculosOrdenados} />
-              </section>
+              {/* Todos los vehículos */}
+              <RevealSection delay={100}>
+                <section>
+                  <div className="mb-5">
+                    <h2 className="text-xl font-extrabold text-white">Todos los vehículos</h2>
+                    <p className="text-sm text-gray-400 mt-0.5">
+                      {MOCK_VEHICULOS.length} publicaciones disponibles
+                    </p>
+                  </div>
+                  <GrillaVehiculos vehiculos={vehiculosOrdenados} />
+                </section>
+              </RevealSection>
 
             </div>
+
+            {/* Right sidebar: banner sticky */}
+            <aside className="w-[220px] shrink-0 hidden xl:block">
+              <div className="sticky top-20">
+                <BannerPublicitario banner={MOCK_BANNERS.sidebar_right} />
+              </div>
+            </aside>
+
           </div>
         </div>
       </div>
 
-      <SeccionBeneficios />
+      <RevealSection>
+        <SeccionBeneficios />
+      </RevealSection>
 
-      {/* Banner popup mobile — barra fija inferior, solo mobile, dismissable */}
+      {/* Banner popup mobile */}
       <BannerPopupMobile banner={MOCK_BANNERS.mobile_popup} />
     </MainLayout>
   )

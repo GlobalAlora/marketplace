@@ -4,11 +4,11 @@
 
 export type BannerPosicion =
   | 'sidebar'          // izquierdo vertical — 260x400px
+  | 'sidebar_right'    // derecho vertical — 220x400px, sticky en grillas
   | 'horizontal_top'   // debajo de destacados — 100% ancho x 90px
   | 'horizontal_mid'   // entre secciones de contenido — 100% ancho x 90px
   | 'mobile_top'       // mobile only, debajo del hero — 100% ancho x 60px
   | 'mobile_popup'     // mobile only, barra fija inferior — dismissable
-  // TODO: 'sidebar_right' — banners verticales lado derecho (desktop), planificados
 
 export interface Banner {
   imagen_url: string
@@ -18,6 +18,13 @@ export interface Banner {
 }
 
 export const MOCK_BANNERS: Record<BannerPosicion, Banner> = {
+  sidebar_right: {
+    imagen_url:
+      'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=260&h=400&fit=crop&q=80',
+    link_url: '#',
+    activo: true,
+    posicion: 'sidebar_right',
+  },
   sidebar: {
     imagen_url:
       'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=260&h=400&fit=crop&q=80',

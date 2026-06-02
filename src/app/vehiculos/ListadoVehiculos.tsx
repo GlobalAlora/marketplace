@@ -2,11 +2,11 @@
 
 import { useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import SidebarFiltros from '@/components/vehiculos/SidebarFiltros'
+import FiltrosHorizontales from '@/components/vehiculos/FiltrosHorizontales'
 import VehiculoCard from '@/components/vehiculos/VehiculoCard'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
-import { MOCK_BANNER } from '@/lib/utils/mock-banner'
+import { MOCK_BANNERS } from '@/lib/utils/mock-banner'
 
 const SORT_OPTIONS = [
   { label: 'Más recientes', value: 'reciente' },
@@ -16,7 +16,7 @@ const SORT_OPTIONS = [
 ]
 
 const SELECT_STYLE =
-  'bg-white border border-gray-200 text-gray-800 text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:border-[#282F8F] transition-colors appearance-none cursor-pointer'
+  'bg-white/8 border border-white/15 text-white text-sm rounded-full pl-3 pr-8 py-2 focus:outline-none focus:border-[#FFC107]/50 transition-colors appearance-none cursor-pointer hover:bg-white/12'
 
 export default function ListadoVehiculos() {
   const searchParams = useSearchParams()
@@ -49,7 +49,6 @@ export default function ListadoVehiculos() {
       case 'km_asc':
         return [...result].sort((a, b) => a.kilometraje - b.kilometraje)
       default: {
-        // Destacados primero (por fecha), luego el resto (por fecha).
         const byDate = (a: { created_at: string }, b: { created_at: string }) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         return [
@@ -88,7 +87,7 @@ export default function ListadoVehiculos() {
                 Todos los vehículos
               </h1>
               <p className="mt-1 text-gray-400 text-sm">
-                Comprá y vendé autos en Comodoro Rivadavia y la región patagónica
+                Comprá y vendé autos en la región patagónica
               </p>
             </div>
 
@@ -109,18 +108,13 @@ export default function ListadoVehiculos() {
         </div>
       </div>
 
+      {/* Sticky horizontal filter bar */}
+      <FiltrosHorizontales sticky />
+
       {/* Main content area */}
-      <div className="bg-[#F5F6FA]">
+      <div className="bg-[#071526]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-8">
           <div className="flex flex-col lg:flex-row gap-6">
-
-            {/* Columna izquierda: filtros + banner publicitario, ambos sticky como unidad */}
-            <aside className="w-[260px] shrink-0 hidden lg:block">
-              <div className="sticky top-20 flex flex-col gap-4">
-                <SidebarFiltros />
-                <BannerPublicitario banner={MOCK_BANNER} />
-              </div>
-            </aside>
 
             {/* Listings column */}
             <div className="flex-1 min-w-0">
@@ -128,14 +122,14 @@ export default function ListadoVehiculos() {
               {/* Toolbar */}
               <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-sm text-gray-600 font-medium">
+                  <span className="text-sm text-gray-400 font-medium">
                     {filtered.length}{' '}
                     {filtered.length === 1 ? 'resultado' : 'resultados'}
                   </span>
                   {hasFilters && (
                     <button
                       onClick={handleClearFilters}
-                      className="text-xs font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors underline underline-offset-2"
+                      className="text-xs font-semibold text-[#FFC107] hover:text-white transition-colors underline underline-offset-2"
                     >
                       Limpiar filtros
                     </button>
@@ -168,37 +162,44 @@ export default function ListadoVehiculos() {
 
               {/* Grid */}
               {filtered.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                   {filtered.map(v => (
                     <VehiculoCard key={v.id} vehiculo={v} />
                   ))}
                 </div>
               ) : (
-                /* Empty state */
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
                     <svg
-                      className="w-8 h-8 text-gray-400"
+                      className="w-8 h-8 text-gray-500"
                       fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
                       aria-hidden="true"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
                     </svg>
                   </div>
-                  <h3 className="text-base font-bold text-[#0D0F14] mb-1">Sin resultados</h3>
-                  <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
+                  <h3 className="text-base font-bold text-white mb-1">Sin resultados</h3>
+                  <p className="text-sm text-gray-400 max-w-xs leading-relaxed">
                     No hay vehículos que coincidan con los filtros seleccionados.
                     Probá con otros criterios.
                   </p>
                   <button
                     onClick={handleClearFilters}
-                    className="mt-5 text-sm font-bold text-[#282F8F] hover:text-[#FFC107] transition-colors"
+                    className="mt-5 text-sm font-bold text-[#FFC107] hover:text-white transition-colors"
                   >
                     Ver todos los vehículos →
                   </button>
                 </div>
               )}
             </div>
+
+            {/* Right sidebar: sticky banner */}
+            <aside className="w-[220px] shrink-0 hidden xl:block">
+              <div className="sticky top-36">
+                <BannerPublicitario banner={MOCK_BANNERS.sidebar_right} />
+              </div>
+            </aside>
+
           </div>
         </div>
       </div>

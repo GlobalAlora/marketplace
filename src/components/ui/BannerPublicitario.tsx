@@ -78,6 +78,31 @@ export default function BannerPublicitario({ banner }: BannerPublicitarioProps) 
     )
   }
 
+  // ─── Banner sidebar right (vertical) ────────────────────────────────────────
+  if (banner.posicion === 'sidebar_right') {
+    return (
+      <div className="w-full">
+        <LabelPublicidad center />
+        <a
+          href={banner.link_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:opacity-95 transition-all duration-200"
+          aria-label="Ir al sitio del anunciante"
+        >
+          <img
+            src={banner.imagen_url}
+            alt="Espacio publicitario"
+            width={220}
+            height={400}
+            className="w-full object-cover block"
+            loading="lazy"
+          />
+        </a>
+      </div>
+    )
+  }
+
   // ─── Banner sidebar (vertical) ───────────────────────────────────────────────
   // Posición por defecto. 260×400px, visible en desktop dentro del aside izquierdo.
   return (

@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import type { Vehiculo } from '@/types'
+import { useAuth } from '@/lib/mock-auth'
 
 interface InfoVehiculoProps {
   vehiculo: Vehiculo
@@ -108,6 +111,8 @@ function IconoTelefono() {
 }
 
 export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
+  const { isLoggedIn } = useAuth()
+
   const esAgencia =
     vehiculo.profiles?.role === 'agencia_premium' ||
     vehiculo.profiles?.role === 'agencia_basica'
@@ -162,9 +167,21 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Precio</p>
-          <p className="text-4xl font-extrabold text-white leading-none">
-            {formatPrecio(vehiculo.precio)}
-          </p>
+          {isLoggedIn ? (
+            <p className="text-4xl font-extrabold text-white leading-none">
+              {formatPrecio(vehiculo.precio)}
+            </p>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="inline-flex items-center gap-2 bg-[#FFC107]/10 border border-[#FFC107]/30 rounded-xl px-4 py-2.5 hover:bg-[#FFC107]/20 transition-colors"
+            >
+              <svg className="w-4 h-4 text-[#FFC107] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              <span className="text-sm font-semibold text-[#FFC107]">Iniciá sesión para ver el precio</span>
+            </Link>
+          )}
         </div>
         <div className="flex flex-col items-end gap-1 pb-1 text-xs text-gray-500">
           {vehiculo.vistas !== undefined && (

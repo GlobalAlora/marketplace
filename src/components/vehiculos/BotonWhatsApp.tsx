@@ -1,3 +1,8 @@
+'use client'
+
+import Link from 'next/link'
+import { useAuth } from '@/lib/mock-auth'
+
 interface BotonWhatsAppProps {
   telefono: string
   marca: string
@@ -6,7 +11,22 @@ interface BotonWhatsAppProps {
 }
 
 export default function BotonWhatsApp({ telefono, marca, modelo, año }: BotonWhatsAppProps) {
-  // Argentina mobile WhatsApp: país 54 + 9 + número (sin 0 ni 15)
+  const { isLoggedIn } = useAuth()
+
+  if (!isLoggedIn) {
+    return (
+      <Link
+        href="/auth/registro"
+        className="flex items-center justify-center gap-3 w-full bg-[#282F8F] text-white font-extrabold py-4 rounded-xl hover:bg-[#1f2570] active:scale-[0.99] transition-all text-base"
+      >
+        <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        Registrate para contactar
+      </Link>
+    )
+  }
+
   const numero = `549${telefono}`
   const mensaje = `Hola, vi tu auto ${marca} ${modelo} ${año} en AUTODUX y me interesa. ¿Está disponible?`
   const href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`

@@ -10,6 +10,37 @@ export interface MockAgencia {
   created_at: string
 }
 
+export interface MockVendedor {
+  id: string
+  nombre: string
+  apellido: string
+  telefono: string
+  verificado: boolean
+  created_at: string
+  bio?: string
+}
+
+export const MOCK_VENDEDORES: MockVendedor[] = [
+  {
+    id: 'u1',
+    nombre: 'Juan',
+    apellido: 'Pérez',
+    telefono: '2974123456',
+    verificado: true,
+    created_at: '2026-01-01T00:00:00Z',
+    bio: 'Vendo mis vehículos personales con toda la documentación en orden. Siempre disponible para coordinar una vista y hacer una prueba de manejo. Ubicado en Comodoro Rivadavia.',
+  },
+  {
+    id: 'u4',
+    nombre: 'María',
+    apellido: 'González',
+    telefono: '2974345678',
+    verificado: true,
+    created_at: '2026-03-01T00:00:00Z',
+    bio: 'Particular. Vendo vehículo propio, bien mantenido, con todas las revisiones al día. Precio negociable para trato directo. Rada Tilly, Comodoro Rivadavia.',
+  },
+]
+
 export const MOCK_AGENCIAS: MockAgencia[] = [
   {
     id: 'u2',

@@ -16,11 +16,14 @@ const byDate = (a: { created_at: string }, b: { created_at: string }) =>
 const destacados       = MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate).slice(0, 3)
 const ultimosPublicados = [...MOCK_VEHICULOS].sort(byDate).slice(0, 4)
 
-// Preview home: destacados primero, luego por fecha — máx 9 cards
-const todosPreview = [
+// Preview home: destacados primero, luego por fecha — máx 12 cards
+// Se divide en 2 filas de 6 para intercalar el banner publicitario
+const todosOrdenados = [
   ...MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate),
   ...MOCK_VEHICULOS.filter(v => !v.destacado).sort(byDate),
-].slice(0, 9)
+]
+const todosPreviewA = todosOrdenados.slice(0, 6)   // fila 1 y 2
+const todosPreviewB = todosOrdenados.slice(6, 12)  // fila 3 y 4
 
 export default function Home() {
   return (
@@ -83,7 +86,16 @@ export default function Home() {
               </Link>
             </div>
 
-            <GrillaVehiculos vehiculos={todosPreview} />
+            {/* Primera mitad — 6 cards (2 filas) */}
+            <GrillaVehiculos vehiculos={todosPreviewA} />
+
+            {/* Banner publicitario entre fila 2 y fila 3 */}
+            <div className="my-5">
+              <BannerPublicitario banner={MOCK_BANNERS.horizontal_mid} />
+            </div>
+
+            {/* Segunda mitad — 6 cards (2 filas) */}
+            <GrillaVehiculos vehiculos={todosPreviewB} />
 
             {/* CTA al listado completo */}
             <div className="mt-8 flex justify-center">

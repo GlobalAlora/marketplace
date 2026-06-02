@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
 
@@ -197,6 +198,9 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
 }
 
 export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
   if (vehiculos.length === 0) return null
 
   const [principal, ...resto] = vehiculos
@@ -229,7 +233,10 @@ export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps)
         </div>
 
         {/* Bento grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-3 gap-5 transition-opacity duration-300"
+          style={{ opacity: mounted ? 1 : 0 }}
+        >
           <div className={resto.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}>
             <CardGrande vehiculo={principal} />
           </div>

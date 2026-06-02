@@ -52,7 +52,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-lg hover:shadow-xl hover:shadow-[#FFC107]/10 transition-all duration-300 h-full"
+      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-lg hover:shadow-xl hover:shadow-[#FFC107]/10 transition-all duration-300 min-h-[260px]"
     >
       {/* Imagen */}
       <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto sm:min-h-[260px] shrink-0 overflow-hidden bg-gray-100">

@@ -26,10 +26,8 @@ export default function Home() {
         <BannerPublicitario banner={MOCK_BANNERS.mobile_top} />
       </div>
 
-      {/* Vitrina AUTODUX */}
-      <RevealSection>
-        <SeccionDestacados vehiculos={destacados} />
-      </RevealSection>
+      {/* Vitrina AUTODUX — sin RevealSection: está sobre el fold, evita flash de blanco */}
+      <SeccionDestacados vehiculos={destacados} />
 
       {/* Banner horizontal */}
       <div className="bg-[#071526]">

@@ -65,7 +65,7 @@ export default async function VehiculoPage({ params }: PageProps) {
   return (
     <MainLayout>
       <div className="bg-[#0D0F14] min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
 
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 mb-6 text-sm">
@@ -90,10 +90,10 @@ export default async function VehiculoPage({ params }: PageProps) {
 
           {/* Layout 3 columnas: info izq | galería centro | banner der */}
           {/* En mobile: galería primero, luego info */}
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-6 lg:items-start">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-8 lg:items-start">
 
-            {/* Columna izquierda: info + CTA (orden 2 en mobile, 1 en desktop) */}
-            <div className="w-full lg:w-[300px] xl:w-[320px] lg:shrink-0 lg:sticky lg:top-24 flex flex-col gap-5 order-2 lg:order-1">
+            {/* Columna izquierda: info + CTA */}
+            <div className="w-full lg:w-[360px] xl:w-[400px] lg:shrink-0 lg:sticky lg:top-24 flex flex-col gap-4 order-2 lg:order-1">
               <InfoVehiculo vehiculo={vehiculo} />
               {vehiculo.profiles?.telefono && (
                 <BotonWhatsApp
@@ -105,13 +105,13 @@ export default async function VehiculoPage({ params }: PageProps) {
               )}
             </div>
 
-            {/* Columna central: galería (orden 1 en mobile, 2 en desktop) */}
+            {/* Columna central: galería */}
             <div className="flex-1 min-w-0 order-1 lg:order-2">
               <GaleriaImagenes imagenes={vehiculo.imagenes} titulo={vehiculo.titulo} />
             </div>
 
             {/* Columna derecha: banner publicitario vertical */}
-            <div className="w-full lg:w-[200px] xl:w-[220px] lg:shrink-0 hidden lg:block order-3">
+            <div className="w-full lg:w-[200px] xl:w-[240px] lg:shrink-0 hidden lg:block order-3">
               <div className="sticky top-24">
                 <BannerPublicitario banner={MOCK_BANNERS.sidebar_right} />
               </div>
@@ -127,7 +127,7 @@ export default async function VehiculoPage({ params }: PageProps) {
             {/* Más vehículos de este vendedor */}
             {masDelVendedor.length > 0 && (
               <section className="bg-[#071526] py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
                   <h2 className="text-xl font-extrabold text-white mb-6">
                     Más vehículos de{' '}
                     <Link
@@ -149,7 +149,7 @@ export default async function VehiculoPage({ params }: PageProps) {
             {/* Vehículos similares */}
             {similares.length > 0 && (
               <section className={`py-12 ${masDelVendedor.length > 0 ? 'bg-[#0D0F14] border-t border-white/5' : 'bg-[#071526]'}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
                   <h2 className="text-xl font-extrabold text-white mb-2">
                     Vehículos similares
                   </h2>

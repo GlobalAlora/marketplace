@@ -174,7 +174,7 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
     <div className="flex flex-col divide-y divide-white/8">
 
       {/* ── Precio ── */}
-      <div className="pb-5">
+      <div className="pb-4">
         <SectionLabel>Precio</SectionLabel>
 
         {isLoggedIn ? (
@@ -214,16 +214,17 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
       </div>
 
       {/* ── Características ── */}
-      <div className="py-5">
+      <div className="py-4">
         <SectionLabel>Características</SectionLabel>
-        <div className="grid grid-cols-2 gap-2">
+        <div>
           {specs.map(({ icono, label, value }) => (
-            <div key={label} className="flex items-start gap-2.5 bg-white/[0.04] rounded-xl p-3 hover:bg-white/[0.07] transition-colors">
-              <span className="text-[#FFC107] shrink-0 mt-px">{icono}</span>
-              <div className="min-w-0">
-                <p className="text-[10px] text-gray-500 leading-none mb-1">{label}</p>
-                <p className="text-sm font-semibold text-white leading-snug">{value}</p>
-              </div>
+            <div
+              key={label}
+              className="flex items-center gap-3 py-2.5 border-b border-white/6 last:border-0"
+            >
+              <span className="text-[#FFC107] shrink-0">{icono}</span>
+              <span className="text-xs text-gray-400 w-28 shrink-0">{label}</span>
+              <span className="text-sm font-semibold text-white">{value}</span>
             </div>
           ))}
         </div>
@@ -231,14 +232,14 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
 
       {/* ── Descripción ── */}
       {vehiculo.descripcion && (
-        <div className="py-5">
+        <div className="py-4">
           <SectionLabel>Descripción</SectionLabel>
           <p className="text-sm text-gray-300 leading-relaxed">{vehiculo.descripcion}</p>
         </div>
       )}
 
       {/* ── Vendedor ── */}
-      <div className="pt-5">
+      <div className="pt-4">
         <SectionLabel>Vendedor</SectionLabel>
 
         <div className="flex items-center gap-3">

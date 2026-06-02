@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import FiltrosHorizontales from '@/components/vehiculos/FiltrosHorizontales'
 import VehiculoCard from '@/components/vehiculos/VehiculoCard'
@@ -11,13 +11,78 @@ import { MOCK_BANNERS } from '@/lib/utils/mock-banner'
 
 const SORT_OPTIONS = [
   { label: 'Más recientes', value: 'reciente' },
-  { label: 'Menor precio', value: 'precio_asc' },
-  { label: 'Mayor precio', value: 'precio_desc' },
-  { label: 'Menor km', value: 'km_asc' },
+  { label: 'Menor precio',  value: 'precio_asc' },
+  { label: 'Mayor precio',  value: 'precio_desc' },
+  { label: 'Menor km',     value: 'km_asc' },
 ]
 
-const SELECT_STYLE =
-  'bg-white/8 border border-white/15 text-white text-sm rounded-full pl-3 pr-8 py-2 focus:outline-none focus:border-[#FFC107]/50 transition-colors appearance-none cursor-pointer hover:bg-white/12'
+function SortDropdown({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (v: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const selected = SORT_OPTIONS.find(o => o.value === value) ?? SORT_OPTIONS[0]
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="flex items-center gap-2 bg-white/8 border border-white/15 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-white/14 hover:border-white/25 transition-all duration-150"
+        aria-label="Ordenar vehículos"
+      >
+        {selected.label}
+        <svg
+          className={`w-3.5 h-3.5 shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          className="absolute top-[calc(100%+6px)] right-0 z-50 min-w-[170px] bg-[#0d2137] border border-white/15 rounded-xl shadow-2xl shadow-black/60 overflow-hidden"
+        >
+          {SORT_OPTIONS.map(opt => (
+            <li key={opt.value}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={opt.value === value}
+                onClick={() => { onChange(opt.value); setOpen(false) }}
+                className={[
+                  'w-full text-left px-4 py-2.5 text-sm transition-colors',
+                  opt.value === value
+                    ? 'bg-[#FFC107]/15 text-[#FFC107] font-semibold'
+                    : 'text-gray-300 hover:bg-white/8 hover:text-white',
+                ].join(' ')}
+              >
+                {opt.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
 
 export default function ListadoVehiculos() {
   const searchParams = useSearchParams()
@@ -62,15 +127,15 @@ export default function ListadoVehiculos() {
 
   const hasFilters = !!(q || marca || precioMax || añoDesde || kmMax || ubicacion)
 
-  function handleSortChange(e: React.ChangeEvent<HTMLSelectElement>) {
+  function handleSortChange(value: string) {
     const params = new URLSearchParams(searchParams.toString())
-    if (e.target.value === 'reciente') {
+    if (value === 'reciente') {
       params.delete('sort')
     } else {
-      params.set('sort', e.target.value)
+      params.set('sort', value)
     }
     const qs = params.toString()
-    router.replace(`/vehiculos${qs ? '?' + qs : ''}`)
+    router.replace(`/vehiculos${qs ? '?' + qs : ''}`, { scroll: false })
   }
 
   function handleClearFilters() {
@@ -145,27 +210,7 @@ export default function ListadoVehiculos() {
                 </div>
 
                 {/* Sort selector */}
-                <div className="relative shrink-0">
-                  <select
-                    value={sort}
-                    onChange={handleSortChange}
-                    className={SELECT_STYLE}
-                    aria-label="Ordenar vehículos"
-                  >
-                    {SORT_OPTIONS.map(o => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </select>
-                  <svg
-                    className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"
-                    fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                  </svg>
-                </div>
+                <SortDropdown value={sort} onChange={handleSortChange} />
               </div>
 
               {/* Grid */}

@@ -55,11 +55,13 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
       className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-lg hover:shadow-xl hover:shadow-[#FFC107]/10 transition-all duration-300 h-full"
     >
       {/* Imagen */}
-      <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto shrink-0 overflow-hidden bg-gray-100">
+      <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto sm:min-h-[260px] shrink-0 overflow-hidden bg-gray-100">
         {vehiculo.imagenes[0] ? (
           <img
             src={vehiculo.imagenes[0]}
             alt={vehiculo.titulo}
+            loading="eager"
+            fetchPriority="high"
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
@@ -143,11 +145,12 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
       className="group flex flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-md hover:shadow-lg hover:shadow-[#FFC107]/10 transition-all duration-300 flex-1 min-h-[130px]"
     >
       {/* Imagen */}
-      <div className="relative w-[42%] shrink-0 overflow-hidden bg-gray-100">
+      <div className="relative w-[42%] min-h-[130px] shrink-0 overflow-hidden bg-gray-100">
         {vehiculo.imagenes[0] ? (
           <img
             src={vehiculo.imagenes[0]}
             alt={vehiculo.titulo}
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (

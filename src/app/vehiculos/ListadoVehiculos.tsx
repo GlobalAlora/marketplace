@@ -112,6 +112,13 @@ export default function ListadoVehiculos() {
       {/* Sticky horizontal filter bar */}
       <FiltrosHorizontales sticky />
 
+      {/* Banner horizontal top — debajo de filtros, antes de la grilla */}
+      <div className="bg-[#071526] border-b border-white/5">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
+          <BannerPublicitario banner={MOCK_BANNERS.horizontal_top} />
+        </div>
+      </div>
+
       {/* Main content area */}
       <div className="bg-[#071526]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-8">

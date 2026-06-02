@@ -106,6 +106,18 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
           )}
         </div>
 
+        {/* Ver más */}
+        <div className={`mt-2 pt-2 border-t ${d ? 'border-gray-100' : 'border-white/8'}`}>
+          <span className={`inline-flex items-center gap-1.5 text-xs font-bold transition-all duration-200 group-hover:gap-2.5 ${
+            d ? 'text-[#282F8F]' : 'text-[#FFC107]'
+          }`}>
+            Ver más
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </span>
+        </div>
+
         {/* Badge vendedor */}
         {role && (
           <div className="pt-1">

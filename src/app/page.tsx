@@ -13,8 +13,14 @@ import { MOCK_BANNERS } from '@/lib/utils/mock-banner'
 const byDate = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 
-const destacados = MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate).slice(0, 3)
+const destacados       = MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate).slice(0, 3)
 const ultimosPublicados = [...MOCK_VEHICULOS].sort(byDate).slice(0, 4)
+
+// Preview home: destacados primero, luego por fecha — máx 9 cards
+const todosPreview = [
+  ...MOCK_VEHICULOS.filter(v => v.destacado).sort(byDate),
+  ...MOCK_VEHICULOS.filter(v => !v.destacado).sort(byDate),
+].slice(0, 9)
 
 export default function Home() {
   return (
@@ -26,36 +32,58 @@ export default function Home() {
         <BannerPublicitario banner={MOCK_BANNERS.mobile_top} />
       </div>
 
-      {/* Vitrina AUTODUX — sin RevealSection: está sobre el fold, evita flash de blanco */}
+      {/* Vitrina AUTODUX */}
       <SeccionDestacados vehiculos={destacados} />
 
-      {/* Banner horizontal */}
+      {/* Banner horizontal top */}
       <div className="bg-[#071526]">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
           <BannerPublicitario banner={MOCK_BANNERS.horizontal_top} />
         </div>
       </div>
 
-      {/* Últimos publicados — preview de 4, CTA hacia /vehiculos */}
+      {/* Últimos publicados — 4 cards */}
       <div className="bg-[#071526]">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 pt-10 pb-6">
           <RevealSection>
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-xl font-extrabold text-white">Últimos publicados</h2>
+                <p className="text-sm text-gray-400 mt-0.5">Recién agregados</p>
+              </div>
+              <Link href="/vehiculos" className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0">
+                Ver todos →
+              </Link>
+            </div>
+            <GrillaVehiculos vehiculos={ultimosPublicados} />
+          </RevealSection>
+        </div>
+      </div>
+
+      {/* Banner horizontal mid */}
+      <div className="bg-[#071526]">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
+          <BannerPublicitario banner={MOCK_BANNERS.horizontal_mid} />
+        </div>
+      </div>
+
+      {/* Todos los vehículos — preview 9 cards + CTA a /vehiculos */}
+      <div className="bg-[#071526]">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 pt-6 pb-10">
+          <RevealSection>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-xl font-extrabold text-white">Todos los vehículos</h2>
                 <p className="text-sm text-gray-400 mt-0.5">
                   {MOCK_VEHICULOS.length} publicaciones disponibles en la Patagonia
                 </p>
               </div>
-              <Link
-                href="/vehiculos"
-                className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0"
-              >
+              <Link href="/vehiculos" className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0">
                 Ver todos →
               </Link>
             </div>
 
-            <GrillaVehiculos vehiculos={ultimosPublicados} />
+            <GrillaVehiculos vehiculos={todosPreview} />
 
             {/* CTA al listado completo */}
             <div className="mt-8 flex justify-center">

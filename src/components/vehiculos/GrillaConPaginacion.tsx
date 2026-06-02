@@ -2,13 +2,19 @@
 
 import { useState } from 'react'
 import type { Vehiculo } from '@/types'
+import type { Banner } from '@/lib/utils/mock-banner'
 import VehiculoCard from './VehiculoCard'
+import BannerPublicitario from '@/components/ui/BannerPublicitario'
 
 interface GrillaConPaginacionProps {
   vehiculos: Vehiculo[]
   initialLimit?: number
   pageSize?: number
   cols?: 'auto' | 2 | 3
+  /** Banner horizontal inyectado dentro de la grilla después de N cards */
+  midBanner?: Banner
+  /** Después de cuántas cards insertar el banner (default: 9 = 3 filas × 3 cols) */
+  midBannerAfter?: number
 }
 
 export default function GrillaConPaginacion({
@@ -16,12 +22,19 @@ export default function GrillaConPaginacion({
   initialLimit = 12,
   pageSize = 12,
   cols = 'auto',
+  midBanner,
+  midBannerAfter = 9,
 }: GrillaConPaginacionProps) {
   const [visible, setVisible] = useState(initialLimit)
 
   const shown = vehiculos.slice(0, visible)
   const remaining = vehiculos.length - visible
   const hasMore = remaining > 0
+
+  // Divide el listado visible en dos mitades para insertar el banner en el medio
+  const firstSlice = shown.slice(0, midBannerAfter)
+  const restSlice = shown.slice(midBannerAfter)
+  const showMidBanner = !!midBanner && shown.length > midBannerAfter
 
   const gridCols =
     cols === 2
@@ -32,11 +45,28 @@ export default function GrillaConPaginacion({
 
   return (
     <div>
+      {/* Primera porción */}
       <div className={`grid ${gridCols} gap-5`}>
-        {shown.map(v => (
+        {firstSlice.map(v => (
           <VehiculoCard key={v.id} vehiculo={v} />
         ))}
       </div>
+
+      {/* Banner horizontal mid — solo si hay suficientes cards */}
+      {showMidBanner && (
+        <div className="my-6">
+          <BannerPublicitario banner={midBanner!} />
+        </div>
+      )}
+
+      {/* Segunda porción */}
+      {restSlice.length > 0 && (
+        <div className={`grid ${gridCols} gap-5`}>
+          {restSlice.map(v => (
+            <VehiculoCard key={v.id} vehiculo={v} />
+          ))}
+        </div>
+      )}
 
       {/* Footer: contador + botón ver más */}
       <div className="mt-6 flex flex-col items-center gap-3">

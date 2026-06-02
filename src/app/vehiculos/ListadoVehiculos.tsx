@@ -167,6 +167,8 @@ export default function ListadoVehiculos() {
                   vehiculos={filtered}
                   initialLimit={12}
                   pageSize={12}
+                  midBanner={MOCK_BANNERS.horizontal_mid}
+                  midBannerAfter={9}
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">

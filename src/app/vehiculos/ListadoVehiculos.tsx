@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import FiltrosHorizontales from '@/components/vehiculos/FiltrosHorizontales'
 import VehiculoCard from '@/components/vehiculos/VehiculoCard'
+import GrillaConPaginacion from '@/components/vehiculos/GrillaConPaginacion'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 import { MOCK_BANNERS } from '@/lib/utils/mock-banner'
@@ -162,11 +163,11 @@ export default function ListadoVehiculos() {
 
               {/* Grid */}
               {filtered.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {filtered.map(v => (
-                    <VehiculoCard key={v.id} vehiculo={v} />
-                  ))}
-                </div>
+                <GrillaConPaginacion
+                  vehiculos={filtered}
+                  initialLimit={12}
+                  pageSize={12}
+                />
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">

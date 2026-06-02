@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import MainLayout from '@/components/layout/MainLayout'
-import VehiculoCard from '@/components/vehiculos/VehiculoCard'
+import GrillaConPaginacion from '@/components/vehiculos/GrillaConPaginacion'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import { MOCK_VEHICULOS, MOCK_VENDEDORES } from '@/lib/utils/mock-data'
 import { MOCK_BANNERS } from '@/lib/utils/mock-banner'
@@ -196,11 +196,7 @@ export default async function UsuarioPage({ params }: PageProps) {
                 </div>
 
                 {vehiculos.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {vehiculos.map(v => (
-                      <VehiculoCard key={v.id} vehiculo={v} />
-                    ))}
-                  </div>
+                  <GrillaConPaginacion vehiculos={vehiculos} initialLimit={6} pageSize={6} />
                 ) : (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4 text-gray-500">

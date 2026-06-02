@@ -2,6 +2,7 @@ import Link from 'next/link'
 import MainLayout from '@/components/layout/MainLayout'
 import Hero from '@/components/vehiculos/Hero'
 import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
+import GrillaConPaginacion from '@/components/vehiculos/GrillaConPaginacion'
 import SeccionDestacados from '@/components/vehiculos/SeccionDestacados'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
 import FiltrosHorizontales from '@/components/vehiculos/FiltrosHorizontales'
@@ -92,7 +93,7 @@ export default function Home() {
                       {MOCK_VEHICULOS.length} publicaciones disponibles
                     </p>
                   </div>
-                  <GrillaVehiculos vehiculos={vehiculosOrdenados} />
+                  <GrillaConPaginacion vehiculos={vehiculosOrdenados} initialLimit={8} pageSize={8} />
                 </section>
               </RevealSection>
 

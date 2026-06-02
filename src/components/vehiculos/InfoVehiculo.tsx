@@ -251,7 +251,16 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm font-bold text-white">{nombreVendedor}</p>
+              {esAgencia ? (
+                <Link
+                  href={`/agencias/${vehiculo.profiles?.id ?? vehiculo.user_id}`}
+                  className="text-sm font-bold text-white hover:text-[#FFC107] transition-colors"
+                >
+                  {nombreVendedor}
+                </Link>
+              ) : (
+                <p className="text-sm font-bold text-white">{nombreVendedor}</p>
+              )}
               {verificado && (
                 <span className="inline-flex items-center gap-1 text-[10px] bg-[#282F8F]/60 text-[#A0AFFF] px-2 py-0.5 rounded-full font-semibold shrink-0">
                   <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">

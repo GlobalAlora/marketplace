@@ -1,5 +1,36 @@
 import type { Vehiculo } from '@/types'
 
+export interface MockAgencia {
+  id: string
+  nombre: string
+  descripcion: string
+  telefono: string
+  verificado: boolean
+  role: 'agencia_premium' | 'agencia_basica'
+  created_at: string
+}
+
+export const MOCK_AGENCIAS: MockAgencia[] = [
+  {
+    id: 'u2',
+    nombre: 'Automotores Sur',
+    descripcion: 'Concesionaria multimarca con más de 20 años en Comodoro Rivadavia. Especialistas en vehículos 4x4 y pick-ups para trabajo en la industria petrolera. Financiación propia, recibimos tu usado y gestionamos la transferencia.',
+    telefono: '2974654321',
+    verificado: true,
+    role: 'agencia_premium',
+    created_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'u6',
+    nombre: 'Patagonia Automotores',
+    descripcion: 'Agencia especializada en vehículos utilitarios y de trabajo para la región. Servicio técnico propio, garantía escrita en todos nuestros vehículos. Más de 10 años acompañando a la comunidad de la Patagonia.',
+    telefono: '2974112233',
+    verificado: true,
+    role: 'agencia_premium',
+    created_at: '2026-02-15T00:00:00Z',
+  },
+]
+
 // ADMIN ONLY: El campo `destacado: true` es un producto comercial.
 // Solo puede ser activado por un usuario con role === 'admin'.
 // En producción: RPC Supabase con check de role en server-side.
@@ -107,7 +138,7 @@ export const MOCK_VEHICULOS: Vehiculo[] = [
   },
   {
     id: '4',
-    user_id: 'u3',
+    user_id: 'u6',
     titulo: 'Chevrolet S10 High Country',
     marca: 'Chevrolet',
     modelo: 'S10 High Country',
@@ -132,9 +163,10 @@ export const MOCK_VEHICULOS: Vehiculo[] = [
     created_at: '2026-04-12T10:00:00Z',
     updated_at: '2026-04-12T10:00:00Z',
     profiles: {
-      id: 'u3', email: 'carlos@mail.com', nombre: 'Carlos', apellido: 'Rodríguez',
-      telefono: '2974789012', role: 'particular',
-      verificado: false, activo: true, created_at: '2026-02-01T00:00:00Z',
+      id: 'u6', email: 'patagonia@mail.com', nombre: 'Agencia', apellido: 'Patagonia',
+      telefono: '2974112233', role: 'agencia_premium',
+      nombre_agencia: 'Patagonia Automotores', verificado: true, activo: true,
+      created_at: '2026-02-15T00:00:00Z',
     },
   },
   {
@@ -238,7 +270,7 @@ export const MOCK_VEHICULOS: Vehiculo[] = [
   },
   {
     id: '8',
-    user_id: 'u5',
+    user_id: 'u6',
     titulo: 'Mitsubishi L200 Triton GLX',
     marca: 'Mitsubishi',
     modelo: 'L200 Triton',
@@ -263,9 +295,10 @@ export const MOCK_VEHICULOS: Vehiculo[] = [
     created_at: '2026-04-22T10:00:00Z',
     updated_at: '2026-04-22T10:00:00Z',
     profiles: {
-      id: 'u5', email: 'roberto@mail.com', nombre: 'Roberto', apellido: 'Silva',
-      telefono: '2974901234', role: 'particular',
-      verificado: false, activo: true, created_at: '2026-03-15T00:00:00Z',
+      id: 'u6', email: 'patagonia@mail.com', nombre: 'Agencia', apellido: 'Patagonia',
+      telefono: '2974112233', role: 'agencia_premium',
+      nombre_agencia: 'Patagonia Automotores', verificado: true, activo: true,
+      created_at: '2026-02-15T00:00:00Z',
     },
   },
 ]

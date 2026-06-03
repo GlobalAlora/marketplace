@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import AuthLayout from '@/components/auth/AuthLayout'
 import { createClient } from '@/lib/supabase/client'
 
@@ -18,7 +17,6 @@ interface FormErrors {
 }
 
 export default function LoginPage() {
-  const router = useRouter()
   const [email, setEmail]           = useState('')
   const [password, setPassword]     = useState('')
   const [showPw, setShowPw]         = useState(false)
@@ -54,8 +52,8 @@ export default function LoginPage() {
       }
       return
     }
-    router.push('/dashboard')
-    router.refresh()
+    // Full reload para que el server component lea las cookies de sesión recién seteadas
+    window.location.href = '/dashboard'
   }
 
   return (

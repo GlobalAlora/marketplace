@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
 import LogoAutodux from '@/components/auth/LogoAutodux'
-import { useAuth, type MockUser } from '@/lib/mock-auth'
+import { useAuth } from '@/lib/supabase/AuthProvider'
 
 const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
@@ -29,8 +29,8 @@ const IconSearch = ({ className }: { className?: string }) => (
   </svg>
 )
 
-function getInitials(user: MockUser): string {
-  return `${user.nombre[0] ?? ''}${user.apellido[0] ?? ''}`.toUpperCase()
+function getInitials(nombre: string, apellido: string): string {
+  return `${nombre[0] ?? ''}${apellido[0] ?? ''}`.toUpperCase()
 }
 
 export default function Header() {
@@ -41,7 +41,7 @@ export default function Header() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const [scrolled, setScrolled]               = useState(false)
 
-  const { user, setUser } = useAuth()
+  const { user, signOut } = useAuth()
 
   const router           = useRouter()
   const desktopSearchRef = useRef<HTMLDivElement>(null)
@@ -73,9 +73,9 @@ export default function Header() {
   }
 
   function handleSignOut() {
-    setUser(null)
     setUserDropdownOpen(false)
     setMenuOpen(false)
+    signOut()
   }
 
   // Close search dropdown when clicking outside desktop search
@@ -192,7 +192,7 @@ export default function Header() {
               >
                 {/* Avatar */}
                 <span className="w-7 h-7 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
-                  {getInitials(user)}
+                  {getInitials(user.nombre, user.apellido)}
                 </span>
                 <span className="text-sm font-semibold text-white leading-none">{user.nombre}</span>
                 <svg
@@ -212,14 +212,14 @@ export default function Header() {
                     <p className="text-xs text-gray-500 truncate">{user.email}</p>
                   </div>
                   <Link
-                    href="/panel"
+                    href={user?.role === 'admin' ? '/admin' : '/dashboard'}
                     className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
                     onClick={() => setUserDropdownOpen(false)}
                   >
                     <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                     </svg>
-                    Mi panel
+                    {user?.role === 'admin' ? 'Panel Admin' : 'Mi panel'}
                   </Link>
                   <button
                     type="button"
@@ -330,7 +330,7 @@ export default function Header() {
                 <div className="mt-2 pt-2 border-t border-white/10">
                   <div className="flex items-center gap-2.5 py-2">
                     <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
-                      {getInitials(user)}
+                      {getInitials(user.nombre, user.apellido)}
                     </span>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-white truncate">{user.nombre} {user.apellido}</p>
@@ -338,7 +338,7 @@ export default function Header() {
                     </div>
                   </div>
                   <Link
-                    href="/panel"
+                    href={user?.role === 'admin' ? '/admin' : '/dashboard'}
                     className="flex items-center gap-2 py-2.5 text-sm text-gray-300 hover:text-[#FFC107] transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >

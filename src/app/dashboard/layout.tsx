@@ -14,7 +14,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
-  if (!profile) redirect('/auth/login')
+  // Si el profile no existe redirigimos a / y no a /auth/login
+  // para evitar el loop: middleware ve usuario auth → /dashboard → /auth/login → /dashboard
+  if (!profile) redirect('/')
 
   return (
     <div className="min-h-screen bg-[#0D0F14] flex">

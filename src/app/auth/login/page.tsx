@@ -45,7 +45,13 @@ export default function LoginPage() {
 
     setLoading(false)
     if (error) {
-      setServerError('Email o contraseña incorrectos')
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        setServerError('Tenés que confirmar tu email antes de iniciar sesión. Revisá tu bandeja.')
+      } else if (error.message.toLowerCase().includes('invalid login')) {
+        setServerError('Email o contraseña incorrectos')
+      } else {
+        setServerError(error.message)
+      }
       return
     }
     router.push('/dashboard')

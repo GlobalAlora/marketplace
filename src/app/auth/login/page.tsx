@@ -2,11 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import type { Metadata } from 'next'
+import { useRouter } from 'next/navigation'
 import AuthLayout from '@/components/auth/AuthLayout'
-
-// Note: metadata must be in a server component; this is handled at layout level.
-// For SEO on this page use generateMetadata pattern when connecting Supabase.
+import { createClient } from '@/lib/supabase/client'
 
 const INPUT_BASE =
   'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
@@ -20,11 +18,13 @@ interface FormErrors {
 }
 
 export default function LoginPage() {
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [showPw, setShowPw]     = useState(false)
-  const [errors, setErrors]     = useState<FormErrors>({})
-  const [loading, setLoading]   = useState(false)
+  const router = useRouter()
+  const [email, setEmail]           = useState('')
+  const [password, setPassword]     = useState('')
+  const [showPw, setShowPw]         = useState(false)
+  const [errors, setErrors]         = useState<FormErrors>({})
+  const [loading, setLoading]       = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   function validate(): boolean {
     const next: FormErrors = {}
@@ -34,12 +34,22 @@ export default function LoginPage() {
     return Object.keys(next).length === 0
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!validate()) return
-    // TODO: Replace with real Supabase auth
     setLoading(true)
-    setTimeout(() => setLoading(false), 1200)
+    setServerError(null)
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    setLoading(false)
+    if (error) {
+      setServerError('Email o contraseña incorrectos')
+      return
+    }
+    router.push('/dashboard')
+    router.refresh()
   }
 
   return (
@@ -122,6 +132,13 @@ export default function LoginPage() {
             </div>
             {errors.password && <p className="mt-1.5 text-xs text-red-400">{errors.password}</p>}
           </div>
+
+          {/* Error del servidor */}
+          {serverError && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+              <p className="text-xs text-red-400">{serverError}</p>
+            </div>
+          )}
 
           {/* Submit */}
           <button

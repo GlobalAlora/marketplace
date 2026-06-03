@@ -2,7 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import AuthLayout from '@/components/auth/AuthLayout'
+import { createClient } from '@/lib/supabase/client'
 
 const INPUT_BASE =
   'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-3 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
@@ -35,11 +37,14 @@ const EMPTY: FormState = {
 }
 
 export default function RegistroPage() {
-  const [form, setForm]       = useState<FormState>(EMPTY)
-  const [errors, setErrors]   = useState<FormErrors>({})
-  const [showPw, setShowPw]   = useState(false)
-  const [showCfm, setShowCfm] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const [form, setForm]         = useState<FormState>(EMPTY)
+  const [errors, setErrors]     = useState<FormErrors>({})
+  const [showPw, setShowPw]     = useState(false)
+  const [showCfm, setShowCfm]   = useState(false)
+  const [loading, setLoading]   = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const [success, setSuccess]   = useState(false)
 
   const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(f => ({ ...f, [key]: e.target.value }))
@@ -63,12 +68,56 @@ export default function RegistroPage() {
     return Object.keys(next).length === 0
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!validate()) return
-    // TODO: Replace with real Supabase auth (signUp)
     setLoading(true)
-    setTimeout(() => setLoading(false), 1200)
+    setServerError(null)
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: {
+          nombre: form.nombre,
+          apellido: form.apellido,
+          telefono: form.telefono,
+        },
+      },
+    })
+
+    setLoading(false)
+    if (error) {
+      setServerError(error.message)
+      return
+    }
+    setSuccess(true)
+  }
+
+  if (success) {
+    return (
+      <AuthLayout>
+        <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl shadow-2xl p-8 text-center">
+          <div className="w-14 h-14 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-extrabold text-white mb-2">¡Cuenta creada!</h2>
+          <p className="text-sm text-gray-400 mb-6">
+            Te enviamos un email de confirmación a <span className="text-white font-semibold">{form.email}</span>.<br />
+            Revisá tu bandeja y hacé clic en el enlace para activar tu cuenta.
+          </p>
+          <Link
+            href="/auth/login"
+            className="inline-block bg-[#FFC107] text-[#0D0F14] font-extrabold py-3 px-6 rounded-xl hover:bg-yellow-400 transition-all text-sm"
+          >
+            Ir al inicio de sesión
+          </Link>
+        </div>
+      </AuthLayout>
+    )
   }
 
   return (
@@ -245,6 +294,13 @@ export default function RegistroPage() {
               </p>
             )}
           </div>
+
+          {/* Error del servidor */}
+          {serverError && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+              <p className="text-xs text-red-400">{serverError}</p>
+            </div>
+          )}
 
           {/* Submit */}
           <button

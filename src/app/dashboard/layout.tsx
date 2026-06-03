@@ -8,15 +8,31 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from('profiles')
     .select('nombre, apellido, email, role, avatar_url')
     .eq('id', user.id)
     .single()
 
-  // Si el profile no existe redirigimos a / y no a /auth/login
-  // para evitar el loop: middleware ve usuario auth → /dashboard → /auth/login → /dashboard
-  if (!profile) redirect('/')
+  // Si el trigger no creó el profile (edge case), lo creamos ahora
+  if (!profile) {
+    const meta = user.user_metadata ?? {}
+    await supabase.from('profiles').upsert({
+      id: user.id,
+      email: user.email ?? '',
+      nombre: meta.nombre ?? '',
+      apellido: meta.apellido ?? '',
+      telefono: meta.telefono ?? '',
+    })
+    const { data: created } = await supabase
+      .from('profiles')
+      .select('nombre, apellido, email, role, avatar_url')
+      .eq('id', user.id)
+      .single()
+    profile = created
+  }
+
+  if (!profile) redirect('/auth/login')
 
   return (
     <div className="min-h-screen bg-[#0D0F14] flex">

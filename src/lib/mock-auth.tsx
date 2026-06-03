@@ -1,34 +1,21 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+// Shim de compatibilidad — delega a AuthProvider real (Supabase).
+// Los componentes que importan de aquí no necesitan cambios.
+import { AuthProvider, useAuth as useRealAuth, type AuthUser } from '@/lib/supabase/AuthProvider'
+import type { ReactNode } from 'react'
 
-export interface MockUser {
-  nombre: string
-  apellido: string
-  email: string
-}
-
-interface AuthContextType {
-  user: MockUser | null
-  setUser: (user: MockUser | null) => void
-  isLoggedIn: boolean
-}
-
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  setUser: () => {},
-  isLoggedIn: false,
-})
+export type MockUser = AuthUser
 
 export function MockAuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<MockUser | null>(null)
-  return (
-    <AuthContext.Provider value={{ user, setUser, isLoggedIn: !!user }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthProvider>{children}</AuthProvider>
 }
 
 export function useAuth() {
-  return useContext(AuthContext)
+  const { user, signOut } = useRealAuth()
+  return {
+    user,
+    setUser: (_u: MockUser | null) => { if (!_u) signOut() },
+    isLoggedIn: !!user,
+  }
 }

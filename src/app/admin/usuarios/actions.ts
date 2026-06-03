@@ -27,7 +27,7 @@ export async function updateRole(userId: string, role: Role) {
     .update({ role })
     .eq('id', userId)
   if (error) throw new Error(error.message)
-  revalidatePath('/dashboard/admin/usuarios')
+  revalidatePath('/admin/usuarios')
 }
 
 export async function toggleVerificado(userId: string, verificado: boolean) {
@@ -37,7 +37,7 @@ export async function toggleVerificado(userId: string, verificado: boolean) {
     .update({ verificado })
     .eq('id', userId)
   if (error) throw new Error(error.message)
-  revalidatePath('/dashboard/admin/usuarios')
+  revalidatePath('/admin/usuarios')
 }
 
 export async function toggleActivo(userId: string, activo: boolean) {
@@ -47,5 +47,5 @@ export async function toggleActivo(userId: string, activo: boolean) {
     .update({ activo })
     .eq('id', userId)
   if (error) throw new Error(error.message)
-  revalidatePath('/dashboard/admin/usuarios')
+  revalidatePath('/admin/usuarios')
 }

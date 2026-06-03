@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { updateRole, toggleVerificado, toggleActivo } from '@/app/dashboard/admin/usuarios/actions'
+import { updateRole, toggleVerificado, toggleActivo } from '@/app/admin/usuarios/actions'
 
 type Role = 'particular' | 'agencia_basica' | 'agencia_premium' | 'admin'
 

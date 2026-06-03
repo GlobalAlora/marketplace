@@ -33,8 +33,13 @@ export async function middleware(request: NextRequest) {
   const isAuthPage = pathname.startsWith('/auth/login') || pathname.startsWith('/auth/registro')
   const isDashboard = pathname.startsWith('/dashboard')
   const isAdmin = pathname.startsWith('/admin')
+  const isPanel = pathname.startsWith('/panel')
 
-  if (isDashboard && !user) {
+  if (isDashboard) {
+    return NextResponse.redirect(new URL('/admin', request.url))
+  }
+
+  if (isPanel && !user) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 

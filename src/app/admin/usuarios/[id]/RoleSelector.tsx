@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
-import { updateRole, toggleVerificado, toggleActivo } from '@/app/dashboard/admin/usuarios/actions'
+import { updateRole, toggleVerificado, toggleActivo } from '@/app/admin/usuarios/actions'
 import { useRouter } from 'next/navigation'
 
 type Role = 'particular' | 'agencia_basica' | 'agencia_premium' | 'admin'

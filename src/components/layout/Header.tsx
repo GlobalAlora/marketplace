@@ -212,7 +212,7 @@ export default function Header() {
                     <p className="text-xs text-gray-500 truncate">{user.email}</p>
                   </div>
                   <Link
-                    href={user?.role === 'admin' ? '/admin' : '/dashboard'}
+                    href="/admin"
                     className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
                     onClick={() => setUserDropdownOpen(false)}
                   >
@@ -338,7 +338,7 @@ export default function Header() {
                     </div>
                   </div>
                   <Link
-                    href={user?.role === 'admin' ? '/admin' : '/dashboard'}
+                    href="/admin"
                     className="flex items-center gap-2 py-2.5 text-sm text-gray-300 hover:text-[#FFC107] transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >

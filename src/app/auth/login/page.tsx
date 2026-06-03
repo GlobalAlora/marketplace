@@ -39,7 +39,7 @@ export default function LoginPage() {
     setServerError(null)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     setLoading(false)
     if (error) {
@@ -52,8 +52,15 @@ export default function LoginPage() {
       }
       return
     }
+    // Fetch role to redirect correctly
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user!.id)
+      .single()
+
     // Full reload para que el server component lea las cookies de sesión recién seteadas
-    window.location.href = '/dashboard'
+    window.location.href = profile?.role === 'admin' ? '/admin' : '/panel'
   }
 
   return (

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { MARCAS } from '@/lib/utils/mock-data'
+import { MARCAS } from '@/lib/constants'
 
 interface Option {
   label: string

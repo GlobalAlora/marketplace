@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { MARCAS } from '@/lib/utils/mock-data'
+import { MARCAS } from '@/lib/constants'
 
 const PRECIOS = [
   { label: 'Sin límite', value: '' },

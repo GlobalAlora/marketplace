@@ -5,7 +5,7 @@
 // Este componente es 'use client' porque necesita estado para el dismiss.
 
 import { useState } from 'react'
-import type { Banner } from '@/lib/utils/mock-banner'
+import type { Banner } from '@/types'
 
 interface BannerPopupMobileProps {
   banner: Banner

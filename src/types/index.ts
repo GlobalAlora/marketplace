@@ -10,6 +10,7 @@ export type Profile = {
   avatar_url?: string
   nombre_agencia?: string
   logo_agencia?: string
+  bio?: string
   verificado: boolean
   activo: boolean
   created_at: string

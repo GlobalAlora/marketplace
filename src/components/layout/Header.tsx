@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { MOCK_VEHICULOS } from '@/lib/utils/mock-data'
+import { MARCAS } from '@/lib/constants'
 import LogoAutodux from '@/components/auth/LogoAutodux'
 import { useAuth } from '@/lib/supabase/AuthProvider'
 
@@ -13,15 +13,8 @@ const NAV_LINKS = [
   { href: '/publicar', label: 'Publicar' },
 ]
 
-// Deduplicated marca+modelo pairs for autocomplete
-const SUGERENCIAS = Array.from(
-  new Map(
-    MOCK_VEHICULOS.map(v => [
-      `${v.marca}|${v.modelo}`,
-      { key: `${v.marca}|${v.modelo}`, marca: v.marca, modelo: v.modelo },
-    ])
-  ).values()
-)
+// Marca suggestions for search autocomplete
+const SUGERENCIAS = MARCAS.map(m => ({ key: m, marca: m, modelo: '' }))
 
 const IconSearch = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { Vehiculo } from '@/types'
-import type { Banner } from '@/lib/utils/mock-banner'
+import type { Banner } from '@/types'
 import VehiculoCard from './VehiculoCard'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
 

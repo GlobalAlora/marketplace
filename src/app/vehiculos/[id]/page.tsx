@@ -196,32 +196,9 @@ export default async function VehiculoPage({ params }: PageProps) {
         {/* ── Secciones recomendación ─────────────────────────────────────── */}
         <div className="mt-6 border-t border-white/5">
 
-          {/* Similares — siempre primero */}
-          {similares.length > 0 && (
-            <section className="bg-[#071526] py-12">
-              <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
-                <div className="flex items-end justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl font-extrabold text-white">{tituloSimilares}</h2>
-                    <p className="text-sm text-gray-400 mt-0.5">{subtituloSimilares}</p>
-                  </div>
-                  <Link
-                    href={`/vehiculos?marca=${encodeURIComponent(vehiculo.marca)}`}
-                    className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0"
-                  >
-                    Ver todos →
-                  </Link>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                  {similares.map(v => <VehiculoCard key={v.id} vehiculo={v} />)}
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* Más del mismo vendedor */}
+          {/* 1. Más del mismo vendedor — primero */}
           {masDelVendedor.length > 0 && (
-            <section className="bg-[#0D0F14] border-t border-white/5 py-12">
+            <section className="bg-[#071526] py-12">
               <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
                 <div className="flex items-end justify-between mb-6">
                   <div>
@@ -245,6 +222,29 @@ export default async function VehiculoPage({ params }: PageProps) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                   {masDelVendedor.map(v => <VehiculoCard key={v.id} vehiculo={v} />)}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* 2. Similares de otras agencias/particulares — después */}
+          {similares.length > 0 && (
+            <section className={`py-12 ${masDelVendedor.length > 0 ? 'bg-[#0D0F14] border-t border-white/5' : 'bg-[#071526]'}`}>
+              <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
+                <div className="flex items-end justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-extrabold text-white">{tituloSimilares}</h2>
+                    <p className="text-sm text-gray-400 mt-0.5">{subtituloSimilares}</p>
+                  </div>
+                  <Link
+                    href={`/vehiculos?marca=${encodeURIComponent(vehiculo.marca)}`}
+                    className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0"
+                  >
+                    Ver todos →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {similares.map(v => <VehiculoCard key={v.id} vehiculo={v} />)}
                 </div>
               </div>
             </section>

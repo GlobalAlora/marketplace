@@ -81,8 +81,9 @@ export default async function VehiculoPage({ params }: PageProps) {
       .limit(4),
   ])
 
-  const mismaMarca   = (rawMismaMarca  ?? []) as unknown as Vehiculo[]
-  const masDelVendedor = (rawMasVendedor ?? []) as unknown as Vehiculo[]
+  const mismaMarca = (rawMismaMarca ?? []) as unknown as Vehiculo[]
+  const masDelVendedor = [...((rawMasVendedor ?? []) as unknown as Vehiculo[])]
+    .sort((a, b) => Number(b.destacado) - Number(a.destacado))
 
   // ── Similares: misma marca (hasta 4). Si faltan, rellenar con rango precio ─
   let similares: Vehiculo[] = mismaMarca.slice(0, 4)
@@ -110,6 +111,12 @@ export default async function VehiculoPage({ params }: PageProps) {
 
     similares = [...similares, ...relleno]
   }
+
+  // Destacados siempre al frente, independientemente de la fuente
+  similares = [
+    ...similares.filter(v => v.destacado),
+    ...similares.filter(v => !v.destacado),
+  ]
 
   // ── Labels y links de vendedor ─────────────────────────────────────────────
   const esAgencia = vehiculo.profiles?.role === 'agencia_premium' || vehiculo.profiles?.role === 'agencia_basica'

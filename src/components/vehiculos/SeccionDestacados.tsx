@@ -10,6 +10,14 @@ interface SeccionDestacadosProps {
   vehiculos: Vehiculo[]
 }
 
+// ── Design tokens ────────────────────────────────────────────────────────────
+const GOLD        = '#C9A840'
+const GOLD_LIGHT  = '#D4B34A'
+const GOLD_DARK   = '#A88820'
+const NAVY        = '#0C1D36'
+const NAVY_MID    = '#0F2340'
+const NAVY_LIGHT  = '#162B4A'
+
 function formatPrecio(precio: number): string {
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
@@ -22,7 +30,94 @@ function formatKm(km: number): string {
   return new Intl.NumberFormat('es-AR').format(km) + ' km'
 }
 
-/** Ícono propio Vitrina — diamante/gema 4 puntas representando exclusividad y premium */
+// ── Decorative elements ───────────────────────────────────────────────────────
+
+/** Diagonal corner ribbon "VITRINA" in the top-left */
+function CornerRibbon({ small = false }: { small?: boolean }) {
+  const size   = small ? 76  : 96
+  const top    = small ? 17  : 21
+  const left   = small ? -19 : -22
+  const width  = small ? 88  : 108
+  const fsize  = small ? '8px' : '9px'
+  const py     = small ? '3px' : '5px'
+
+  return (
+    <div
+      className="absolute top-0 left-0 overflow-hidden z-10 pointer-events-none"
+      style={{ width: size, height: size }}
+    >
+      <div
+        className="absolute font-black tracking-[0.18em] text-center select-none"
+        style={{
+          top,
+          left,
+          width,
+          transform: 'rotate(-45deg)',
+          background: `linear-gradient(180deg, ${GOLD_LIGHT} 0%, ${GOLD_DARK} 100%)`,
+          color: NAVY,
+          fontSize: fsize,
+          paddingTop: py,
+          paddingBottom: py,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
+          letterSpacing: '0.18em',
+        }}
+      >
+        VITRINA
+      </div>
+    </div>
+  )
+}
+
+/** Downward-shield badge with star in the top-right */
+function ShieldBadge({ small = false }: { small?: boolean }) {
+  const w = small ? 38 : 46
+  const h = small ? 46 : 56
+  return (
+    <div className="absolute top-0 right-4 z-10 pointer-events-none" style={{ width: w, height: h }}>
+      <div
+        className="w-full h-full flex items-center justify-center"
+        style={{
+          background: `linear-gradient(180deg, ${GOLD_LIGHT} 0%, ${GOLD_DARK} 100%)`,
+          clipPath: 'polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%)',
+          boxShadow: `0 4px 16px ${GOLD}66`,
+        }}
+      >
+        {/* star — outline */}
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={NAVY}
+          strokeWidth={1.8}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ width: small ? 16 : 20, height: small ? 16 : 20, marginTop: small ? -4 : -6 }}
+          aria-hidden="true"
+        >
+          <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />
+        </svg>
+      </div>
+    </div>
+  )
+}
+
+/** Car placeholder for empty image slots */
+function CarPlaceholder({ large = false }: { large?: boolean }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center" style={{ color: NAVY_LIGHT }}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className={large ? 'w-20 h-20 opacity-60' : 'w-10 h-10 opacity-50'}
+        aria-hidden="true"
+      >
+        <path d="M3.75 5.25h.386l1.295-3.235A2.25 2.25 0 017.5 0.75h9a2.25 2.25 0 012.069 1.265L19.864 5.25h.386A2.25 2.25 0 0122.5 7.5v6a2.25 2.25 0 01-2.25 2.25v1.5a.75.75 0 01-1.5 0V15.75h-13.5v1.5a.75.75 0 01-1.5 0V15.75A2.25 2.25 0 011.5 13.5v-6a2.25 2.25 0 012.25-2.25zM5.61 5.25h12.78l-.97-2.425a.75.75 0 00-.69-.575h-9a.75.75 0 00-.69.455L5.61 5.25zM6 10.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm12 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+      </svg>
+    </div>
+  )
+}
+
+// ── Icon for section header ───────────────────────────────────────────────────
 function IconVitrina({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
@@ -31,20 +126,8 @@ function IconVitrina({ className }: { className?: string }) {
   )
 }
 
-function BadgeDestacado({ small = false }: { small?: boolean }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1 font-extrabold tracking-[0.16em] text-[#FFC107] uppercase leading-none ${
-        small ? 'text-[9px]' : 'text-[10px]'
-      }`}
-    >
-      <IconVitrina className="w-2.5 h-2.5" />
-      Destacado
-    </span>
-  )
-}
+// ── Cards ─────────────────────────────────────────────────────────────────────
 
-/** Card principal — 2/3 del ancho en desktop */
 function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   const { isLoggedIn } = useAuth()
   const router = useRouter()
@@ -55,10 +138,23 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-lg hover:shadow-xl hover:shadow-[#FFC107]/10 transition-shadow duration-300 min-h-[260px]"
+      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden min-h-[260px] transition-all duration-300"
+      style={{
+        background: `linear-gradient(135deg, ${NAVY_MID} 0%, ${NAVY} 100%)`,
+        border: `1.5px solid ${GOLD}55`,
+        boxShadow: `0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 ${GOLD}22`,
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          `0 8px 40px rgba(0,0,0,0.6), 0 0 0 1.5px ${GOLD}99, inset 0 1px 0 ${GOLD}33`
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          `0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 ${GOLD}22`
+      }}
     >
-      {/* Imagen */}
-      <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto sm:min-h-[260px] shrink-0 overflow-hidden bg-gray-100">
+      {/* ── Image panel ── */}
+      <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto sm:min-h-[260px] shrink-0 overflow-hidden" style={{ background: NAVY }}>
         {vehiculo.imagenes[0] ? (
           <img
             src={vehiculo.imagenes[0]}
@@ -68,41 +164,48 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-16 h-16">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-            </svg>
-          </div>
+          <CarPlaceholder large />
         )}
-        {/* Badge vitrina sobre imagen */}
-        <div className="absolute top-3 left-3 bg-[#FFC107] text-[#0D0F14] text-[9px] font-extrabold tracking-widest px-2.5 py-1 rounded-full uppercase flex items-center gap-1">
-          <IconVitrina className="w-2.5 h-2.5" />
-          Vitrina
-        </div>
+
+        {/* Dark overlay so ribbon/badge always readable over images */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(12,29,54,0.3) 0%, transparent 50%)' }} />
+
+        <CornerRibbon />
+        <ShieldBadge />
       </div>
 
-      {/* Info */}
-      <div className="flex flex-col justify-between p-6 lg:p-8 flex-1 min-w-0">
+      {/* ── Info panel ── */}
+      <div
+        className="flex flex-col justify-between p-6 lg:p-8 flex-1 min-w-0"
+        style={{ borderLeft: `1px solid ${GOLD}22` }}
+      >
         <div className="flex flex-col gap-3">
-          <BadgeDestacado />
-          <h3 className="text-xl lg:text-2xl font-bold text-[#0D0F14] leading-tight group-hover:text-[#282F8F] transition-colors">
+          {/* Subtle "Destacado" label */}
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold tracking-[0.18em] uppercase" style={{ color: GOLD }}>
+            <IconVitrina className="w-2.5 h-2.5" />
+            Destacado
+          </span>
+
+          <h3 className="text-xl lg:text-2xl font-bold text-white leading-tight group-hover:opacity-90 transition-opacity">
             {vehiculo.titulo}
           </h3>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-blue-200/70">
             <span>{vehiculo.año}</span>
-            <span className="text-gray-300">·</span>
+            <span className="opacity-40">·</span>
             <span>{formatKm(vehiculo.kilometraje)}</span>
-            <span className="text-gray-300">·</span>
+            <span className="opacity-40">·</span>
             <span>{vehiculo.ubicacion}</span>
             {vehiculo.transmision && (
               <>
-                <span className="text-gray-300">·</span>
+                <span className="opacity-40">·</span>
                 <span className="capitalize">{vehiculo.transmision}</span>
               </>
             )}
           </div>
+
           {vehiculo.descripcion && (
-            <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed hidden sm:block">
+            <p className="text-sm text-blue-100/50 line-clamp-3 leading-relaxed hidden sm:block">
               {vehiculo.descripcion}
             </p>
           )}
@@ -110,14 +213,14 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
 
         <div className="flex flex-col gap-4 mt-5">
           {isLoggedIn ? (
-            <p className="text-3xl font-black text-[#0D0F14] tracking-tight leading-none">
+            <p className="text-3xl font-black tracking-tight leading-none" style={{ color: GOLD }}>
               {formatPrecio(vehiculo.precio)}
             </p>
           ) : (
             <button
               type="button"
               onClick={e => { e.preventDefault(); router.push('/auth/login') }}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-200/70 hover:text-white transition-colors"
             >
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -125,12 +228,16 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
               Iniciá sesión para ver el precio
             </button>
           )}
+
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="inline-flex items-center gap-2 bg-[#FFC107] text-[#0D0F14] text-sm font-bold px-5 py-2.5 rounded-xl group-hover:bg-yellow-400 transition-colors">
+            <span
+              className="inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl transition-all duration-200"
+              style={{ background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD_DARK})`, color: NAVY }}
+            >
               Ver vehículo →
             </span>
             {vendedor && (
-              <span className="text-xs text-gray-400 truncate">{vendedor}</span>
+              <span className="text-xs text-blue-200/50 truncate">{vendedor}</span>
             )}
           </div>
         </div>
@@ -139,17 +246,33 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   )
 }
 
-/** Cards secundarias */
 function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
   const { isLoggedIn } = useAuth()
   const router = useRouter()
+
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-row rounded-2xl overflow-hidden bg-white border-2 border-[#FFC107] shadow-md hover:shadow-lg hover:shadow-[#FFC107]/10 transition-shadow duration-300 min-h-[130px]"
+      className="group flex flex-row rounded-2xl overflow-hidden min-h-[130px] transition-all duration-300"
+      style={{
+        background: `linear-gradient(135deg, ${NAVY_MID} 0%, ${NAVY} 100%)`,
+        border: `1.5px solid ${GOLD}55`,
+        boxShadow: `0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 ${GOLD}22`,
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          `0 6px 28px rgba(0,0,0,0.55), 0 0 0 1.5px ${GOLD}99, inset 0 1px 0 ${GOLD}33`
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          `0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 ${GOLD}22`
+      }}
     >
-      {/* Imagen */}
-      <div className="relative w-[42%] min-h-[130px] shrink-0 overflow-hidden bg-gray-100">
+      {/* Image */}
+      <div
+        className="relative w-[42%] min-h-[130px] shrink-0 overflow-hidden"
+        style={{ background: NAVY }}
+      >
         {vehiculo.imagenes[0] ? (
           <img
             src={vehiculo.imagenes[0]}
@@ -158,36 +281,42 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-10 h-10">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-            </svg>
-          </div>
+          <CarPlaceholder />
         )}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(12,29,54,0.35) 0%, transparent 55%)' }} />
+        <CornerRibbon small />
+        <ShieldBadge small />
       </div>
 
       {/* Info */}
-      <div className="flex flex-col justify-between p-4 flex-1 min-w-0 border-l-4 border-l-[#FFC107]">
+      <div
+        className="flex flex-col justify-between p-4 flex-1 min-w-0"
+        style={{ borderLeft: `2px solid ${GOLD}33` }}
+      >
         <div className="flex flex-col gap-1.5">
-          <BadgeDestacado small />
-          <h3 className="text-sm font-bold text-[#0D0F14] leading-snug line-clamp-2 group-hover:text-[#282F8F] transition-colors">
+          <span className="inline-flex items-center gap-1 text-[8px] font-extrabold tracking-[0.18em] uppercase" style={{ color: GOLD }}>
+            <IconVitrina className="w-2 h-2" />
+            Destacado
+          </span>
+          <h3 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:opacity-90 transition-opacity">
             {vehiculo.titulo}
           </h3>
-          <div className="flex items-center gap-2 text-xs text-gray-500">
+          <div className="flex items-center gap-2 text-xs text-blue-200/60">
             <span>{vehiculo.año}</span>
-            <span>·</span>
+            <span className="opacity-40">·</span>
             <span>{formatKm(vehiculo.kilometraje)}</span>
           </div>
         </div>
+
         {isLoggedIn ? (
-          <p className="text-base font-black text-[#0D0F14] mt-2 leading-none">
+          <p className="text-base font-black mt-2 leading-none" style={{ color: GOLD }}>
             {formatPrecio(vehiculo.precio)}
           </p>
         ) : (
           <button
             type="button"
             onClick={e => { e.preventDefault(); router.push('/auth/login') }}
-            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
+            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-blue-200/60 hover:text-white transition-colors"
           >
             <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -199,6 +328,8 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
     </Link>
   )
 }
+
+// ── Section ───────────────────────────────────────────────────────────────────
 
 export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps) {
   const [mounted, setMounted] = useState(false)
@@ -212,16 +343,17 @@ export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps)
     <section className="bg-[#071526] border-b border-white/8">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10">
 
-        {/* Header de sección */}
+        {/* Section header */}
         <div className="flex items-end justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FFC107] flex items-center justify-center shrink-0">
-              <IconVitrina className="w-5 h-5 text-[#0D0F14]" />
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD_DARK})` }}
+            >
+              <IconVitrina className="w-5 h-5" style={{ color: NAVY }} />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-white">
-                Vitrina AUTODUX
-              </h2>
+              <h2 className="text-xl font-extrabold text-white">Vitrina AUTODUX</h2>
               <p className="text-sm text-gray-400 mt-0.5">
                 Descubrí las oportunidades más interesantes de la Patagonia.
               </p>
@@ -229,7 +361,8 @@ export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps)
           </div>
           <Link
             href="/vehiculos"
-            className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0"
+            className="text-sm font-semibold hover:text-white transition-colors shrink-0"
+            style={{ color: GOLD }}
           >
             Ver todos →
           </Link>

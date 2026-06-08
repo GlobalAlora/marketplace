@@ -15,11 +15,14 @@ interface PageProps {
   params: Promise<{ id: string }>
 }
 
+const SELECT_FIELDS =
+  '*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)'
+
 async function getVehiculo(id: string): Promise<Vehiculo | null> {
   const supabase = await createClient()
   const { data } = await supabase
     .from('vehiculos')
-    .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+    .select(SELECT_FIELDS)
     .eq('id', id)
     .eq('activo', true)
     .eq('vendido', false)
@@ -33,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!vehiculo) return { title: 'Vehículo no encontrado — AUTODUX' }
   return {
     title: `${vehiculo.titulo} — AUTODUX`,
-    description: vehiculo.descripcion,
+    description: vehiculo.descripcion ?? undefined,
   }
 }
 
@@ -48,47 +51,82 @@ export default async function VehiculoPage({ params }: PageProps) {
 
   if (!vehiculo) notFound()
 
-  // Más vehículos del mismo vendedor
-  const { data: rawMasVendedor } = await supabase
-    .from('vehiculos')
-    .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
-    .eq('user_id', vehiculo.user_id)
-    .eq('activo', true)
-    .eq('vendido', false)
-    .neq('id', vehiculo.id)
-    .order('created_at', { ascending: false })
-    .limit(3)
+  // ── Queries en paralelo ────────────────────────────────────────────────────
+  const [
+    { data: rawMismaMarca },
+    { data: rawMasVendedor },
+  ] = await Promise.all([
+    // 1. Misma marca — destacados primero
+    supabase
+      .from('vehiculos')
+      .select(SELECT_FIELDS)
+      .eq('activo', true)
+      .eq('vendido', false)
+      .eq('marca', vehiculo.marca)
+      .neq('id', vehiculo.id)
+      .order('destacado', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(8),
 
-  // Similares: misma marca o precio parecido, destacados primero
-  const { data: rawSimilares } = await supabase
-    .from('vehiculos')
-    .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
-    .eq('activo', true)
-    .eq('vendido', false)
-    .neq('id', vehiculo.id)
-    .order('destacado', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(9)
+    // 2. Más del mismo vendedor — destacados primero
+    supabase
+      .from('vehiculos')
+      .select(SELECT_FIELDS)
+      .eq('user_id', vehiculo.user_id)
+      .eq('activo', true)
+      .eq('vendido', false)
+      .neq('id', vehiculo.id)
+      .order('destacado', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(4),
+  ])
 
+  const mismaMarca   = (rawMismaMarca  ?? []) as unknown as Vehiculo[]
   const masDelVendedor = (rawMasVendedor ?? []) as unknown as Vehiculo[]
 
-  // Score similares: misma marca (+50) + precio similar (+25) + destacado (+100)
-  const similares = ((rawSimilares ?? []) as unknown as Vehiculo[])
-    .map(v => {
-      const priceDiff = Math.abs(v.precio - vehiculo.precio) / vehiculo.precio
-      const score = (v.destacado ? 100 : 0) + (v.marca === vehiculo.marca ? 50 : 0) + (priceDiff <= 0.3 ? 25 : 0)
-      return { v, score }
-    })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map(({ v }) => v)
+  // ── Similares: misma marca (hasta 4). Si faltan, rellenar con rango precio ─
+  let similares: Vehiculo[] = mismaMarca.slice(0, 4)
 
+  if (similares.length < 4) {
+    const yaEnLista = new Set([vehiculo.id, ...similares.map(v => v.id)])
+    const precioMin = vehiculo.precio * 0.55
+    const precioMax = vehiculo.precio * 1.45
+
+    const { data: rawRelleno } = await supabase
+      .from('vehiculos')
+      .select(SELECT_FIELDS)
+      .eq('activo', true)
+      .eq('vendido', false)
+      .neq('marca', vehiculo.marca)    // ya tenemos los de misma marca
+      .gte('precio', precioMin)
+      .lte('precio', precioMax)
+      .order('destacado', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(8)
+
+    const relleno = ((rawRelleno ?? []) as unknown as Vehiculo[])
+      .filter(v => !yaEnLista.has(v.id))
+      .slice(0, 4 - similares.length)
+
+    similares = [...similares, ...relleno]
+  }
+
+  // ── Labels y links de vendedor ─────────────────────────────────────────────
   const esAgencia = vehiculo.profiles?.role === 'agencia_premium' || vehiculo.profiles?.role === 'agencia_basica'
   const nombreVendedor = vehiculo.profiles?.nombre_agencia ||
     `${vehiculo.profiles?.nombre ?? ''} ${vehiculo.profiles?.apellido ?? ''}`.trim() || 'este vendedor'
   const agenciaHref = esAgencia
     ? `/agencias/${vehiculo.profiles?.id ?? vehiculo.user_id}`
     : `/usuarios/${vehiculo.profiles?.id ?? vehiculo.user_id}`
+
+  // Título de la sección similares
+  const hayDeMismaMarca = mismaMarca.length > 0
+  const tituloSimilares = hayDeMismaMarca
+    ? `Más ${vehiculo.marca}`
+    : 'Vehículos similares'
+  const subtituloSimilares = hayDeMismaMarca
+    ? `Destacados primero · ${vehiculo.marca} disponibles ahora`
+    : 'Rango de precio similar · Destacados primero'
 
   return (
     <MainLayout>
@@ -148,37 +186,64 @@ export default async function VehiculoPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Secciones recomendación */}
-        {(masDelVendedor.length > 0 || similares.length > 0) && (
-          <div className="mt-6 border-t border-white/5">
-            {masDelVendedor.length > 0 && (
-              <section className="bg-[#071526] py-12">
-                <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
-                  <h2 className="text-xl font-extrabold text-white mb-6">
-                    Más vehículos de{' '}
-                    <Link href={agenciaHref} className="text-[#FFC107] hover:text-white transition-colors underline underline-offset-2">
-                      {nombreVendedor}
-                    </Link>
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {masDelVendedor.map(v => <VehiculoCard key={v.id} vehiculo={v} />)}
+        {/* ── Secciones recomendación ─────────────────────────────────────── */}
+        <div className="mt-6 border-t border-white/5">
+
+          {/* Similares — siempre primero */}
+          {similares.length > 0 && (
+            <section className="bg-[#071526] py-12">
+              <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
+                <div className="flex items-end justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-extrabold text-white">{tituloSimilares}</h2>
+                    <p className="text-sm text-gray-400 mt-0.5">{subtituloSimilares}</p>
                   </div>
+                  <Link
+                    href={`/vehiculos?marca=${encodeURIComponent(vehiculo.marca)}`}
+                    className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0"
+                  >
+                    Ver todos →
+                  </Link>
                 </div>
-              </section>
-            )}
-            {similares.length > 0 && (
-              <section className={`py-12 ${masDelVendedor.length > 0 ? 'bg-[#0D0F14] border-t border-white/5' : 'bg-[#071526]'}`}>
-                <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
-                  <h2 className="text-xl font-extrabold text-white mb-2">Vehículos similares</h2>
-                  <p className="text-sm text-gray-400 mb-6">Destacados primero, luego por marca y precio.</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {similares.map(v => <VehiculoCard key={v.id} vehiculo={v} />)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {similares.map(v => <VehiculoCard key={v.id} vehiculo={v} />)}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Más del mismo vendedor */}
+          {masDelVendedor.length > 0 && (
+            <section className="bg-[#0D0F14] border-t border-white/5 py-12">
+              <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
+                <div className="flex items-end justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-extrabold text-white">
+                      Más de{' '}
+                      <Link
+                        href={agenciaHref}
+                        className="text-[#FFC107] hover:text-white transition-colors underline underline-offset-2"
+                      >
+                        {nombreVendedor}
+                      </Link>
+                    </h2>
+                    <p className="text-sm text-gray-400 mt-0.5">Otros vehículos de este vendedor · Destacados primero</p>
                   </div>
+                  <Link
+                    href={agenciaHref}
+                    className="text-sm font-semibold text-[#FFC107] hover:text-white transition-colors shrink-0"
+                  >
+                    Ver perfil →
+                  </Link>
                 </div>
-              </section>
-            )}
-          </div>
-        )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {masDelVendedor.map(v => <VehiculoCard key={v.id} vehiculo={v} />)}
+                </div>
+              </div>
+            </section>
+          )}
+
+        </div>
       </div>
     </MainLayout>
   )

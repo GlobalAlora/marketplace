@@ -89,17 +89,26 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
       if (ubicacion && v.ubicacion !== ubicacion)      return false
       return true
     })
+    // Destacados siempre primero dentro de cada criterio de orden
+    const dest = result.filter(v => v.destacado)
+    const rest = result.filter(v => !v.destacado)
     switch (sort) {
-      case 'precio_asc':  return [...result].sort((a, b) => a.precio - b.precio)
-      case 'precio_desc': return [...result].sort((a, b) => b.precio - a.precio)
-      case 'km_asc':      return [...result].sort((a, b) => a.kilometraje - b.kilometraje)
+      case 'precio_asc': {
+        const byPrecio = (a: Vehiculo, b: Vehiculo) => a.precio - b.precio
+        return [...dest.sort(byPrecio), ...rest.sort(byPrecio)]
+      }
+      case 'precio_desc': {
+        const byPrecioDesc = (a: Vehiculo, b: Vehiculo) => b.precio - a.precio
+        return [...dest.sort(byPrecioDesc), ...rest.sort(byPrecioDesc)]
+      }
+      case 'km_asc': {
+        const byKm = (a: Vehiculo, b: Vehiculo) => a.kilometraje - b.kilometraje
+        return [...dest.sort(byKm), ...rest.sort(byKm)]
+      }
       default: {
-        const byDate = (a: { created_at: string }, b: { created_at: string }) =>
+        const byDate = (a: Vehiculo, b: Vehiculo) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        return [
-          ...result.filter(v => v.destacado).sort(byDate),
-          ...result.filter(v => !v.destacado).sort(byDate),
-        ]
+        return [...dest.sort(byDate), ...rest.sort(byDate)]
       }
     }
   }, [vehiculos, q, marca, precioMax, añoDesde, kmMax, ubicacion, sort])

@@ -118,9 +118,9 @@ function CarPlaceholder({ large = false }: { large?: boolean }) {
 }
 
 // ── Icon for section header ───────────────────────────────────────────────────
-function IconVitrina({ className }: { className?: string }) {
+function IconVitrina({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style} aria-hidden="true">
       <path d="M12 2L14.2 9.8H22L15.9 14.4L18.1 22L12 17.4L5.9 22L8.1 14.4L2 9.8H9.8L12 2Z" />
     </svg>
   )

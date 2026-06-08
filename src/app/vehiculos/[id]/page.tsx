@@ -85,38 +85,45 @@ export default async function VehiculoPage({ params }: PageProps) {
   const masDelVendedor = [...((rawMasVendedor ?? []) as unknown as Vehiculo[])]
     .sort((a, b) => Number(b.destacado) - Number(a.destacado))
 
-  // ── Similares: misma marca (hasta 4). Si faltan, rellenar con rango precio ─
-  let similares: Vehiculo[] = mismaMarca.slice(0, 4)
+  // ── Similares: SOLO misma marca (título exacto) ────────────────────────────
+  // Si hay de la misma marca → "Más [Marca]", solo esa marca (sin mezclar)
+  // Si NO hay de la misma marca → "Vehículos similares" por rango de precio
+  let similares: Vehiculo[]
+  let tituloSimilares: string
+  let subtituloSimilares: string
 
-  if (similares.length < 4) {
-    const yaEnLista = new Set([vehiculo.id, ...similares.map(v => v.id)])
+  if (mismaMarca.length > 0) {
+    // Solo misma marca — el título es exacto, no confunde al usuario
+    similares = [
+      ...mismaMarca.filter(v => v.destacado),
+      ...mismaMarca.filter(v => !v.destacado),
+    ].slice(0, 4)
+    tituloSimilares   = `Más ${vehiculo.marca}`
+    subtituloSimilares = `Destacados primero · ${vehiculo.marca} disponibles ahora`
+  } else {
+    // Sin misma marca → rango de precio ±45%, cualquier marca, destacados primero
     const precioMin = vehiculo.precio * 0.55
     const precioMax = vehiculo.precio * 1.45
-
-    const { data: rawRelleno } = await supabase
+    const { data: rawPrecio } = await supabase
       .from('vehiculos')
       .select(SELECT_FIELDS)
       .eq('activo', true)
       .eq('vendido', false)
-      .neq('marca', vehiculo.marca)    // ya tenemos los de misma marca
+      .neq('id', vehiculo.id)
       .gte('precio', precioMin)
       .lte('precio', precioMax)
       .order('destacado', { ascending: false })
       .order('created_at', { ascending: false })
-      .limit(8)
+      .limit(4)
 
-    const relleno = ((rawRelleno ?? []) as unknown as Vehiculo[])
-      .filter(v => !yaEnLista.has(v.id))
-      .slice(0, 4 - similares.length)
-
-    similares = [...similares, ...relleno]
+    const porPrecio = (rawPrecio ?? []) as unknown as Vehiculo[]
+    similares = [
+      ...porPrecio.filter(v => v.destacado),
+      ...porPrecio.filter(v => !v.destacado),
+    ]
+    tituloSimilares   = 'Vehículos similares'
+    subtituloSimilares = 'Rango de precio similar · Destacados primero'
   }
-
-  // Destacados siempre al frente, independientemente de la fuente
-  similares = [
-    ...similares.filter(v => v.destacado),
-    ...similares.filter(v => !v.destacado),
-  ]
 
   // ── Labels y links de vendedor ─────────────────────────────────────────────
   const esAgencia = vehiculo.profiles?.role === 'agencia_premium' || vehiculo.profiles?.role === 'agencia_basica'
@@ -125,15 +132,6 @@ export default async function VehiculoPage({ params }: PageProps) {
   const agenciaHref = esAgencia
     ? `/agencias/${vehiculo.profiles?.id ?? vehiculo.user_id}`
     : `/usuarios/${vehiculo.profiles?.id ?? vehiculo.user_id}`
-
-  // Título de la sección similares
-  const hayDeMismaMarca = mismaMarca.length > 0
-  const tituloSimilares = hayDeMismaMarca
-    ? `Más ${vehiculo.marca}`
-    : 'Vehículos similares'
-  const subtituloSimilares = hayDeMismaMarca
-    ? `Destacados primero · ${vehiculo.marca} disponibles ahora`
-    : 'Rango de precio similar · Destacados primero'
 
   return (
     <MainLayout>

@@ -4,6 +4,8 @@ import Hero from '@/components/vehiculos/Hero'
 import GrillaVehiculos from '@/components/vehiculos/GrillaVehiculos'
 import SeccionDestacados from '@/components/vehiculos/SeccionDestacados'
 import SeccionBeneficios from '@/components/vehiculos/SeccionBeneficios'
+import SobreNosotros from '@/components/home/SobreNosotros'
+import SeccionPlanes from '@/components/home/SeccionPlanes'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import RevealSection from '@/components/ui/RevealSection'
 import { createClient } from '@/lib/supabase/server'
@@ -69,7 +71,7 @@ export default async function Home() {
       {/* Banner home_top — debajo del hero */}
       {banners.home_top && (
         <div className="bg-[#071526]">
-          <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
+          <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-4">
             <BannerPublicitario banner={banners.home_top} />
           </div>
         </div>
@@ -99,7 +101,7 @@ export default async function Home() {
       {/* Banner home_mid — entre secciones */}
       {banners.home_mid && (
         <div className="bg-[#071526]">
-          <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
+          <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-4">
             <BannerPublicitario banner={banners.home_mid} />
           </div>
         </div>
@@ -141,18 +143,24 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Banner home_bottom — debajo de todos los vehículos */}
+      {/* Banner home_bottom */}
       {banners.home_bottom && (
         <div className="bg-[#071526]">
-          <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3">
+          <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-4">
             <BannerPublicitario banner={banners.home_bottom} />
           </div>
         </div>
       )}
 
-      <RevealSection>
-        <SeccionBeneficios />
-      </RevealSection>
+      {/* ¿Por qué usar AUTODUX? — rediseñado con carrusel */}
+      <SeccionBeneficios />
+
+      {/* Sobre Nosotros */}
+      <SobreNosotros />
+
+      {/* Planes */}
+      <SeccionPlanes />
+
     </MainLayout>
   )
 }

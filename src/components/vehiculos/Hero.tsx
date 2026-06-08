@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
 const FRASES = [
-  'Conectando oportunidades.',
-  'Encontrá lo que buscás.',
-  'Publicá lo que ofrecés.',
+  { text: 'Conectando oportunidades.', color: '#FFC107' },
+  { text: 'Encontrá lo que buscás.',   color: '#ffffff' },
+  { text: 'Publicá lo que ofrecés.',   color: '#7cb9ff' },
 ]
 
 function IconSearch() {
@@ -65,18 +65,11 @@ const CARDS = [
 ]
 
 export default function Hero() {
-  const [fraseIdx, setFraseIdx] = useState(0)
-  const [fadeIn, setFadeIn] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFadeIn(false)
-      setTimeout(() => {
-        setFraseIdx(i => (i + 1) % FRASES.length)
-        setFadeIn(true)
-      }, 380)
-    }, 3000)
-    return () => clearInterval(interval)
+    const t = setTimeout(() => setMounted(true), 80)
+    return () => clearTimeout(t)
   }, [])
 
   return (
@@ -87,27 +80,48 @@ export default function Hero() {
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-[#0D0F14]/85" aria-hidden="true" />
+      {/* subtle dot grid */}
+      <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '28px 28px' }} aria-hidden="true" />
 
-      <div className="relative z-10 max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-10 sm:py-14">
+      <div className="relative z-10 max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-12 sm:py-16">
         <div className="flex flex-col lg:flex-row gap-10 lg:items-center">
 
           {/* Left: headline + animated subtitle */}
           <div className="flex-1 min-w-0">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-tight tracking-tight">
               Conectamos lo que buscas,{' '}
               <span className="text-[#FFC107]">con lo que se vende.</span>
             </h1>
 
-            <div className="mt-5 h-8 overflow-hidden">
-              <p
-                className="text-base sm:text-lg text-gray-200 font-medium leading-relaxed transition-opacity duration-380"
-                style={{ opacity: fadeIn ? 1 : 0 }}
-              >
-                {FRASES[fraseIdx]}
-              </p>
+            {/* 3 frases con colores distintos + animación de entrada escalonada */}
+            <div className="mt-6 flex flex-col gap-2">
+              {FRASES.map((frase, i) => (
+                <div
+                  key={frase.text}
+                  style={{
+                    opacity: mounted ? 1 : 0,
+                    transform: mounted ? 'translateY(0)' : 'translateY(16px)',
+                    transition: `opacity 0.55s ease, transform 0.55s ease`,
+                    transitionDelay: `${i * 130}ms`,
+                  }}
+                  className="flex items-center gap-3"
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ backgroundColor: frase.color }}
+                    aria-hidden="true"
+                  />
+                  <p
+                    className="text-lg sm:text-xl font-semibold leading-snug"
+                    style={{ color: frase.color }}
+                  >
+                    {frase.text}
+                  </p>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-3 flex items-start gap-2">
+            <div className="mt-5 flex items-start gap-2">
               <svg className="w-4 h-4 mt-0.5 text-[#FFC107] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.076 3.218-4.688 3.218-7.327 0-5.19-4.054-9-9-9s-9 3.81-9 9c0 2.639 1.274 5.251 3.218 7.327a19.579 19.579 0 002.682 2.282 16.944 16.944 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
               </svg>
@@ -119,31 +133,35 @@ export default function Hero() {
 
           {/* Right: 3 user-type cards */}
           <div className="w-full lg:w-[360px] xl:w-[400px] lg:shrink-0 flex flex-col gap-3">
-            {CARDS.map((card) => (
-              <Link
+            {CARDS.map((card, i) => (
+              <div
                 key={card.pregunta}
-                href={card.href}
-                className="group flex items-center gap-4 bg-white/7 border border-white/12 rounded-2xl p-4 hover:bg-white/12 hover:border-white/25 transition-all duration-200"
+                style={{
+                  opacity: mounted ? 1 : 0,
+                  transform: mounted ? 'translateX(0)' : 'translateX(20px)',
+                  transition: 'opacity 0.55s ease, transform 0.55s ease',
+                  transitionDelay: `${i * 100 + 200}ms`,
+                }}
               >
-                {/* Icon */}
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: card.iconBg, color: card.iconColor }}
+                <Link
+                  href={card.href}
+                  className="group flex items-center gap-4 bg-white/7 border border-white/12 rounded-2xl p-4 hover:bg-white/12 hover:border-white/25 hover:shadow-lg hover:shadow-black/30 transition-all duration-200"
                 >
-                  {card.icon}
-                </div>
-
-                {/* Text */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-sm leading-snug">{card.pregunta}</p>
-                  <p className="text-gray-400 text-xs leading-relaxed mt-0.5 line-clamp-2">{card.descripcion}</p>
-                </div>
-
-                {/* Arrow */}
-                <span className="text-[#FFC107] text-sm font-bold shrink-0 group-hover:translate-x-1 transition-transform duration-200">
-                  →
-                </span>
-              </Link>
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    style={{ backgroundColor: card.iconBg, color: card.iconColor }}
+                  >
+                    {card.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-bold text-sm leading-snug">{card.pregunta}</p>
+                    <p className="text-gray-400 text-xs leading-relaxed mt-0.5 line-clamp-2">{card.descripcion}</p>
+                  </div>
+                  <span className="text-[#FFC107] text-sm font-bold shrink-0 group-hover:translate-x-1 transition-transform duration-200">
+                    →
+                  </span>
+                </Link>
+              </div>
             ))}
           </div>
 

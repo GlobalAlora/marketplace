@@ -109,14 +109,14 @@ export default function Header() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0D0F14] border-b border-white/10 transition-all duration-300">
+    <header className={`sticky top-0 z-50 border-b border-white/10 transition-all duration-300 ${scrolled ? 'bg-[#0D0F14]/95 backdrop-blur-md shadow-lg shadow-black/30' : 'bg-[#0D0F14]'}`}>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
-        <div className="flex items-center gap-4 h-16">
+        <div className="flex items-center gap-4 h-20">
 
           {/* Logo — shrinks on scroll */}
-          <Link href="/" className="shrink-0 flex items-center gap-2.5 group">
-            <LogoAutodux size={scrolled ? 20 : 26} />
-            <span className={`font-extrabold tracking-tight text-white group-hover:opacity-90 transition-all duration-300 ${scrolled ? 'text-lg' : 'text-xl'}`}>
+          <Link href="/" className="shrink-0 flex items-center gap-3 group">
+            <LogoAutodux size={scrolled ? 24 : 34} />
+            <span className={`font-extrabold tracking-tight text-white group-hover:opacity-90 transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl'}`}>
               AUTO<span className="text-[#FFC107]">DUX</span>
             </span>
           </Link>

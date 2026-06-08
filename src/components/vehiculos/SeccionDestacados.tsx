@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
 
@@ -46,6 +47,7 @@ function BadgeDestacado({ small = false }: { small?: boolean }) {
 /** Card principal — 2/3 del ancho en desktop */
 function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   const { isLoggedIn } = useAuth()
+  const router = useRouter()
   const vendedor =
     vehiculo.profiles?.nombre_agencia ??
     `${vehiculo.profiles?.nombre ?? ''} ${vehiculo.profiles?.apellido ?? ''}`.trim()
@@ -112,16 +114,16 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
               {formatPrecio(vehiculo.precio)}
             </p>
           ) : (
-            <Link
-              href="/auth/login"
-              onClick={e => e.stopPropagation()}
+            <button
+              type="button"
+              onClick={e => { e.preventDefault(); router.push('/auth/login') }}
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
             >
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
               Iniciá sesión para ver el precio
-            </Link>
+            </button>
           )}
           <div className="flex items-center gap-3 flex-wrap">
             <span className="inline-flex items-center gap-2 bg-[#FFC107] text-[#0D0F14] text-sm font-bold px-5 py-2.5 rounded-xl group-hover:bg-yellow-400 transition-colors">
@@ -140,6 +142,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
 /** Cards secundarias */
 function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
   const { isLoggedIn } = useAuth()
+  const router = useRouter()
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
@@ -181,16 +184,16 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
             {formatPrecio(vehiculo.precio)}
           </p>
         ) : (
-          <Link
-            href="/auth/login"
-            onClick={e => e.stopPropagation()}
+          <button
+            type="button"
+            onClick={e => { e.preventDefault(); router.push('/auth/login') }}
             className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[#282F8F] hover:text-[#FFC107] transition-colors"
           >
             <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
             Ver precio
-          </Link>
+          </button>
         )}
       </div>
     </Link>

@@ -4,11 +4,10 @@ interface BannerPublicitarioProps {
   banner: Banner
 }
 
-// Label estándar de transparencia requerido en todas las variantes
 function LabelPublicidad({ center = false }: { center?: boolean }) {
   return (
     <p
-      className={`text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1 ${
+      className={`text-[10px] font-medium text-gray-600 uppercase tracking-widest mb-1.5 ${
         center ? 'text-center' : ''
       }`}
     >
@@ -21,7 +20,6 @@ export default function BannerPublicitario({ banner }: BannerPublicitarioProps) 
   if (!banner.activo) return null
 
   // ─── Banners horizontales (leaderboard) ─────────────────────────────────────
-  // home_top / home_mid / home_bottom / vehiculos_top / vehiculos_mid
   if (!banner.posicion.startsWith('sidebar') && banner.posicion !== 'mobile_top') {
     return (
       <div className="w-full hidden sm:block">
@@ -30,15 +28,15 @@ export default function BannerPublicitario({ banner }: BannerPublicitarioProps) 
           href={banner.link_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block overflow-hidden rounded-xl shadow-sm hover:opacity-95 hover:shadow-md transition-all duration-200"
+          className="block overflow-hidden rounded-2xl shadow-md hover:opacity-95 hover:shadow-lg hover:shadow-black/30 transition-all duration-200 ring-1 ring-white/8"
           aria-label="Ir al sitio del anunciante"
         >
           <img
             src={banner.imagen_url}
             alt="Espacio publicitario"
             width={1200}
-            height={90}
-            className="w-full h-[90px] object-cover block"
+            height={120}
+            className="w-full h-[120px] object-cover block"
             loading="lazy"
           />
         </a>
@@ -47,7 +45,6 @@ export default function BannerPublicitario({ banner }: BannerPublicitarioProps) 
   }
 
   // ─── Banner mobile top ───────────────────────────────────────────────────────
-  // Solo visible en mobile (lg:hidden). Slim strip debajo del hero.
   if (banner.posicion === 'mobile_top') {
     return (
       <div className="w-full lg:hidden">
@@ -56,15 +53,15 @@ export default function BannerPublicitario({ banner }: BannerPublicitarioProps) 
           href={banner.link_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block overflow-hidden rounded-xl shadow-sm hover:opacity-95 transition-opacity"
+          className="block overflow-hidden rounded-xl shadow-sm hover:opacity-95 transition-opacity ring-1 ring-white/8"
           aria-label="Ir al sitio del anunciante"
         >
           <img
             src={banner.imagen_url}
             alt="Espacio publicitario"
             width={800}
-            height={60}
-            className="w-full h-[60px] object-cover block"
+            height={72}
+            className="w-full h-[72px] object-cover block"
             loading="lazy"
           />
         </a>
@@ -72,7 +69,7 @@ export default function BannerPublicitario({ banner }: BannerPublicitarioProps) 
     )
   }
 
-  // ─── Banner sidebar vertical — 220×300px ────────────────────────────────────
+  // ─── Banner sidebar vertical ─────────────────────────────────────────────────
   return (
     <div className="w-full">
       <LabelPublicidad center />
@@ -80,15 +77,15 @@ export default function BannerPublicitario({ banner }: BannerPublicitarioProps) 
         href={banner.link_url || '#'}
         target="_blank"
         rel="noopener noreferrer"
-        className="block rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:opacity-95 transition-all duration-200"
+        className="block rounded-2xl overflow-hidden shadow-md hover:shadow-lg hover:shadow-black/30 hover:opacity-95 transition-all duration-200 ring-1 ring-white/8"
         aria-label="Ir al sitio del anunciante"
       >
         <img
           src={banner.imagen_url}
           alt="Espacio publicitario"
           width={220}
-          height={300}
-          className="w-full h-[300px] object-cover block"
+          height={320}
+          className="w-full h-[320px] object-cover block"
           loading="lazy"
         />
       </a>

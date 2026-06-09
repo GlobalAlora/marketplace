@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import AuthLayout from '@/components/auth/AuthLayout'
+import { createClient } from '@/lib/supabase/client'
 
 export default function RecuperarPage() {
   const [email, setEmail]   = useState('')
@@ -10,7 +11,7 @@ export default function RecuperarPage() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent]     = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim()) {
       setError('Ingresá tu email para continuar')
@@ -18,11 +19,25 @@ export default function RecuperarPage() {
     }
     setError('')
     setLoading(true)
-    // TODO: Replace with real Supabase auth (resetPasswordForEmail)
-    setTimeout(() => {
-      setLoading(false)
-      setSent(true)
-    }, 1200)
+
+    const supabase = createClient()
+    const redirectTo = `${window.location.origin}/auth/nueva-contrasena`
+
+    const { error: authError } = await supabase.auth.resetPasswordForEmail(
+      email.trim().toLowerCase(),
+      { redirectTo }
+    )
+
+    setLoading(false)
+
+    if (authError) {
+      // Supabase devuelve error solo para problemas de red/config,
+      // no por emails inexistentes (por seguridad muestra éxito igual)
+      setError('No se pudo enviar el email. Intentá de nuevo.')
+      return
+    }
+
+    setSent(true)
   }
 
   return (

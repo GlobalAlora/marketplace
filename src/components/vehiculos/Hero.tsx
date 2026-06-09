@@ -122,8 +122,9 @@ export default function Hero() {
             </div>
 
             <div className="mt-5 flex items-start gap-2">
-              <svg className="w-5 h-5 mt-0.5 text-[#FFC107] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.076 3.218-4.688 3.218-7.327 0-5.19-4.054-9-9-9s-9 3.81-9 9c0 2.639 1.274 5.251 3.218 7.327a19.579 19.579 0 002.682 2.282 16.944 16.944 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              {/* Map pin icon */}
+              <svg className="w-5 h-5 mt-0.5 text-[#FFC107] shrink-0" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
+                <path d="M32 2C20.402 2 11 11.402 11 23c0 15.274 19.2 37.41 20.026 38.36a1.3 1.3 0 001.948 0C33.8 60.41 53 38.274 53 23 53 11.402 43.598 2 32 2zm0 30a9 9 0 110-18 9 9 0 010 18z" />
               </svg>
               <p className="text-sm text-gray-400 max-w-sm leading-relaxed">
                 Comodoro Rivadavia, Rada Tilly y toda la región patagónica.

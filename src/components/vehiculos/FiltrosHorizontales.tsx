@@ -190,7 +190,7 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
   }
 
   const wrapperCls = sticky
-    ? 'sticky top-20 z-40 bg-[#071526] border-b border-white/8'
+    ? 'sticky top-14 z-40 bg-[#071526] border-b border-white/8'
     : ''
 
   const innerCls = sticky

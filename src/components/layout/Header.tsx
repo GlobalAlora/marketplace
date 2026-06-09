@@ -111,12 +111,12 @@ export default function Header() {
   return (
     <header className={`sticky top-0 z-50 border-b border-white/10 backdrop-blur-md transition-[background-color,box-shadow] duration-300 ${scrolled ? 'bg-[#0D0F14]/95 shadow-lg shadow-black/30' : 'bg-[#0D0F14]/98'}`}>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
-        <div className="flex items-center gap-4 h-20">
+        <div className={`flex items-center gap-4 transition-[height] duration-300 ${scrolled ? 'h-14' : 'h-20'}`}>
 
-          {/* Logo */}
+          {/* Logo — shrinks on scroll */}
           <Link href="/" className="shrink-0 flex items-center gap-3 group">
-            <LogoAutodux size={30} />
-            <span className="font-extrabold tracking-tight text-white text-2xl group-hover:opacity-90 transition-opacity duration-200">
+            <LogoAutodux size={scrolled ? 22 : 30} />
+            <span className={`font-extrabold tracking-tight text-white group-hover:opacity-90 transition-[font-size] duration-300 ${scrolled ? 'text-lg' : 'text-2xl'}`}>
               AUTO<span className="text-[#FFC107]">DUX</span>
             </span>
           </Link>

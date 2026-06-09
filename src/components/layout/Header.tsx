@@ -109,14 +109,14 @@ export default function Header() {
   }, [])
 
   return (
-    <header className={`sticky top-0 z-50 border-b border-white/10 transition-all duration-300 ${scrolled ? 'bg-[#0D0F14]/95 backdrop-blur-md shadow-lg shadow-black/30' : 'bg-[#0D0F14]'}`}>
+    <header className={`sticky top-0 z-50 border-b border-white/10 backdrop-blur-md transition-[background-color,box-shadow] duration-300 ${scrolled ? 'bg-[#0D0F14]/95 shadow-lg shadow-black/30' : 'bg-[#0D0F14]/98'}`}>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
         <div className="flex items-center gap-4 h-20">
 
-          {/* Logo — shrinks on scroll */}
+          {/* Logo */}
           <Link href="/" className="shrink-0 flex items-center gap-3 group">
-            <LogoAutodux size={scrolled ? 24 : 34} />
-            <span className={`font-extrabold tracking-tight text-white group-hover:opacity-90 transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl'}`}>
+            <LogoAutodux size={30} />
+            <span className="font-extrabold tracking-tight text-white text-2xl group-hover:opacity-90 transition-opacity duration-200">
               AUTO<span className="text-[#FFC107]">DUX</span>
             </span>
           </Link>
@@ -231,7 +231,7 @@ export default function Header() {
             /* Not logged in — Ingresar button */
             <Link
               href="/auth/login"
-              className="hidden md:block text-sm font-bold px-5 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors ml-2"
+              className="hidden md:block text-sm font-bold px-5 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors ml-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFC107] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0F14]"
             >
               Ingresar
             </Link>

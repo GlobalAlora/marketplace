@@ -11,9 +11,9 @@ interface SeccionDestacadosProps {
 }
 
 // ── Design tokens ────────────────────────────────────────────────────────────
-const GOLD        = '#C9A840'
-const GOLD_LIGHT  = '#D4B34A'
-const GOLD_DARK   = '#A88820'
+const GOLD        = '#FFC107'   // brand primary yellow
+const GOLD_LIGHT  = '#FFD033'   // lighter tint for gradients
+const GOLD_DARK   = '#E5A800'   // darker shade for gradients
 const NAVY        = '#0C1D36'
 const NAVY_MID    = '#0F2340'
 const NAVY_LIGHT  = '#162B4A'
@@ -32,14 +32,19 @@ function formatKm(km: number): string {
 
 // ── Decorative elements ───────────────────────────────────────────────────────
 
-/** Diagonal corner ribbon "VITRINA" in the top-left */
+/** Diagonal corner ribbon "VITRINA" in the top-left.
+ *  The strip must be exactly container * √2 wide so it reaches
+ *  edge-to-edge without leaving gaps at the lower corners. */
 function CornerRibbon({ small = false }: { small?: boolean }) {
-  const size   = small ? 76  : 96
-  const top    = small ? 17  : 21
-  const left   = small ? -19 : -22
-  const width  = small ? 88  : 108
-  const fsize  = small ? '8px' : '9px'
-  const py     = small ? '3px' : '5px'
+  // container square: must be big enough to show the full diagonal strip
+  const size      = small ? 80   : 100
+  // strip dimensions — width = size * √2 ≈ size * 1.415
+  const stripW    = Math.round(size * 1.415)
+  const stripH    = small ? 18   : 22
+  // center strip on container diagonal
+  const top       = Math.round((size - stripH) / 2)
+  const left      = Math.round((size - stripW) / 2)
+  const fsize     = small ? '8px' : '9.5px'
 
   return (
     <div
@@ -47,19 +52,20 @@ function CornerRibbon({ small = false }: { small?: boolean }) {
       style={{ width: size, height: size }}
     >
       <div
-        className="absolute font-black tracking-[0.18em] text-center select-none"
+        className="absolute font-black text-center select-none"
         style={{
           top,
           left,
-          width,
+          width: stripW,
+          height: stripH,
+          lineHeight: `${stripH}px`,
           transform: 'rotate(-45deg)',
+          transformOrigin: 'center center',
           background: `linear-gradient(180deg, ${GOLD_LIGHT} 0%, ${GOLD_DARK} 100%)`,
           color: NAVY,
           fontSize: fsize,
-          paddingTop: py,
-          paddingBottom: py,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
-          letterSpacing: '0.18em',
+          letterSpacing: '0.2em',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
         }}
       >
         VITRINA
@@ -82,15 +88,11 @@ function ShieldBadge({ small = false }: { small?: boolean }) {
           boxShadow: `0 4px 16px ${GOLD}66`,
         }}
       >
-        {/* star — outline */}
+        {/* star — solid fill for clean contrast on gold */}
         <svg
           viewBox="0 0 24 24"
-          fill="none"
-          stroke={NAVY}
-          strokeWidth={1.8}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ width: small ? 16 : 20, height: small ? 16 : 20, marginTop: small ? -4 : -6 }}
+          fill={NAVY}
+          style={{ width: small ? 15 : 19, height: small ? 15 : 19, marginTop: small ? -4 : -6 }}
           aria-hidden="true"
         >
           <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />

@@ -163,7 +163,7 @@ export default async function VehiculoPage({ params }: PageProps) {
           <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
 
             {/* Columna izquierda: info + CTA */}
-            <div className="w-full lg:w-[360px] xl:w-[400px] lg:shrink-0 lg:sticky lg:top-24 flex flex-col gap-4 order-2 lg:order-1">
+            <div className="w-full lg:w-[360px] xl:w-[400px] lg:shrink-0 flex flex-col gap-4 order-2 lg:order-1">
               <InfoVehiculo vehiculo={vehiculo} />
               {vehiculo.profiles?.telefono && (
                 <BotonWhatsApp

@@ -72,7 +72,6 @@ export default function SeccionPlanes() {
   return (
     <section
       className="bg-[#071526] py-16 sm:py-20"
-      style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
       aria-labelledby="planes-heading"
     >
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">

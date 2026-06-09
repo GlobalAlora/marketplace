@@ -211,26 +211,24 @@ export default function SeccionBeneficios() {
   const card = CARDS[active]
 
   return (
-    <section
-      className="bg-[#0D0F14] py-16 sm:py-20"
-      style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
-    >
+    <section className="bg-[#0D0F14] py-16 sm:py-20">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 lg:items-start">
 
-          {/* ── Columna izquierda (sticky) ────────────────────────────────── */}
-          <RevealSection className="w-full lg:w-[420px] xl:w-[460px] shrink-0 lg:sticky lg:top-28">
-            <p className="text-xs font-semibold text-[#FFC107] uppercase tracking-widest mb-3">
-              Plataforma
-            </p>
+          {/* ── Columna izquierda ────────────────────────────────────────── */}
+          <RevealSection className="w-full lg:w-[420px] xl:w-[460px] shrink-0">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
               ¿Por qué usar{' '}
               <span className="text-[#FFC107]">AUTODUX?</span>
             </h2>
-            <p className="mt-4 text-gray-400 text-base leading-relaxed">
-              Encontrá tu próximo vehículo sin perder días buscando.
-              Compará agencias, vehículos y precios de toda la Patagonia en un solo lugar.
-            </p>
+            <div className="mt-4 text-base leading-relaxed space-y-1">
+              <p className="text-white font-semibold underline underline-offset-4 decoration-[#FFC107]/50 decoration-2">
+                Encontrá tu próximo vehículo sin perder días buscando.
+              </p>
+              <p className="text-gray-400">
+                Compará agencias, vehículos y precios de toda la Patagonia en un solo lugar.
+              </p>
+            </div>
 
             {/* Lista de beneficios */}
             <ul className="mt-8 flex flex-col gap-3.5" role="list">
@@ -289,7 +287,7 @@ export default function SeccionBeneficios() {
               />
 
               {/* Contenido animado */}
-              <div ref={cardRef} className="relative z-10 p-8 sm:p-10 min-h-[320px] flex flex-col justify-between">
+              <div ref={cardRef} className="relative z-10 p-8 sm:p-10 h-[340px] flex flex-col justify-between overflow-hidden">
                 <div>
                   {/* Ícono */}
                   <div

@@ -12,10 +12,10 @@ export default function SobreNosotros() {
         style={{ backgroundImage: `url(${BG_URL})` }}
         aria-hidden="true"
       />
-      {/* Overlay degradado profundo */}
+      {/* Overlay degradado profundo — 100% opaco en los bordes para evitar líneas */}
       <div
         className="absolute inset-0"
-        style={{ background: 'linear-gradient(135deg, rgba(13,15,20,0.97) 0%, rgba(7,21,38,0.95) 50%, rgba(13,15,20,0.97) 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, rgba(13,15,20,1) 0%, rgba(13,15,20,0.96) 8%, rgba(7,21,38,0.95) 50%, rgba(13,15,20,0.96) 92%, rgba(13,15,20,1) 100%)' }}
         aria-hidden="true"
       />
       {/* Acento de color */}
@@ -40,13 +40,14 @@ export default function SobreNosotros() {
         </RevealSection>
 
         <RevealSection delay={120} className="mt-8 max-w-3xl">
-          <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-            AUTODUX nace para simplificar la forma en que las personas encuentran y exploran
+          <p className="text-white text-base sm:text-lg leading-relaxed">
+            <span className="font-extrabold bg-[#FFC107]/15 text-[#FFC107] px-1 rounded">AUTODUX</span>{' '}
+            nace para simplificar la forma en que las personas encuentran y exploran
             vehículos, centralizando la información en una plataforma moderna, organizada y confiable.
             Ayudamos a los usuarios a descubrir y comparar opciones, ahorrando tiempo y facilitando la
             toma de decisiones.
           </p>
-          <p className="text-gray-400 text-base sm:text-lg leading-relaxed mt-4">
+          <p className="text-white text-base sm:text-lg leading-relaxed mt-4">
             Al mismo tiempo, brindamos a las agencias una herramienta de trabajo que les permite
             gestionar su inventario, acceder a métricas relevantes y obtener una visión más completa
             del mercado. Combinamos tecnología, organización y datos para aportar mayor eficiencia,

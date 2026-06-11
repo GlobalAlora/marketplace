@@ -33,29 +33,29 @@ function formatKm(km: number): string {
 // ── Decorative elements ───────────────────────────────────────────────────────
 
 /** Diagonal corner ribbon "VITRINA" in the top-left.
- *  The strip must be exactly container * √2 wide so it reaches
- *  edge-to-edge without leaving gaps at the lower corners. */
+ *  The container is centered on the image corner (0,0) by using a negative
+ *  offset of half its size. The parent image panel's overflow-hidden clips
+ *  the parts that extend outside. This guarantees the strip passes exactly
+ *  through the corner pixel regardless of card size. */
 function CornerRibbon({ small = false }: { small?: boolean }) {
-  // Container must be large enough that the rotated strip reaches the outer edges.
-  // We use 1.5× the strip width so the ends safely clear the container corners.
-  const size   = small ? 96    : 120
+  const half   = small ? 65  : 85   // half of container size
+  const size   = half * 2
   const stripW = Math.round(size * 1.415)
-  const stripH = small ? 18    : 22
-  const top    = Math.round((size - stripH) / 2)
-  const left   = Math.round((size - stripW) / 2)
+  const stripH = small ? 18  : 24
   const fsize  = small ? '8px' : '9.5px'
 
   return (
+    // No overflow-hidden here — parent image panel provides the clip
     <div
-      className="absolute top-0 left-0 overflow-hidden z-10 pointer-events-none"
-      style={{ width: size, height: size }}
+      className="absolute z-10 pointer-events-none"
+      style={{ top: -half, left: -half, width: size, height: size }}
     >
       <div
         className="absolute font-black text-center select-none"
         style={{
-          top,
-          left,
-          width: stripW,
+          top:    Math.round((size - stripH) / 2),
+          left:   Math.round((size - stripW) / 2),
+          width:  stripW,
           height: stripH,
           lineHeight: `${stripH}px`,
           transform: 'rotate(-45deg)',

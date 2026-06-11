@@ -50,7 +50,7 @@ function CornerRibbon({ small = false }: { small?: boolean }) {
       <div
         className="absolute font-black text-center select-none"
         style={{
-          top:    Math.round((size - stripH) / 2),
+          top:    small ? 18 : 27,
           left:   Math.round((size - stripW) / 2),
           width:  stripW,
           height: stripH,

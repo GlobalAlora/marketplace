@@ -222,7 +222,7 @@ export default function SeccionBeneficios() {
               <span className="text-[#FFC107]">AUTODUX?</span>
             </h2>
             <div className="mt-4 text-base leading-relaxed space-y-1">
-              <p className="text-white font-semibold underline underline-offset-4 decoration-[#FFC107]/50 decoration-2">
+              <p className="text-white font-semibold">
                 Encontrá tu próximo vehículo sin perder días buscando.
               </p>
               <p className="text-gray-400">

@@ -4,7 +4,7 @@ const BG_URL = 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1
 
 export default function SobreNosotros() {
   return (
-    <section className="relative overflow-hidden bg-[#0D0F14]" aria-labelledby="sobre-nosotros-heading">
+    <section className="relative overflow-hidden bg-[#0D0F14] -mt-px" aria-labelledby="sobre-nosotros-heading">
 
       {/* Fondo con efecto parallax en desktop */}
       <div

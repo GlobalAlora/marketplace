@@ -3,6 +3,23 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import EditarForm from './EditarForm'
 
+interface VehiculoRow {
+  id: string
+  marca: string
+  modelo: string
+  año: number
+  kilometraje: number
+  precio: number
+  descripcion: string | null
+  ubicacion: string
+  condicion: string
+  transmision: string | null
+  combustible: string | null
+  puertas: number | null
+  color: string | null
+  imagenes: string[]
+}
+
 interface PageProps {
   params: Promise<{ id: string }>
 }
@@ -13,15 +30,17 @@ export default async function EditarPage({ params }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: vehiculo } = await supabase
+  const { data: raw } = await supabase
     .from('vehiculos')
-    .select('id, marca, modelo, año, kilometraje, precio, descripcion, ubicacion, condicion, transmision, combustible, puertas, color, imagenes')
+    .select('*')
     .eq('id', id)
     .eq('user_id', user.id)
     .eq('vendido', false)
     .maybeSingle()
 
-  if (!vehiculo) notFound()
+  if (!raw) notFound()
+
+  const vehiculo = raw as unknown as VehiculoRow
 
   return (
     <div className="p-6 lg:p-8 max-w-2xl">

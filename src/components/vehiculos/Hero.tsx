@@ -66,12 +66,29 @@ const CARDS = [
 ]
 
 export default function Hero({ config = {} }: { config?: SiteConfig }) {
+  const [faseIdx, setFaseIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
   const [mounted, setMounted] = useState(false)
 
   const tituloLinea1  = config.hero_titulo_linea1  ?? 'Conectamos lo que buscas,'
   const tituloLinea2  = config.hero_titulo_linea2  ?? 'con lo que se vende.'
   const subtitulo     = config.hero_subtitulo      ?? 'Comodoro Rivadavia, Rada Tilly y toda la región patagónica.'
   const imagenFondo   = config.hero_imagen_fondo   ?? 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1600'
+
+  useEffect(() => {
+    const cycle = () => {
+      // fade out
+      setVisible(false)
+      const next = setTimeout(() => {
+        // swap text + fade in
+        setFaseIdx(i => (i + 1) % FRASES.length)
+        setVisible(true)
+      }, 450)
+      return next
+    }
+    const interval = setInterval(cycle, 2800)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 80)
@@ -99,32 +116,28 @@ export default function Hero({ config = {} }: { config?: SiteConfig }) {
               <span className="text-[#FFC107]">{tituloLinea2}</span>
             </h1>
 
-            {/* 3 frases con colores distintos + animación de entrada escalonada */}
-            <div className="mt-6 flex flex-col gap-2">
-              {FRASES.map((frase, i) => (
-                <div
-                  key={frase.text}
-                  style={{
-                    opacity: mounted ? 1 : 0,
-                    transform: mounted ? 'translateY(0)' : 'translateY(16px)',
-                    transition: `opacity 0.55s ease, transform 0.55s ease`,
-                    transitionDelay: `${i * 130}ms`,
-                  }}
-                  className="flex items-center gap-3"
+            {/* Frase rotante — aparece, desaparece, siguiente */}
+            <div className="mt-6 h-9 flex items-center">
+              <div
+                className="flex items-center gap-3"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? 'translateY(0)' : 'translateY(8px)',
+                  transition: 'opacity 0.4s ease, transform 0.4s ease',
+                }}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                  style={{ backgroundColor: FRASES[faseIdx].color }}
+                  aria-hidden="true"
+                />
+                <p
+                  className="text-lg sm:text-xl font-semibold leading-snug"
+                  style={{ color: FRASES[faseIdx].color }}
                 >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{ backgroundColor: frase.color }}
-                    aria-hidden="true"
-                  />
-                  <p
-                    className="text-lg sm:text-xl font-semibold leading-snug"
-                    style={{ color: frase.color }}
-                  >
-                    {frase.text}
-                  </p>
-                </div>
-              ))}
+                  {FRASES[faseIdx].text}
+                </p>
+              </div>
             </div>
 
             <div className="mt-5 flex items-start gap-2">

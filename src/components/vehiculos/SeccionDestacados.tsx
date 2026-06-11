@@ -33,22 +33,19 @@ function formatKm(km: number): string {
 // ── Decorative elements ───────────────────────────────────────────────────────
 
 /** Diagonal corner ribbon "VITRINA" in the top-left.
- *  The container is centered on the image corner (0,0) by using a negative
- *  offset of half its size. The parent image panel's overflow-hidden clips
- *  the parts that extend outside. This guarantees the strip passes exactly
- *  through the corner pixel regardless of card size. */
+ *  Container at top-0/left-0 with overflow-hidden clips the strip.
+ *  Strip is intentionally wider than needed so its ends always extend
+ *  past the container corners — no gaps even with strip height. */
 function CornerRibbon({ small = false }: { small?: boolean }) {
-  const half   = small ? 65  : 85   // half of container size
-  const size   = half * 2
-  const stripW = Math.round(size * 1.415)
+  const size   = small ? 90  : 110
+  const stripW = 300          // intentionally oversized — overflow-hidden clips
   const stripH = small ? 18  : 24
   const fsize  = small ? '8px' : '9.5px'
 
   return (
-    // No overflow-hidden here — parent image panel provides the clip
     <div
-      className="absolute z-10 pointer-events-none"
-      style={{ top: -half, left: -half, width: size, height: size }}
+      className="absolute top-0 left-0 overflow-hidden z-10 pointer-events-none"
+      style={{ width: size, height: size }}
     >
       <div
         className="absolute font-black text-center select-none"

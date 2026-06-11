@@ -12,12 +12,14 @@ export default function SobreNosotros() {
         style={{ backgroundImage: `url(${BG_URL})` }}
         aria-hidden="true"
       />
-      {/* Overlay degradado profundo — 100% opaco en los bordes para evitar líneas */}
+      {/* Overlay degradado profundo */}
       <div
         className="absolute inset-0"
-        style={{ background: 'linear-gradient(to bottom, rgba(13,15,20,1) 0%, rgba(13,15,20,0.96) 8%, rgba(7,21,38,0.95) 50%, rgba(13,15,20,0.96) 92%, rgba(13,15,20,1) 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, rgba(13,15,20,1) 0%, rgba(13,15,20,1) 4%, rgba(13,15,20,0.96) 10%, rgba(7,21,38,0.95) 50%, rgba(13,15,20,0.96) 92%, rgba(13,15,20,1) 100%)' }}
         aria-hidden="true"
       />
+      {/* Strip sólido en el borde superior — cubre artefacto 1px del bg-fixed */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-[#0D0F14] z-[2]" aria-hidden="true" />
       {/* Acento de color */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] opacity-[0.06] pointer-events-none" style={{ background: 'radial-gradient(circle, #282F8F 0%, transparent 70%)' }} aria-hidden="true" />
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] opacity-[0.05] pointer-events-none" style={{ background: 'radial-gradient(circle, #FFC107 0%, transparent 70%)' }} aria-hidden="true" />

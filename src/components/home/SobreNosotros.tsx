@@ -43,7 +43,7 @@ export default function SobreNosotros() {
 
         <RevealSection delay={120} className="mt-8 max-w-3xl">
           <p className="text-white text-base sm:text-lg leading-relaxed">
-            <span className="font-extrabold bg-[#FFC107]/15 text-[#FFC107] px-1 rounded">AUTODUX</span>{' '}
+            <span className="font-extrabold text-white">AUTO</span><span className="font-extrabold text-[#FFC107]">DUX</span>{' '}
             nace para simplificar la forma en que las personas encuentran y exploran
             vehículos, centralizando la información en una plataforma moderna, organizada y confiable.
             Ayudamos a los usuarios a descubrir y comparar opciones, ahorrando tiempo y facilitando la

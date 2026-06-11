@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import VehiculosAdminClient from './VehiculosAdminClient'
 
+export const dynamic = 'force-dynamic'
+
 interface VehiculoAdmin {
   id: string
   titulo: string
@@ -28,9 +30,10 @@ export default async function AdminVehiculosPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: raw } = await (supabase
     .from('vehiculos')
-    .select('id, titulo, marca, modelo, año, precio, activo, destacado, vendido, vistas, imagenes, created_at, profiles!vehiculos_user_id_fkey(nombre, apellido, role)')
+    .select('*, profiles!vehiculos_user_id_fkey(nombre, apellido, role)')
     .order('created_at', { ascending: false }) as any) as { data: any[] | null }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const vehiculos: VehiculoAdmin[] = (raw ?? []).map((v: any) => ({
     id: v.id,
     titulo: v.titulo,

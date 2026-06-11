@@ -8,6 +8,8 @@ import { useAuth } from '@/lib/mock-auth'
 
 interface SeccionDestacadosProps {
   vehiculos: Vehiculo[]
+  titulo?: string
+  subtitulo?: string
 }
 
 // ── Design tokens ────────────────────────────────────────────────────────────
@@ -323,7 +325,7 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
 
 // ── Section ───────────────────────────────────────────────────────────────────
 
-export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps) {
+export default function SeccionDestacados({ vehiculos, titulo, subtitulo }: SeccionDestacadosProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
 
@@ -345,9 +347,11 @@ export default function SeccionDestacados({ vehiculos }: SeccionDestacadosProps)
               <IconVitrina className="w-5 h-5" style={{ color: NAVY }} />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-white">Vitrina AUTODUX</h2>
+              <h2 className="text-xl font-extrabold text-white">
+                {titulo ?? 'Vitrina AUTODUX'}
+              </h2>
               <p className="text-sm text-gray-400 mt-0.5">
-                Descubrí las oportunidades más interesantes de la Patagonia.
+                {subtitulo ?? 'Descubrí las oportunidades más interesantes de la Patagonia.'}
               </p>
             </div>
           </div>

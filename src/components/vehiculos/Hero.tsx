@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import type { SiteConfig } from '@/lib/site-config'
 
 const FRASES = [
   { text: 'Conectando oportunidades.', color: '#FFC107' },
@@ -64,8 +65,13 @@ const CARDS = [
   },
 ]
 
-export default function Hero() {
+export default function Hero({ config = {} }: { config?: SiteConfig }) {
   const [mounted, setMounted] = useState(false)
+
+  const tituloLinea1  = config.hero_titulo_linea1  ?? 'Conectamos lo que buscas,'
+  const tituloLinea2  = config.hero_titulo_linea2  ?? 'con lo que se vende.'
+  const subtitulo     = config.hero_subtitulo      ?? 'Comodoro Rivadavia, Rada Tilly y toda la región patagónica.'
+  const imagenFondo   = config.hero_imagen_fondo   ?? 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1600'
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 80)
@@ -76,7 +82,7 @@ export default function Hero() {
     <section className="relative bg-[#0D0F14] text-white overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1600)' }}
+        style={{ backgroundImage: `url(${imagenFondo})` }}
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-[#0D0F14]/85" aria-hidden="true" />
@@ -89,8 +95,8 @@ export default function Hero() {
           {/* Left: headline + animated subtitle */}
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-tight tracking-tight">
-              Conectamos lo que buscas,{' '}
-              <span className="text-[#FFC107]">con lo que se vende.</span>
+              {tituloLinea1}{' '}
+              <span className="text-[#FFC107]">{tituloLinea2}</span>
             </h1>
 
             {/* 3 frases con colores distintos + animación de entrada escalonada */}
@@ -127,7 +133,7 @@ export default function Hero() {
                 <path d="M32 2C20.402 2 11 11.402 11 23c0 15.274 19.2 37.41 20.026 38.36a1.3 1.3 0 001.948 0C33.8 60.41 53 38.274 53 23 53 11.402 43.598 2 32 2zm0 30a9 9 0 110-18 9 9 0 010 18z" />
               </svg>
               <p className="text-sm text-gray-400 max-w-sm leading-relaxed">
-                Comodoro Rivadavia, Rada Tilly y toda la región patagónica.
+                {subtitulo}
               </p>
             </div>
           </div>

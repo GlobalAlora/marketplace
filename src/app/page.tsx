@@ -10,6 +10,7 @@ import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import RevealSection from '@/components/ui/RevealSection'
 import { createClient } from '@/lib/supabase/server'
 import { getBanners } from '@/lib/banners'
+import { getSiteConfig } from '@/lib/site-config'
 import type { Vehiculo } from '@/types'
 
 export const revalidate = 300 // 5 min cache
@@ -23,6 +24,7 @@ export default async function Home() {
     { data: rawTodos },
     { count: totalCount },
     banners,
+    siteConfig,
   ] = await Promise.all([
     // Vitrina: solo destacados activos, máx 3
     supabase
@@ -55,6 +57,9 @@ export default async function Home() {
 
     // Banners de home
     getBanners(['home_top', 'home_mid', 'home_bottom']),
+
+    // Config del sitio (CMS)
+    getSiteConfig(),
   ])
 
   const destacados      = (rawDestacados ?? []) as unknown as Vehiculo[]
@@ -66,7 +71,7 @@ export default async function Home() {
 
   return (
     <MainLayout>
-      <Hero />
+      <Hero config={siteConfig} />
 
       {/* Banner home_top — debajo del hero */}
       {banners.home_top && (
@@ -78,7 +83,11 @@ export default async function Home() {
       )}
 
       {/* Vitrina AUTODUX */}
-      <SeccionDestacados vehiculos={destacados} />
+      <SeccionDestacados
+        vehiculos={destacados}
+        titulo={siteConfig.vitrina_titulo}
+        subtitulo={siteConfig.vitrina_subtitulo}
+      />
 
       {/* Últimos publicados */}
       <div className="bg-[#071526]">
@@ -153,7 +162,7 @@ export default async function Home() {
       )}
 
       {/* ¿Por qué usar AUTODUX? — rediseñado con carrusel */}
-      <SeccionBeneficios />
+      <SeccionBeneficios config={siteConfig} />
 
       {/* Sobre Nosotros */}
       <SobreNosotros />

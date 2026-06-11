@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import RevealSection from '@/components/ui/RevealSection'
+import type { SiteConfig } from '@/lib/site-config'
 
 /* ─── Beneficios lista (columna izquierda) ─────────────────────────────────── */
 const LISTA = [
@@ -151,10 +152,14 @@ function Arrow({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) 
 }
 
 /* ─── Componente principal ────────────────────────────────────────────────── */
-export default function SeccionBeneficios() {
+export default function SeccionBeneficios({ config = {} }: { config?: SiteConfig }) {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
+
+  const beneficiosTitulo     = config.beneficios_titulo      ?? '¿Por qué usar AUTODUX?'
+  const beneficiosSubtitulo1 = config.beneficios_subtitulo_1 ?? 'Encontrá tu próximo vehículo sin perder días buscando.'
+  const beneficiosSubtitulo2 = config.beneficios_subtitulo_2 ?? 'Compará agencias, vehículos y precios de toda la Patagonia en un solo lugar.'
 
   /* anima la tarjeta activa en la entrada */
   const animateIn = useCallback((fromRight = true) => {
@@ -218,15 +223,14 @@ export default function SeccionBeneficios() {
           {/* ── Columna izquierda ────────────────────────────────────────── */}
           <RevealSection className="w-full lg:w-[420px] xl:w-[460px] shrink-0">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-              ¿Por qué usar{' '}
-              <span className="text-[#FFC107]">AUTODUX?</span>
+              {beneficiosTitulo}
             </h2>
             <div className="mt-4 text-base leading-relaxed space-y-1">
               <p className="text-white font-semibold">
-                Encontrá tu próximo vehículo sin perder días buscando.
+                {beneficiosSubtitulo1}
               </p>
               <p className="text-gray-400">
-                Compará agencias, vehículos y precios de toda la Patagonia en un solo lugar.
+                {beneficiosSubtitulo2}
               </p>
             </div>
 

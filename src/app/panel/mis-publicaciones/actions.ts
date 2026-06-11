@@ -11,33 +11,36 @@ async function getAuthClient() {
 }
 
 export async function toggleActivo(vehiculoId: string, activo: boolean) {
-  const { supabase } = await getAuthClient()
+  const { supabase, userId } = await getAuthClient()
   const { error } = await supabase
     .from('vehiculos')
     .update({ activo })
     .eq('id', vehiculoId)
+    .eq('user_id', userId)
   if (error) throw new Error(error.message)
   revalidatePath('/panel/mis-publicaciones')
   revalidatePath('/panel')
 }
 
 export async function marcarVendido(vehiculoId: string) {
-  const { supabase } = await getAuthClient()
+  const { supabase, userId } = await getAuthClient()
   const { error } = await supabase
     .from('vehiculos')
     .update({ vendido: true, activo: false })
     .eq('id', vehiculoId)
+    .eq('user_id', userId)
   if (error) throw new Error(error.message)
   revalidatePath('/panel/mis-publicaciones')
   revalidatePath('/panel')
 }
 
 export async function deleteVehiculo(vehiculoId: string) {
-  const { supabase } = await getAuthClient()
+  const { supabase, userId } = await getAuthClient()
   const { error } = await supabase
     .from('vehiculos')
     .delete()
     .eq('id', vehiculoId)
+    .eq('user_id', userId)
   if (error) throw new Error(error.message)
   revalidatePath('/panel/mis-publicaciones')
   revalidatePath('/panel')

@@ -36,15 +36,14 @@ function formatKm(km: number): string {
  *  The strip must be exactly container * √2 wide so it reaches
  *  edge-to-edge without leaving gaps at the lower corners. */
 function CornerRibbon({ small = false }: { small?: boolean }) {
-  // container square: must be big enough to show the full diagonal strip
-  const size      = small ? 80   : 100
-  // strip dimensions — width = size * √2 ≈ size * 1.415
-  const stripW    = Math.round(size * 1.415)
-  const stripH    = small ? 18   : 22
-  // center strip on container diagonal
-  const top       = Math.round((size - stripH) / 2)
-  const left      = Math.round((size - stripW) / 2)
-  const fsize     = small ? '8px' : '9.5px'
+  // Container must be large enough that the rotated strip reaches the outer edges.
+  // We use 1.5× the strip width so the ends safely clear the container corners.
+  const size   = small ? 96    : 120
+  const stripW = Math.round(size * 1.415)
+  const stripH = small ? 18    : 22
+  const top    = Math.round((size - stripH) / 2)
+  const left   = Math.round((size - stripW) / 2)
+  const fsize  = small ? '8px' : '9.5px'
 
   return (
     <div
@@ -65,7 +64,6 @@ function CornerRibbon({ small = false }: { small?: boolean }) {
           color: NAVY,
           fontSize: fsize,
           letterSpacing: '0.2em',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
         }}
       >
         VITRINA
@@ -142,17 +140,17 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
       href={`/vehiculos/${vehiculo.id}`}
       className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden min-h-[260px] transition-all duration-300"
       style={{
-        background: `linear-gradient(135deg, ${NAVY_MID} 0%, ${NAVY} 100%)`,
-        border: `1.5px solid ${GOLD}55`,
-        boxShadow: `0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 ${GOLD}22`,
+        background: '#FFFFFF',
+        border: `2px solid ${GOLD}`,
+        boxShadow: `0 4px 24px rgba(0,0,0,0.12)`,
       }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.boxShadow =
-          `0 8px 40px rgba(0,0,0,0.6), 0 0 0 1.5px ${GOLD}99, inset 0 1px 0 ${GOLD}33`
+          `0 8px 40px rgba(0,0,0,0.18), 0 0 0 1px ${GOLD}`
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.boxShadow =
-          `0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 ${GOLD}22`
+          `0 4px 24px rgba(0,0,0,0.12)`
       }}
     >
       {/* ── Image panel ── */}
@@ -169,9 +167,6 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
           <CarPlaceholder large />
         )}
 
-        {/* Dark overlay so ribbon/badge always readable over images */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(12,29,54,0.3) 0%, transparent 50%)' }} />
-
         <CornerRibbon />
         <ShieldBadge />
       </div>
@@ -179,20 +174,19 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
       {/* ── Info panel ── */}
       <div
         className="flex flex-col justify-between p-6 lg:p-8 flex-1 min-w-0"
-        style={{ borderLeft: `1px solid ${GOLD}22` }}
+        style={{ borderLeft: `1px solid ${GOLD}44` }}
       >
         <div className="flex flex-col gap-3">
-          {/* Subtle "Destacado" label */}
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold tracking-[0.18em] uppercase" style={{ color: GOLD }}>
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold tracking-[0.18em] uppercase" style={{ color: GOLD_DARK }}>
             <IconVitrina className="w-2.5 h-2.5" />
             Destacado
           </span>
 
-          <h3 className="text-xl lg:text-2xl font-bold text-white leading-tight group-hover:opacity-90 transition-opacity">
+          <h3 className="text-xl lg:text-2xl font-bold text-gray-900 leading-tight group-hover:text-[#282F8F] transition-colors">
             {vehiculo.titulo}
           </h3>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-blue-200/70">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
             <span>{vehiculo.año}</span>
             <span className="opacity-40">·</span>
             <span>{formatKm(vehiculo.kilometraje)}</span>
@@ -207,7 +201,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
           </div>
 
           {vehiculo.descripcion && (
-            <p className="text-sm text-blue-100/50 line-clamp-3 leading-relaxed hidden sm:block">
+            <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed hidden sm:block">
               {vehiculo.descripcion}
             </p>
           )}
@@ -215,14 +209,14 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
 
         <div className="flex flex-col gap-4 mt-5">
           {isLoggedIn ? (
-            <p className="text-3xl font-black tracking-tight leading-none" style={{ color: GOLD }}>
+            <p className="text-3xl font-black tracking-tight leading-none text-gray-900">
               {formatPrecio(vehiculo.precio)}
             </p>
           ) : (
             <button
               type="button"
               onClick={e => { e.preventDefault(); router.push('/auth/login') }}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-200/70 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-400 hover:text-gray-700 transition-colors"
             >
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -239,7 +233,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
               Ver vehículo →
             </span>
             {vendedor && (
-              <span className="text-xs text-blue-200/50 truncate">{vendedor}</span>
+              <span className="text-xs text-gray-400 truncate">{vendedor}</span>
             )}
           </div>
         </div>
@@ -257,17 +251,17 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
       href={`/vehiculos/${vehiculo.id}`}
       className="group flex flex-row rounded-2xl overflow-hidden min-h-[130px] transition-all duration-300"
       style={{
-        background: `linear-gradient(135deg, ${NAVY_MID} 0%, ${NAVY} 100%)`,
-        border: `1.5px solid ${GOLD}55`,
-        boxShadow: `0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 ${GOLD}22`,
+        background: '#FFFFFF',
+        border: `2px solid ${GOLD}`,
+        boxShadow: `0 2px 12px rgba(0,0,0,0.1)`,
       }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.boxShadow =
-          `0 6px 28px rgba(0,0,0,0.55), 0 0 0 1.5px ${GOLD}99, inset 0 1px 0 ${GOLD}33`
+          `0 6px 28px rgba(0,0,0,0.16), 0 0 0 1px ${GOLD}`
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.boxShadow =
-          `0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 ${GOLD}22`
+          `0 2px 12px rgba(0,0,0,0.1)`
       }}
     >
       {/* Image */}
@@ -285,7 +279,6 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
         ) : (
           <CarPlaceholder />
         )}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(12,29,54,0.35) 0%, transparent 55%)' }} />
         <CornerRibbon small />
         <ShieldBadge small />
       </div>
@@ -293,17 +286,17 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
       {/* Info */}
       <div
         className="flex flex-col justify-between p-4 flex-1 min-w-0"
-        style={{ borderLeft: `2px solid ${GOLD}33` }}
+        style={{ borderLeft: `1px solid ${GOLD}44` }}
       >
         <div className="flex flex-col gap-1.5">
-          <span className="inline-flex items-center gap-1 text-[8px] font-extrabold tracking-[0.18em] uppercase" style={{ color: GOLD }}>
+          <span className="inline-flex items-center gap-1 text-[8px] font-extrabold tracking-[0.18em] uppercase" style={{ color: GOLD_DARK }}>
             <IconVitrina className="w-2 h-2" />
             Destacado
           </span>
-          <h3 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:opacity-90 transition-opacity">
+          <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-[#282F8F] transition-colors">
             {vehiculo.titulo}
           </h3>
-          <div className="flex items-center gap-2 text-xs text-blue-200/60">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
             <span>{vehiculo.año}</span>
             <span className="opacity-40">·</span>
             <span>{formatKm(vehiculo.kilometraje)}</span>
@@ -311,14 +304,14 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
         </div>
 
         {isLoggedIn ? (
-          <p className="text-base font-black mt-2 leading-none" style={{ color: GOLD }}>
+          <p className="text-base font-black mt-2 leading-none text-gray-900">
             {formatPrecio(vehiculo.precio)}
           </p>
         ) : (
           <button
             type="button"
             onClick={e => { e.preventDefault(); router.push('/auth/login') }}
-            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-blue-200/60 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors"
           >
             <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />

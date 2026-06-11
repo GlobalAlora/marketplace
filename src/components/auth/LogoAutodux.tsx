@@ -10,9 +10,9 @@ interface LogoAutoduxProps {
 
 export default function LogoAutodux({ size = 44, color = '#ffffff' }: LogoAutoduxProps) {
   // ViewBox crops to the car icon region of the original 29700×21000 canvas.
-  // Car paths span roughly x: 2800–25600, y: 6400–11200.
-  const vb = '2800 6400 23000 5200'
-  const w = Math.round(size * (23000 / 5200))
+  // Roofline bezier arcs reach y≈5100 — viewBox starts at 4800 to avoid clipping.
+  const vb = '2800 4800 23000 7000'
+  const w = Math.round(size * (23000 / 7000))
 
   return (
     <svg

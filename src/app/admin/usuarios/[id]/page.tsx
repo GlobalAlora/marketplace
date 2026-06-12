@@ -24,8 +24,8 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
 
   const ROLE_LABELS: Record<string, string> = {
     admin: 'Administrador',
-    agencia_premium: 'Agencia Premium',
-    agencia_basica: 'Agencia Básica',
+    agencia_premium: 'Agencia DUX',
+    agencia_basica: 'Agencia PRIME',
     particular: 'Particular',
   }
 

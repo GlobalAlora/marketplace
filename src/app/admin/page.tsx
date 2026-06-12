@@ -175,8 +175,8 @@ function RoleBadge({ role }: { role: string }) {
   }
   const labels: Record<string, string> = {
     admin: 'Admin',
-    agencia_premium: 'Premium',
-    agencia_basica: 'Agencia',
+    agencia_premium: 'DUX',
+    agencia_basica: 'PRIME',
     particular: 'Particular',
   }
   return (

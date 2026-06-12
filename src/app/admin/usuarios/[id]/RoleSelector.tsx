@@ -8,8 +8,8 @@ type Role = 'particular' | 'agencia_basica' | 'agencia_premium' | 'admin'
 
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
   { value: 'particular', label: 'Particular' },
-  { value: 'agencia_basica', label: 'Agencia Básica' },
-  { value: 'agencia_premium', label: 'Agencia Premium' },
+  { value: 'agencia_basica', label: 'Agencia PRIME' },
+  { value: 'agencia_premium', label: 'Agencia DUX' },
   { value: 'admin', label: 'Admin' },
 ]
 

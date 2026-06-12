@@ -20,8 +20,8 @@ interface Profile {
 
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
   { value: 'particular', label: 'Particular' },
-  { value: 'agencia_basica', label: 'Agencia Básica' },
-  { value: 'agencia_premium', label: 'Agencia Premium' },
+  { value: 'agencia_basica', label: 'Agencia PRIME' },
+  { value: 'agencia_premium', label: 'Agencia DUX' },
   { value: 'admin', label: 'Admin' },
 ]
 
@@ -34,8 +34,8 @@ const ROLE_STYLES: Record<Role, string> = {
 
 const ROLE_LABELS: Record<Role, string> = {
   admin: 'Admin',
-  agencia_premium: 'Premium',
-  agencia_basica: 'Agencia',
+  agencia_premium: 'DUX',
+  agencia_basica: 'PRIME',
   particular: 'Particular',
 }
 

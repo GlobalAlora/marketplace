@@ -20,13 +20,13 @@ const ROLE_INFO = [
   },
   {
     key: 'agencia_basica' as const,
-    label: 'Agencia Básica',
+    label: 'Agencia PRIME',
     desc: 'Concesionaria con funcionalidades básicas',
     badge: 'bg-[#282F8F]/30 text-[#7b85e0]',
   },
   {
     key: 'agencia_premium' as const,
-    label: 'Agencia Premium',
+    label: 'Agencia DUX',
     desc: 'Concesionaria con acceso completo + métricas',
     badge: 'bg-[#FFC107]/15 text-[#FFC107]',
   },

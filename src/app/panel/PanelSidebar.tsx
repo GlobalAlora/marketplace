@@ -16,8 +16,8 @@ interface Profile {
 
 const ROLE_LABELS: Record<Role, string> = {
   particular: 'Particular',
-  agencia_basica: 'Agencia Básica',
-  agencia_premium: 'Agencia Premium',
+  agencia_basica: 'Agencia PRIME',
+  agencia_premium: 'Agencia DUX',
 }
 
 const ROLE_COLORS: Record<Role, string> = {

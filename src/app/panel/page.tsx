@@ -67,8 +67,8 @@ export default async function PanelPage() {
         {pct >= 80 && (
           <p className="text-[11px] text-[#FFC107] mt-2">
             Estás cerca del límite de tu plan.{' '}
-            {role === 'particular' && 'Considerá actualizar a Agencia Básica.'}
-            {role === 'agencia_basica' && 'Considerá actualizar a Agencia Premium.'}
+            {role === 'particular' && 'Considerá actualizar a Agencia PRIME.'}
+            {role === 'agencia_basica' && 'Considerá actualizar a Agencia DUX.'}
           </p>
         )}
       </div>

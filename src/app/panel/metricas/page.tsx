@@ -124,7 +124,7 @@ export default async function MetricasPage() {
 
       {!isPremium && (
         <p className="text-xs text-gray-600 mt-4 text-center">
-          Actualizá a Agencia Premium para ver el gráfico de rendimiento completo.
+          Actualizá a Agencia DUX para ver el gráfico de rendimiento completo.
         </p>
       )}
     </div>

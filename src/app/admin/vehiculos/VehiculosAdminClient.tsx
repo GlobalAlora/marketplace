@@ -23,8 +23,8 @@ interface VehiculoAdmin {
 
 const ROLE_LABEL: Record<string, string> = {
   particular: 'Particular',
-  agencia_basica: 'Ag. Básica',
-  agencia_premium: 'Ag. Premium',
+  agencia_basica: 'Ag. PRIME',
+  agencia_premium: 'Ag. DUX',
 }
 
 const FILTER_ESTADO = ['todos', 'activo', 'pausado', 'vendido']

@@ -168,7 +168,7 @@ export default async function Home() {
       <SobreNosotros />
 
       {/* Planes */}
-      <SeccionPlanes />
+      <SeccionPlanes config={siteConfig} />
 
     </MainLayout>
   )

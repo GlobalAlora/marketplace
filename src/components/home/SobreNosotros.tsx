@@ -61,11 +61,14 @@ export default function SobreNosotros() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-14">
           <RevealSection delay={200}>
             <div
-              className="rounded-2xl p-8 h-full"
-              style={{ background: 'rgba(40,47,143,0.15)', border: '1px solid rgba(40,47,143,0.4)' }}
+              className="group rounded-2xl p-8 h-full border border-[rgba(40,47,143,0.4)] hover:border-[rgba(40,47,143,0.7)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(40,47,143,0.25)]"
+              style={{
+                background: 'rgba(40,47,143,0.15)',
+                transition: 'transform 250ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 250ms ease, border-color 200ms ease',
+              }}
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-[#282F8F] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#282F8F] flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
                   <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                   </svg>
@@ -82,11 +85,14 @@ export default function SobreNosotros() {
 
           <RevealSection delay={300}>
             <div
-              className="rounded-2xl p-8 h-full"
-              style={{ background: 'rgba(255,193,7,0.07)', border: '1px solid rgba(255,193,7,0.25)' }}
+              className="group rounded-2xl p-8 h-full border border-[rgba(255,193,7,0.25)] hover:border-[rgba(255,193,7,0.5)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,193,7,0.12)]"
+              style={{
+                background: 'rgba(255,193,7,0.07)',
+                transition: 'transform 250ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 250ms ease, border-color 200ms ease',
+              }}
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-[#FFC107] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#FFC107] flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
                   <svg className="w-5 h-5 text-[#0D0F14]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

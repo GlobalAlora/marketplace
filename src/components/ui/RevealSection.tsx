@@ -30,15 +30,15 @@ export default function RevealSection({
   }, [])
 
   const transform = !visible
-    ? direction === 'up' ? 'translateY(32px)'
-    : direction === 'left' ? 'translateX(-20px)'
+    ? direction === 'up' ? 'translateY(24px)'
+    : direction === 'left' ? 'translateX(-16px)'
     : 'none'
     : 'none'
 
   const style: CSSProperties = {
     opacity: visible ? 1 : 0,
     transform,
-    transition: `opacity 0.65s ease, transform 0.65s ease`,
+    transition: `opacity 500ms cubic-bezier(0.23, 1, 0.32, 1), transform 500ms cubic-bezier(0.23, 1, 0.32, 1)`,
     transitionDelay: `${delay}ms`,
   }
 

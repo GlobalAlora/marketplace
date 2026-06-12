@@ -29,6 +29,7 @@ const FIELDS: Field[] = [
   { key: 'footer_copyright',       label: 'Footer — Texto copyright',       type: 'text',     placeholder: '© 2026 AUTODUX…' },
   // General
   { key: 'site_slogan',            label: 'General — Slogan del sitio',     type: 'textarea', placeholder: 'Conectamos lo que buscas, con lo que se vende.' },
+  { key: 'whatsapp_num',           label: 'General — Número de WhatsApp (sin +)', type: 'text', placeholder: '5492974000000' },
 ]
 
 const SECTIONS = [
@@ -36,7 +37,7 @@ const SECTIONS = [
   { label: 'Beneficios', keys: ['beneficios_titulo', 'beneficios_subtitulo_1', 'beneficios_subtitulo_2'] },
   { label: 'Vitrina',    keys: ['vitrina_titulo', 'vitrina_subtitulo'] },
   { label: 'Footer',     keys: ['footer_slogan', 'footer_copyright'] },
-  { label: 'General',    keys: ['site_slogan'] },
+  { label: 'General',    keys: ['site_slogan', 'whatsapp_num'] },
 ]
 
 export default function ConfiguracionClient({ config }: { config: SiteConfig }) {

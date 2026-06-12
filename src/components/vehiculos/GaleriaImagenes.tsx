@@ -60,7 +60,7 @@ export default function GaleriaImagenes({ imagenes, titulo }: GaleriaImagenesPro
       <div className="flex flex-col gap-3">
 
         {/* Imagen principal */}
-        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-black group">
+        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-black group">
           <img
             src={imagenes[indiceActivo]}
             alt={`${titulo} — foto ${indiceActivo + 1}`}

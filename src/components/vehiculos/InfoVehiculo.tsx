@@ -213,6 +213,14 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
         </div>
       </div>
 
+      {/* ── Descripción ── */}
+      {vehiculo.descripcion && (
+        <div className="py-4">
+          <SectionLabel>Descripción</SectionLabel>
+          <p className="text-sm text-gray-300 leading-relaxed">{vehiculo.descripcion}</p>
+        </div>
+      )}
+
       {/* ── Características ── */}
       <div className="py-4">
         <SectionLabel>Características</SectionLabel>
@@ -229,14 +237,6 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
           ))}
         </div>
       </div>
-
-      {/* ── Descripción ── */}
-      {vehiculo.descripcion && (
-        <div className="py-4">
-          <SectionLabel>Descripción</SectionLabel>
-          <p className="text-sm text-gray-300 leading-relaxed">{vehiculo.descripcion}</p>
-        </div>
-      )}
 
       {/* ── Vendedor ── */}
       <div className="pt-4">

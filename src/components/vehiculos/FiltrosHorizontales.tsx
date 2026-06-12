@@ -10,12 +10,12 @@ interface Option {
 }
 
 const PRECIO_OPTS: Option[] = [
-  { label: 'Sin límite',   value: '' },
-  { label: 'Hasta $15M',  value: '15000000' },
-  { label: 'Hasta $20M',  value: '20000000' },
-  { label: 'Hasta $25M',  value: '25000000' },
-  { label: 'Hasta $30M',  value: '30000000' },
-  { label: 'Hasta $40M',  value: '40000000' },
+  { label: 'Cualquier precio', value: '' },
+  { label: 'Hasta $15M',      value: '15000000' },
+  { label: 'Hasta $20M',      value: '20000000' },
+  { label: 'Hasta $25M',      value: '25000000' },
+  { label: 'Hasta $30M',      value: '30000000' },
+  { label: 'Hasta $40M',      value: '40000000' },
 ]
 
 const AÑO_OPTS: Option[] = [
@@ -28,11 +28,17 @@ const AÑO_OPTS: Option[] = [
 ]
 
 const KM_OPTS: Option[] = [
-  { label: 'Sin límite',     value: '' },
+  { label: 'Cualquier km',   value: '' },
   { label: 'Hasta 30k km',  value: '30000' },
   { label: 'Hasta 50k km',  value: '50000' },
   { label: 'Hasta 80k km',  value: '80000' },
   { label: 'Hasta 120k km', value: '120000' },
+]
+
+const CONDICION_OPTS: Option[] = [
+  { label: 'Nuevo o usado', value: '' },
+  { label: 'Nuevo',         value: 'nuevo' },
+  { label: 'Usado',         value: 'usado' },
 ]
 
 const LOCALIDAD_OPTS: Option[] = [
@@ -54,6 +60,7 @@ type Filters = {
   año: string
   km: string
   ubicacion: string
+  condicion: string
 }
 
 // ── Dropdown chip individual ──────────────────────────────────────────────────
@@ -147,22 +154,24 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
 
   // Inicializa con los params actuales de la URL (refleja filtros activos al navegar directo)
   const [filters, setFilters] = useState<Filters>({
-    marca:    searchParams.get('marca')      ?? '',
-    precio:   searchParams.get('precio_max') ?? '',
-    año:      searchParams.get('año_desde')  ?? '',
-    km:       searchParams.get('km_max')     ?? '',
-    ubicacion: searchParams.get('ubicacion') ?? '',
+    marca:     searchParams.get('marca')      ?? '',
+    precio:    searchParams.get('precio_max') ?? '',
+    año:       searchParams.get('año_desde')  ?? '',
+    km:        searchParams.get('km_max')     ?? '',
+    ubicacion: searchParams.get('ubicacion')  ?? '',
+    condicion: searchParams.get('condicion')  ?? '',
   })
 
   const hasFilters = Object.values(filters).some(Boolean)
 
   function buildHref(f: Filters): string {
     const params = new URLSearchParams()
-    if (f.marca)    params.set('marca',      f.marca)
-    if (f.precio)   params.set('precio_max', f.precio)
-    if (f.año)      params.set('año_desde',  f.año)
-    if (f.km)       params.set('km_max',     f.km)
-    if (f.ubicacion) params.set('ubicacion', f.ubicacion)
+    if (f.marca)     params.set('marca',      f.marca)
+    if (f.precio)    params.set('precio_max', f.precio)
+    if (f.año)       params.set('año_desde',  f.año)
+    if (f.km)        params.set('km_max',     f.km)
+    if (f.ubicacion) params.set('ubicacion',  f.ubicacion)
+    if (f.condicion) params.set('condicion',  f.condicion)
     const qs = params.toString()
     return `/vehiculos${qs ? '?' + qs : ''}`
   }
@@ -180,7 +189,7 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
   }
 
   function clearAll() {
-    const empty: Filters = { marca: '', precio: '', año: '', km: '', ubicacion: '' }
+    const empty: Filters = { marca: '', precio: '', año: '', km: '', ubicacion: '', condicion: '' }
     setFilters(empty)
     if (pathname === '/vehiculos') {
       router.replace('/vehiculos', { scroll: false })
@@ -210,10 +219,17 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
           />
 
           <FilterChip
-            label="Sin límite"
+            label="Precio"
             value={filters.precio}
             options={PRECIO_OPTS}
             onChange={v => applyFilter('precio', v)}
+          />
+
+          <FilterChip
+            label="Kilómetros"
+            value={filters.km}
+            options={KM_OPTS}
+            onChange={v => applyFilter('km', v)}
           />
 
           <FilterChip
@@ -224,10 +240,10 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
           />
 
           <FilterChip
-            label="Sin límite"
-            value={filters.km}
-            options={KM_OPTS}
-            onChange={v => applyFilter('km', v)}
+            label="Condición"
+            value={filters.condicion}
+            options={CONDICION_OPTS}
+            onChange={v => applyFilter('condicion', v)}
           />
 
           <FilterChip

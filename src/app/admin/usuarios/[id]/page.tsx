@@ -1,13 +1,15 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { getPlanLimits, PLAN_FALLBACKS } from '@/lib/plan-config'
 import RoleSelector from './RoleSelector'
+import LimiteOverrideForm from './LimiteOverrideForm'
 
 export default async function UsuarioDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: perfil }, { data: vehiculos }] = await Promise.all([
+  const [{ data: perfil }, { data: vehiculos }, planLimits] = await Promise.all([
     supabase
       .from('profiles')
       .select('*')
@@ -18,6 +20,7 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
       .select('id, titulo, marca, modelo, año, precio, activo, vendido, destacado, vistas, created_at')
       .eq('user_id', id)
       .order('created_at', { ascending: false }),
+    getPlanLimits(),
   ])
 
   if (!perfil) notFound()
@@ -83,6 +86,16 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
           <RoleSelector userId={perfil.id} currentRole={perfil.role} />
         </div>
       </div>
+
+      {/* Límite de publicaciones personalizado */}
+      {(perfil.role === 'agencia_basica' || perfil.role === 'agencia_premium') && (
+        <LimiteOverrideForm
+          userId={perfil.id}
+          currentOverride={perfil.max_publicaciones_override ?? null}
+          planLimite={planLimits[perfil.role] ?? PLAN_FALLBACKS[perfil.role] ?? 10}
+          rolLabel={ROLE_LABELS[perfil.role] ?? perfil.role}
+        />
+      )}
 
       {/* Vehículos publicados */}
       <div className="bg-[#111827] border border-white/6 rounded-2xl overflow-hidden">

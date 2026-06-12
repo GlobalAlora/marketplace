@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getPlanLimits, PLAN_FALLBACKS } from '@/lib/plan-config'
+import { getPlanLimits, resolveLimit } from '@/lib/plan-config'
 
 export async function createVehiculo(formData: FormData) {
   const supabase = await createClient()
@@ -12,12 +12,12 @@ export async function createVehiculo(formData: FormData) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, max_publicaciones_override')
     .eq('id', user.id)
     .single()
 
   const planLimits = await getPlanLimits()
-  const limite = planLimits[profile?.role ?? 'particular'] ?? PLAN_FALLBACKS[profile?.role ?? 'particular'] ?? 3
+  const limite = resolveLimit(profile ?? { role: 'particular' }, planLimits)
 
   const { count } = await supabase
     .from('vehiculos')

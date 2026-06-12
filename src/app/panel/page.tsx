@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { getPlanLimits } from '@/lib/plan-config'
+import { getPlanLimits, resolveLimit } from '@/lib/plan-config'
 
 export default async function PanelPage() {
   const supabase = await createClient()
@@ -10,7 +10,7 @@ export default async function PanelPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('nombre, role')
+    .select('nombre, role, max_publicaciones_override')
     .eq('id', user.id)
     .single()
 
@@ -28,7 +28,7 @@ export default async function PanelPage() {
 
   const planLimits = await getPlanLimits()
   const role = profile?.role ?? 'particular'
-  const limite = planLimits[role] ?? 3
+  const limite = resolveLimit(profile ?? { role }, planLimits)
   const usadas = total ?? 0
   const pct = Math.min(100, Math.round((usadas / limite) * 100))
   const isAgencia = role === 'agencia_basica' || role === 'agencia_premium'

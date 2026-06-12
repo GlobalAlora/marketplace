@@ -49,3 +49,13 @@ export async function toggleActivo(userId: string, activo: boolean) {
   if (error) throw new Error(error.message)
   revalidatePath('/admin/usuarios')
 }
+
+export async function setLimiteOverride(userId: string, value: number | null) {
+  const supabase = await getAdminClient()
+  const { error } = await supabase
+    .from('profiles')
+    .update({ max_publicaciones_override: value })
+    .eq('id', userId)
+  if (error) throw new Error(error.message)
+  revalidatePath(`/admin/usuarios/${userId}`)
+}

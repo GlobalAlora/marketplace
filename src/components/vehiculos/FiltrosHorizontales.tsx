@@ -4,19 +4,20 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { MARCAS } from '@/lib/constants'
 
-interface Option {
-  label: string
-  value: string
+// ── Constantes precio ──────────────────────────────────────────────────────────
+const PRICE_ABS_MIN = 0
+const PRICE_ABS_MAX = 60_000_000
+const PRICE_STEP    = 500_000
+
+function formatPrecio(val: number): string {
+  if (val === 0) return '$0'
+  if (val < 1_000_000) return `$${val / 1_000}K`
+  const m = val / 1_000_000
+  return `$${m % 1 === 0 ? m : m.toFixed(1)}M`
 }
 
-const PRECIO_OPTS: Option[] = [
-  { label: 'Cualquier precio', value: '' },
-  { label: 'Hasta $15M',      value: '15000000' },
-  { label: 'Hasta $20M',      value: '20000000' },
-  { label: 'Hasta $25M',      value: '25000000' },
-  { label: 'Hasta $30M',      value: '30000000' },
-  { label: 'Hasta $40M',      value: '40000000' },
-]
+// ── Opciones otros filtros ─────────────────────────────────────────────────────
+interface Option { label: string; value: string }
 
 const AÑO_OPTS: Option[] = [
   { label: 'Cualquier año', value: '' },
@@ -54,22 +55,21 @@ const MARCA_OPTS: Option[] = [
   ...MARCAS.map(m => ({ label: m, value: m })),
 ]
 
-type Filters = {
-  marca: string
-  precio: string
-  año: string
-  km: string
-  ubicacion: string
-  condicion: string
+// ── Chevron ────────────────────────────────────────────────────────────────────
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      className={`w-3.5 h-3.5 shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+      fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+    </svg>
+  )
 }
 
-// ── Dropdown chip individual ──────────────────────────────────────────────────
-function FilterChip({
-  label,
-  value,
-  options,
-  onChange,
-}: {
+// ── Dropdown chip estándar ─────────────────────────────────────────────────────
+function FilterChip({ label, value, options, onChange }: {
   label: string
   value: string
   options: Option[]
@@ -78,7 +78,6 @@ function FilterChip({
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  // Cierra al hacer click fuera
   useEffect(() => {
     if (!open) return
     function handler(e: MouseEvent) {
@@ -104,13 +103,7 @@ function FilterChip({
         ].join(' ')}
       >
         {selected?.label ?? label}
-        <svg
-          className={`w-3.5 h-3.5 shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
-          fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
+        <Chevron open={open} />
       </button>
 
       {open && (
@@ -142,20 +135,180 @@ function FilterChip({
   )
 }
 
-// ── Componente principal ──────────────────────────────────────────────────────
-interface FiltrosHorizontalesProps {
-  sticky?: boolean
+// ── Price range chip ───────────────────────────────────────────────────────────
+const THUMB = [
+  'absolute w-full h-full appearance-none bg-transparent',
+  'focus:outline-none focus-visible:outline-none',
+  '[&::-webkit-slider-runnable-track]:bg-transparent',
+  '[&::-webkit-slider-thumb]:appearance-none',
+  '[&::-webkit-slider-thumb]:w-[18px] [&::-webkit-slider-thumb]:h-[18px]',
+  '[&::-webkit-slider-thumb]:rounded-full',
+  '[&::-webkit-slider-thumb]:bg-white',
+  '[&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(0,0,0,0.55)]',
+  '[&::-webkit-slider-thumb]:border-0',
+  '[&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing',
+  '[&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110',
+  '[&::-moz-range-thumb]:w-[18px] [&::-moz-range-thumb]:h-[18px]',
+  '[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white',
+  '[&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-grab',
+  '[&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(0,0,0,0.55)]',
+  'pointer-events-none',
+  '[&::-webkit-slider-thumb]:pointer-events-auto',
+  '[&::-moz-range-thumb]:pointer-events-auto',
+].join(' ')
+
+function PriceRangeChip({ precioMin, precioMax, onChange }: {
+  precioMin: string
+  precioMax: string
+  onChange: (min: string, max: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const minVal = precioMin ? Number(precioMin) : PRICE_ABS_MIN
+  const maxVal = precioMax ? Number(precioMax) : PRICE_ABS_MAX
+  const isActive = minVal > PRICE_ABS_MIN || maxVal < PRICE_ABS_MAX
+
+  function getLabel() {
+    if (!isActive) return 'Precio'
+    if (minVal > PRICE_ABS_MIN && maxVal < PRICE_ABS_MAX)
+      return `${formatPrecio(minVal)} – ${formatPrecio(maxVal)}`
+    if (minVal > PRICE_ABS_MIN) return `Desde ${formatPrecio(minVal)}`
+    return `Hasta ${formatPrecio(maxVal)}`
+  }
+
+  useEffect(() => {
+    if (!open) return
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const leftPct  = (minVal / PRICE_ABS_MAX) * 100
+  const rightPct = ((PRICE_ABS_MAX - maxVal) / PRICE_ABS_MAX) * 100
+
+  function handleMin(v: number) {
+    const clamped = Math.min(v, maxVal - PRICE_STEP)
+    onChange(clamped > PRICE_ABS_MIN ? String(clamped) : '', precioMax)
+  }
+
+  function handleMax(v: number) {
+    const clamped = Math.max(v, minVal + PRICE_STEP)
+    onChange(precioMin, clamped < PRICE_ABS_MAX ? String(clamped) : '')
+  }
+
+  // Raise min thumb z-index when handles are very close so user can pull it back
+  const minOnTop = minVal >= maxVal - PRICE_STEP
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className={[
+          'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 select-none',
+          isActive
+            ? 'bg-[#FFC107]/15 border-[#FFC107]/50 text-[#FFC107]'
+            : 'bg-white/8 border-white/15 text-white hover:bg-white/14 hover:border-white/25',
+        ].join(' ')}
+      >
+        {getLabel()}
+        <Chevron open={open} />
+      </button>
+
+      {open && (
+        <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-72 bg-[#0d2137] border border-white/15 rounded-2xl shadow-2xl shadow-black/60 p-5">
+
+          {/* Valores actuales */}
+          <div className="flex justify-between items-center mb-5">
+            <div>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Desde</p>
+              <p className="text-sm font-bold text-[#FFC107]">{formatPrecio(minVal)}</p>
+            </div>
+            <div className="h-6 w-px bg-white/10" />
+            <div className="text-right">
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Hasta</p>
+              <p className="text-sm font-bold text-[#FFC107]">
+                {maxVal >= PRICE_ABS_MAX ? 'Sin límite' : formatPrecio(maxVal)}
+              </p>
+            </div>
+          </div>
+
+          {/* Slider */}
+          <div className="relative h-10 flex items-center">
+            {/* Track */}
+            <div className="absolute inset-x-0 h-1.5 rounded-full bg-white/12">
+              {/* Fill activo */}
+              <div
+                className="absolute h-full rounded-full bg-[#FFC107]"
+                style={{ left: `${leftPct}%`, right: `${rightPct}%` }}
+              />
+            </div>
+
+            {/* Min */}
+            <input
+              type="range"
+              min={PRICE_ABS_MIN} max={PRICE_ABS_MAX} step={PRICE_STEP}
+              value={minVal}
+              onChange={e => handleMin(Number(e.target.value))}
+              className={`${THUMB} ${minOnTop ? 'z-[3]' : 'z-[1]'}`}
+            />
+
+            {/* Max */}
+            <input
+              type="range"
+              min={PRICE_ABS_MIN} max={PRICE_ABS_MAX} step={PRICE_STEP}
+              value={maxVal}
+              onChange={e => handleMax(Number(e.target.value))}
+              className={`${THUMB} z-[2]`}
+            />
+          </div>
+
+          {/* Extremos */}
+          <div className="flex justify-between mt-1">
+            <span className="text-[10px] text-gray-600">$0</span>
+            <span className="text-[10px] text-gray-600">$60M+</span>
+          </div>
+
+          {isActive && (
+            <button
+              type="button"
+              onClick={() => onChange('', '')}
+              className="mt-4 w-full text-xs text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              Limpiar precio
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
+// ── Tipos y estado principal ───────────────────────────────────────────────────
+type Filters = {
+  marca:     string
+  precioMin: string
+  precioMax: string
+  año:       string
+  km:        string
+  ubicacion: string
+  condicion: string
+}
+
+interface FiltrosHorizontalesProps { sticky?: boolean }
+
 export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizontalesProps) {
-  const router      = useRouter()
-  const pathname    = usePathname()
+  const router       = useRouter()
+  const pathname     = usePathname()
   const searchParams = useSearchParams()
 
-  // Inicializa con los params actuales de la URL (refleja filtros activos al navegar directo)
   const [filters, setFilters] = useState<Filters>({
     marca:     searchParams.get('marca')      ?? '',
-    precio:    searchParams.get('precio_max') ?? '',
+    precioMin: searchParams.get('precio_min') ?? '',
+    precioMax: searchParams.get('precio_max') ?? '',
     año:       searchParams.get('año_desde')  ?? '',
     km:        searchParams.get('km_max')     ?? '',
     ubicacion: searchParams.get('ubicacion')  ?? '',
@@ -167,7 +320,8 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
   function buildHref(f: Filters): string {
     const params = new URLSearchParams()
     if (f.marca)     params.set('marca',      f.marca)
-    if (f.precio)    params.set('precio_max', f.precio)
+    if (f.precioMin) params.set('precio_min', f.precioMin)
+    if (f.precioMax) params.set('precio_max', f.precioMax)
     if (f.año)       params.set('año_desde',  f.año)
     if (f.km)        params.set('km_max',     f.km)
     if (f.ubicacion) params.set('ubicacion',  f.ubicacion)
@@ -176,39 +330,28 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
     return `/vehiculos${qs ? '?' + qs : ''}`
   }
 
-  // Aplica el filtro inmediatamente (AJAX) — replace en /vehiculos, push desde otras páginas
-  function applyFilter(key: keyof Filters, value: string) {
-    const next = { ...filters, [key]: value }
+  function navigate(next: Filters) {
     setFilters(next)
     const href = buildHref(next)
-    if (pathname === '/vehiculos') {
-      router.replace(href, { scroll: false })
-    } else {
-      router.push(href)
-    }
+    if (pathname === '/vehiculos') router.replace(href, { scroll: false })
+    else router.push(href)
+  }
+
+  function applyFilter(key: keyof Filters, value: string) {
+    navigate({ ...filters, [key]: value })
+  }
+
+  function applyPrecio(min: string, max: string) {
+    navigate({ ...filters, precioMin: min, precioMax: max })
   }
 
   function clearAll() {
-    const empty: Filters = { marca: '', precio: '', año: '', km: '', ubicacion: '', condicion: '' }
-    setFilters(empty)
-    if (pathname === '/vehiculos') {
-      router.replace('/vehiculos', { scroll: false })
-    } else {
-      router.push('/vehiculos')
-    }
+    navigate({ marca: '', precioMin: '', precioMax: '', año: '', km: '', ubicacion: '', condicion: '' })
   }
 
-  const wrapperCls = sticky
-    ? 'sticky top-14 z-40 bg-[#071526] border-b border-white/8'
-    : ''
-
-  const innerCls = sticky
-    ? 'max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3'
-    : ''
-
   return (
-    <div className={wrapperCls}>
-      <div className={innerCls}>
+    <div className={sticky ? 'sticky top-14 z-40 bg-[#071526] border-b border-white/8' : ''}>
+      <div className={sticky ? 'max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3' : ''}>
         <div className="flex flex-wrap items-center gap-2">
 
           <FilterChip
@@ -218,11 +361,10 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
             onChange={v => applyFilter('marca', v)}
           />
 
-          <FilterChip
-            label="Precio"
-            value={filters.precio}
-            options={PRECIO_OPTS}
-            onChange={v => applyFilter('precio', v)}
+          <PriceRangeChip
+            precioMin={filters.precioMin}
+            precioMax={filters.precioMax}
+            onChange={applyPrecio}
           />
 
           <FilterChip

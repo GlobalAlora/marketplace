@@ -37,6 +37,7 @@ export type Vehiculo = {
   updated_at: string
   profiles?: Profile
   // Campos técnicos opcionales
+  condicion?: 'nuevo' | 'usado'
   transmision?: 'manual' | 'automatica'
   combustible?: 'nafta' | 'diesel' | 'gnc' | 'hibrido' | 'electrico'
   puertas?: number

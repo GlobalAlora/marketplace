@@ -1,0 +1,17 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="7" fill="#0D0F14"/>
+  <!-- Car body -->
+  <rect x="4" y="19" width="24" height="5" rx="1.5" fill="#FFC107"/>
+  <!-- Roof + windshield -->
+  <path d="M9.5 19 L12.5 13.5 Q13 13 14 13 L18 13 Q19 13 19.5 13.5 L22.5 19 Z" fill="#FFC107"/>
+  <!-- Speed line -->
+  <rect x="4" y="18.2" width="17" height="0.8" rx="0.4" fill="#FFC107" opacity="0.4"/>
+  <!-- Left wheel -->
+  <circle cx="10" cy="24.5" r="3" fill="#0D0F14"/>
+  <circle cx="10" cy="24.5" r="1.8" fill="#282F8F"/>
+  <circle cx="10" cy="24.5" r="0.7" fill="#FFC107"/>
+  <!-- Right wheel -->
+  <circle cx="22" cy="24.5" r="3" fill="#0D0F14"/>
+  <circle cx="22" cy="24.5" r="1.8" fill="#282F8F"/>
+  <circle cx="22" cy="24.5" r="0.7" fill="#FFC107"/>
+</svg>

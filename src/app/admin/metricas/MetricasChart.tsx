@@ -57,7 +57,7 @@ export default function MetricasChart({ data }: { data: DayData[] }) {
           }}
           labelStyle={{ color: '#9ca3af', marginBottom: 2 }}
           itemStyle={{ color: '#818cf8' }}
-          formatter={(value: number) => [value, 'Registros']}
+          formatter={(value) => [value, 'Registros']}
         />
         <Area
           type="monotone"

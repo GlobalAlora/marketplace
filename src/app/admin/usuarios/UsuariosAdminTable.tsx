@@ -16,6 +16,8 @@ interface Profile {
   verificado: boolean
   activo: boolean
   created_at: string
+  avatar_url: string | null
+  vehiculos_count: number
 }
 
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
@@ -32,25 +34,58 @@ const ROLE_STYLES: Record<Role, string> = {
   particular: 'bg-gray-500/10 text-gray-400 border-gray-500/20',
 }
 
-const ROLE_LABELS: Record<Role, string> = {
-  admin: 'Admin',
-  agencia_premium: 'DUX',
-  agencia_basica: 'PRIME',
-  particular: 'Particular',
-}
-
 type FiltroRol = 'todos' | Role
 type FiltroEstado = 'todos' | 'activo' | 'suspendido'
+type FiltroFecha = 'todos' | '7d' | '30d' | '90d'
+
+const FECHA_LABELS: Record<FiltroFecha, string> = {
+  todos: 'Toda la historia',
+  '7d': 'Última semana',
+  '30d': 'Último mes',
+  '90d': 'Últimos 3 meses',
+}
+
+function exportCSV(usuarios: Profile[]) {
+  const header = ['ID', 'Nombre', 'Apellido', 'Email', 'Rol', 'Verificado', 'Activo', 'Vehículos', 'Registro']
+  const rows = usuarios.map(u => [
+    u.id,
+    u.nombre,
+    u.apellido,
+    u.email,
+    u.role,
+    u.verificado ? 'Sí' : 'No',
+    u.activo ? 'Sí' : 'No',
+    u.vehiculos_count,
+    new Date(u.created_at).toLocaleDateString('es-AR'),
+  ])
+  const csv = [header, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n')
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `usuarios-autodux-${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }) {
   const [filtroRol, setFiltroRol] = useState<FiltroRol>('todos')
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('todos')
+  const [filtroFecha, setFiltroFecha] = useState<FiltroFecha>('todos')
   const [busqueda, setBusqueda] = useState('')
+
+  const now = Date.now()
+  const fechaMs: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90 }
 
   const filtered = usuarios.filter(u => {
     if (filtroRol !== 'todos' && u.role !== filtroRol) return false
     if (filtroEstado === 'activo' && !u.activo) return false
     if (filtroEstado === 'suspendido' && u.activo) return false
+    if (filtroFecha !== 'todos') {
+      const dias = fechaMs[filtroFecha]
+      const cutoff = now - dias * 24 * 60 * 60 * 1000
+      if (new Date(u.created_at).getTime() < cutoff) return false
+    }
     if (busqueda) {
       const q = busqueda.toLowerCase()
       if (!u.nombre.toLowerCase().includes(q) &&
@@ -59,6 +94,8 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
     }
     return true
   })
+
+  const SELECT = 'px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-[#282F8F]/60'
 
   return (
     <div>
@@ -77,30 +114,39 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
           />
         </div>
 
-        <select
-          value={filtroRol}
-          onChange={e => setFiltroRol(e.target.value as FiltroRol)}
-          className="px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-[#282F8F]/60"
-        >
+        <select value={filtroRol} onChange={e => setFiltroRol(e.target.value as FiltroRol)} className={SELECT}>
           <option value="todos" className="bg-[#111827]">Todos los roles</option>
           {ROLE_OPTIONS.map(o => (
             <option key={o.value} value={o.value} className="bg-[#111827]">{o.label}</option>
           ))}
         </select>
 
-        <select
-          value={filtroEstado}
-          onChange={e => setFiltroEstado(e.target.value as FiltroEstado)}
-          className="px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-[#282F8F]/60"
-        >
+        <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value as FiltroEstado)} className={SELECT}>
           <option value="todos" className="bg-[#111827]">Todos los estados</option>
           <option value="activo" className="bg-[#111827]">Activos</option>
           <option value="suspendido" className="bg-[#111827]">Suspendidos</option>
         </select>
 
-        <span className="ml-auto text-xs text-gray-600">
+        <select value={filtroFecha} onChange={e => setFiltroFecha(e.target.value as FiltroFecha)} className={SELECT}>
+          {(Object.keys(FECHA_LABELS) as FiltroFecha[]).map(k => (
+            <option key={k} value={k} className="bg-[#111827]">{FECHA_LABELS[k]}</option>
+          ))}
+        </select>
+
+        <span className="text-xs text-gray-600">
           {filtered.length} de {usuarios.length} usuarios
         </span>
+
+        <button
+          onClick={() => exportCSV(filtered)}
+          title="Exportar CSV"
+          className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-2 rounded-xl transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          CSV
+        </button>
       </div>
 
       {/* Tabla */}
@@ -110,6 +156,7 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
             <tr className="bg-white/2 border-b border-white/6">
               <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Usuario</th>
               <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Rol</th>
+              <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Autos</th>
               <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Verificado</th>
               <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Estado</th>
               <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Registro</th>
@@ -119,7 +166,7 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
           <tbody className="divide-y divide-white/5">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-5 py-12 text-center text-sm text-gray-600">
+                <td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-600">
                   No hay usuarios que coincidan con los filtros
                 </td>
               </tr>
@@ -141,8 +188,11 @@ function UsuarioRow({ usuario: u }: { usuario: Profile }) {
       {/* Usuario */}
       <td className="px-5 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#282F8F]/20 border border-[#282F8F]/30 flex items-center justify-center shrink-0">
-            <span className="text-xs font-bold text-[#FFC107]">{u.nombre.charAt(0).toUpperCase()}</span>
+          <div className="w-8 h-8 rounded-full bg-[#282F8F]/20 border border-[#282F8F]/30 flex items-center justify-center shrink-0 overflow-hidden">
+            {u.avatar_url
+              ? <img src={u.avatar_url} alt="" className="w-full h-full object-cover" />
+              : <span className="text-xs font-bold text-[#FFC107]">{u.nombre.charAt(0).toUpperCase()}</span>
+            }
           </div>
           <div>
             <p className="font-semibold text-white">{u.nombre} {u.apellido}</p>
@@ -164,6 +214,13 @@ function UsuarioRow({ usuario: u }: { usuario: Profile }) {
             </option>
           ))}
         </select>
+      </td>
+
+      {/* Vehículos count */}
+      <td className="px-5 py-4 text-center">
+        <span className={`text-sm font-bold tabular-nums ${u.vehiculos_count > 0 ? 'text-white' : 'text-gray-700'}`}>
+          {u.vehiculos_count}
+        </span>
       </td>
 
       {/* Verificado */}

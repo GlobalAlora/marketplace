@@ -12,7 +12,13 @@ interface Profile {
   avatar_url?: string | null
 }
 
-const NAV = [
+interface Counts {
+  usuarios: number
+  vehiculos: number
+  pendientes: number
+}
+
+const CONTENIDO = [
   {
     href: '/admin',
     label: 'Dashboard',
@@ -23,8 +29,28 @@ const NAV = [
     ),
   },
   {
+    href: '/admin/vehiculos',
+    label: 'Vehículos',
+    countKey: 'vehiculos' as keyof Counts,
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/agencias',
+    label: 'Agencias',
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+      </svg>
+    ),
+  },
+  {
     href: '/admin/usuarios',
     label: 'Usuarios',
+    countKey: 'usuarios' as keyof Counts,
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
@@ -32,11 +58,25 @@ const NAV = [
     ),
   },
   {
-    href: '/admin/vehiculos',
-    label: 'Vehículos',
+    href: '/admin/moderacion',
+    label: 'Moderación',
+    countKey: 'pendientes' as keyof Counts,
+    badge: true,
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    ),
+  },
+]
+
+const MONETIZACION = [
+  {
+    href: '/admin/planes',
+    label: 'Planes',
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
       </svg>
     ),
   },
@@ -58,15 +98,9 @@ const NAV = [
       </svg>
     ),
   },
-  {
-    href: '/admin/planes',
-    label: 'Planes',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-      </svg>
-    ),
-  },
+]
+
+const SISTEMA = [
   {
     href: '/admin/configuracion',
     label: 'Configuración',
@@ -79,7 +113,43 @@ const NAV = [
   },
 ]
 
-export default function AdminSidebar({ profile }: { profile: Profile }) {
+interface NavItem {
+  href: string
+  label: string
+  icon: React.ReactNode
+  countKey?: keyof Counts
+  badge?: boolean
+}
+
+function NavLink({ item, pathname, counts }: { item: NavItem; pathname: string; counts: Counts }) {
+  const exact = item.href === '/admin'
+  const active = exact ? pathname === item.href : pathname.startsWith(item.href)
+  const count = item.countKey ? counts[item.countKey] : null
+  const showBadge = item.badge && count && count > 0
+
+  return (
+    <Link
+      href={item.href}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+        active
+          ? 'bg-[#282F8F]/20 text-white border border-[#282F8F]/40'
+          : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+      }`}
+    >
+      <span className={active ? 'text-[#FFC107]' : ''}>{item.icon}</span>
+      <span className="flex-1">{item.label}</span>
+      {showBadge ? (
+        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-none">
+          {count}
+        </span>
+      ) : count !== null && count > 0 ? (
+        <span className="text-[10px] text-gray-600 tabular-nums">{count.toLocaleString('es-AR')}</span>
+      ) : null}
+    </Link>
+  )
+}
+
+export default function AdminSidebar({ profile, counts }: { profile: Profile; counts: Counts }) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -108,34 +178,46 @@ export default function AdminSidebar({ profile }: { profile: Profile }) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {NAV.map(item => {
-          const exact = item.href === '/admin'
-          const active = exact ? pathname === item.href : pathname.startsWith(item.href)
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                active
-                  ? 'bg-[#282F8F]/20 text-white border border-[#282F8F]/40'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
-            >
-              <span className={active ? 'text-[#FFC107]' : ''}>{item.icon}</span>
-              {item.label}
-            </Link>
-          )
-        })}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
+        {/* CONTENIDO */}
+        <div>
+          <p className="text-[9px] font-bold tracking-widest text-gray-700 uppercase px-3 mb-1.5">Contenido</p>
+          <div className="space-y-0.5">
+            {CONTENIDO.map(item => (
+              <NavLink key={item.href} item={item} pathname={pathname} counts={counts} />
+            ))}
+          </div>
+        </div>
+
+        {/* MONETIZACIÓN */}
+        <div>
+          <p className="text-[9px] font-bold tracking-widest text-gray-700 uppercase px-3 mb-1.5">Monetización</p>
+          <div className="space-y-0.5">
+            {MONETIZACION.map(item => (
+              <NavLink key={item.href} item={item} pathname={pathname} counts={counts} />
+            ))}
+          </div>
+        </div>
+
+        {/* SISTEMA */}
+        <div>
+          <p className="text-[9px] font-bold tracking-widest text-gray-700 uppercase px-3 mb-1.5">Sistema</p>
+          <div className="space-y-0.5">
+            {SISTEMA.map(item => (
+              <NavLink key={item.href} item={item} pathname={pathname} counts={counts} />
+            ))}
+          </div>
+        </div>
       </nav>
 
       {/* User */}
       <div className="px-3 pb-4 pt-3 border-t border-white/5 space-y-1">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-[#282F8F]/30 border border-[#282F8F]/50 flex items-center justify-center shrink-0">
-            <span className="text-xs font-bold text-[#FFC107]">
-              {profile.nombre.charAt(0).toUpperCase()}
-            </span>
+          <div className="w-8 h-8 rounded-full bg-[#282F8F]/30 border border-[#282F8F]/50 flex items-center justify-center shrink-0 overflow-hidden">
+            {profile.avatar_url
+              ? <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+              : <span className="text-xs font-bold text-[#FFC107]">{profile.nombre.charAt(0).toUpperCase()}</span>
+            }
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-white truncate">{profile.nombre} {profile.apellido}</p>

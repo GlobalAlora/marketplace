@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { toggleActivoVehiculo, toggleDestacado, deleteVehiculoAdmin } from './actions'
+import Link from 'next/link'
+import { toggleActivoVehiculo, toggleDestacado, deleteVehiculoAdmin, updatePrecioVehiculo } from './actions'
 
 interface VehiculoAdmin {
   id: string
@@ -30,6 +31,7 @@ const ROLE_LABEL: Record<string, string> = {
 const FILTER_ESTADO = ['todos', 'activo', 'pausado', 'vendido']
 const FILTER_DESTACADO = ['todos', 'destacado', 'no_destacado']
 const FILTER_ROL = ['todos', 'particular', 'agencia_basica', 'agencia_premium']
+const PAGE_SIZE = 20
 
 function getEstado(v: VehiculoAdmin) {
   if (v.vendido) return 'vendido'
@@ -51,6 +53,9 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
   const [filterDestacado, setFilterDestacado] = useState('todos')
   const [filterRol, setFilterRol] = useState('todos')
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [editPrecioId, setEditPrecioId] = useState<string | null>(null)
+  const [precioInput, setPrecioInput] = useState('')
 
   const filtered = vehiculos.filter(v => {
     const estado = getEstado(v)
@@ -58,13 +63,30 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
     if (filterDestacado === 'destacado' && !v.destacado) return false
     if (filterDestacado === 'no_destacado' && v.destacado) return false
     if (filterRol !== 'todos' && v.seller_role !== filterRol) return false
-    if (search && !`${v.marca} ${v.modelo} ${v.año}`.toLowerCase().includes(search.toLowerCase())) return false
+    if (search && !`${v.marca} ${v.modelo} ${v.año} ${v.seller_nombre} ${v.seller_apellido}`.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  function resetPage() { setPage(1) }
 
   function act(id: string, fn: () => Promise<void>) {
     setLoadingId(id)
     startTransition(async () => { await fn(); setLoadingId(null) })
+  }
+
+  function startEditPrecio(v: VehiculoAdmin) {
+    setEditPrecioId(v.id)
+    setPrecioInput(String(v.precio))
+  }
+
+  function savePrecio(id: string) {
+    const precio = Number(precioInput.replace(/\D/g, ''))
+    if (!precio || precio <= 0) { setEditPrecioId(null); return }
+    act(id, () => updatePrecioVehiculo(id, precio))
+    setEditPrecioId(null)
   }
 
   const SELECT = 'bg-white/5 border border-white/10 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-[#FFC107] transition-colors'
@@ -75,32 +97,33 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
       <div className="flex flex-wrap gap-3 mb-6">
         <input
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Buscar marca, modelo…"
-          className="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:border-[#FFC107] transition-colors w-48"
+          onChange={e => { setSearch(e.target.value); resetPage() }}
+          placeholder="Buscar marca, modelo, vendedor…"
+          className="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:border-[#FFC107] transition-colors w-56"
         />
-        <select value={filterEstado} onChange={e => setFilterEstado(e.target.value)} className={SELECT}>
+        <select value={filterEstado} onChange={e => { setFilterEstado(e.target.value); resetPage() }} className={SELECT}>
           {FILTER_ESTADO.map(v => <option key={v} value={v}>{v === 'todos' ? 'Estado: todos' : v.charAt(0).toUpperCase() + v.slice(1)}</option>)}
         </select>
-        <select value={filterDestacado} onChange={e => setFilterDestacado(e.target.value)} className={SELECT}>
+        <select value={filterDestacado} onChange={e => { setFilterDestacado(e.target.value); resetPage() }} className={SELECT}>
           <option value="todos">Destacado: todos</option>
           <option value="destacado">Vitrina ★</option>
           <option value="no_destacado">Sin vitrina</option>
         </select>
-        <select value={filterRol} onChange={e => setFilterRol(e.target.value)} className={SELECT}>
+        <select value={filterRol} onChange={e => { setFilterRol(e.target.value); resetPage() }} className={SELECT}>
           {FILTER_ROL.map(v => <option key={v} value={v}>{v === 'todos' ? 'Vendedor: todos' : ROLE_LABEL[v]}</option>)}
         </select>
         <span className="ml-auto text-xs text-gray-600 self-center">{filtered.length} resultados</span>
       </div>
 
-      {filtered.length === 0 ? (
+      {paginated.length === 0 ? (
         <div className="text-center py-16 text-gray-600 text-sm">No hay vehículos que coincidan con los filtros</div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(v => {
+          {paginated.map(v => {
             const estado = getEstado(v)
             const isLoading = loadingId === v.id && pending
             const thumb = v.imagenes?.[0]
+            const editingPrecio = editPrecioId === v.id
 
             return (
               <div key={v.id} className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-4 flex gap-4 items-center">
@@ -119,14 +142,54 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ESTADO_STYLE[estado]}`}>{estado}</span>
                     {v.destacado && <span className="text-[10px] font-bold text-[#FFC107] bg-[#FFC107]/10 px-2 py-0.5 rounded-full">★ Vitrina</span>}
                   </div>
-                  <p className="text-xs text-gray-500">
-                    ${v.precio.toLocaleString('es-AR')} · {v.vistas} vistas · {v.seller_nombre} {v.seller_apellido}
-                    <span className="ml-1 text-gray-700">({ROLE_LABEL[v.seller_role] ?? v.seller_role})</span>
-                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {editingPrecio ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-gray-500">$</span>
+                        <input
+                          type="text"
+                          value={precioInput}
+                          onChange={e => setPrecioInput(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') savePrecio(v.id); if (e.key === 'Escape') setEditPrecioId(null) }}
+                          autoFocus
+                          className="w-28 bg-white/10 border border-[#FFC107]/40 text-white text-xs rounded-lg px-2 py-0.5 focus:outline-none"
+                        />
+                        <button onClick={() => savePrecio(v.id)} className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 px-1.5 py-0.5 rounded transition-colors">OK</button>
+                        <button onClick={() => setEditPrecioId(null)} className="text-[10px] text-gray-500 hover:text-gray-300 px-1 py-0.5 rounded transition-colors">✕</button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => startEditPrecio(v)}
+                        title="Editar precio"
+                        className="text-xs text-gray-500 hover:text-white flex items-center gap-1 group transition-colors"
+                      >
+                        ${v.precio.toLocaleString('es-AR')}
+                        <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                        </svg>
+                      </button>
+                    )}
+                    <span className="text-gray-700">·</span>
+                    <span className="text-xs text-gray-500">{v.vistas} vistas · {v.seller_nombre} {v.seller_apellido}</span>
+                    <span className="text-[10px] text-gray-700">({ROLE_LABEL[v.seller_role] ?? v.seller_role})</span>
+                  </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center gap-1 shrink-0">
+                  {/* Ver publicación */}
+                  <Link
+                    href={`/vehiculos/${v.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Ver publicación"
+                    className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </Link>
+
                   {/* Toggle activo */}
                   {!v.vendido && (
                     <button
@@ -180,6 +243,29 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 text-xs font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            ← Anterior
+          </button>
+          <span className="text-xs text-gray-600">
+            Página {page} de {totalPages} · {filtered.length} resultados
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="px-4 py-2 text-xs font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            Siguiente →
+          </button>
         </div>
       )}
     </div>

@@ -39,3 +39,19 @@ export async function deleteVehiculoAdmin(id: string) {
   revalidatePath('/admin/vehiculos')
   revalidatePath('/')
 }
+
+export async function updatePrecioVehiculo(id: string, precio: number) {
+  if (!Number.isFinite(precio) || precio <= 0) throw new Error('Precio inválido')
+  const supabase = await getAdminClient()
+  const { error } = await supabase.from('vehiculos').update({ precio }).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/vehiculos')
+}
+
+export async function marcarVendido(id: string, vendido: boolean) {
+  const supabase = await getAdminClient()
+  const { error } = await supabase.from('vehiculos').update({ vendido }).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/vehiculos')
+  revalidatePath('/')
+}

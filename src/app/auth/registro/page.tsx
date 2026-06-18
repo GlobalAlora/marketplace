@@ -75,7 +75,7 @@ export default function RegistroPage() {
     setServerError(null)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
@@ -90,6 +90,12 @@ export default function RegistroPage() {
     setLoading(false)
     if (error) {
       setServerError(error.message)
+      return
+    }
+    // Supabase no devuelve error para emails duplicados cuando la confirmación
+    // está activada — en cambio retorna un user con identities vacío.
+    if (data.user && data.user.identities?.length === 0) {
+      setErrors(p => ({ ...p, email: 'Este email ya está registrado' }))
       return
     }
     setSuccess(true)

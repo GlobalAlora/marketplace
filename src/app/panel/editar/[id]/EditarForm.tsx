@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { updateVehiculo } from './actions'
 
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
+const SELECT = 'w-full appearance-none bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors cursor-pointer'
 const LABEL = 'block text-xs font-semibold text-gray-400 mb-1.5'
 
 interface VehiculoData {
@@ -185,14 +186,14 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={LABEL}>Condición *</label>
-          <select name="condicion" required defaultValue={vehiculo.condicion ?? 'usado'} className={INPUT}>
+          <select name="condicion" required defaultValue={vehiculo.condicion ?? 'usado'} className={SELECT}>
             <option value="usado">Usado</option>
             <option value="nuevo">Nuevo</option>
           </select>
         </div>
         <div>
           <label className={LABEL}>Transmisión</label>
-          <select name="transmision" defaultValue={vehiculo.transmision ?? ''} className={INPUT}>
+          <select name="transmision" defaultValue={vehiculo.transmision ?? ''} className={SELECT}>
             <option value="">Sin especificar</option>
             <option value="manual">Manual</option>
             <option value="automatica">Automática</option>
@@ -204,7 +205,7 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={LABEL}>Combustible</label>
-          <select name="combustible" defaultValue={vehiculo.combustible ?? ''} className={INPUT}>
+          <select name="combustible" defaultValue={vehiculo.combustible ?? ''} className={SELECT}>
             <option value="">Sin especificar</option>
             <option value="nafta">Nafta</option>
             <option value="diesel">Diésel</option>
@@ -215,7 +216,7 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
         </div>
         <div>
           <label className={LABEL}>Puertas</label>
-          <select name="puertas" defaultValue={vehiculo.puertas?.toString() ?? ''} className={INPUT}>
+          <select name="puertas" defaultValue={vehiculo.puertas?.toString() ?? ''} className={SELECT}>
             <option value="">Sin especificar</option>
             <option value="2">2</option>
             <option value="3">3</option>

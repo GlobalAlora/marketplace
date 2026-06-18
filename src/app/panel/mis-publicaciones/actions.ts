@@ -34,6 +34,18 @@ export async function marcarVendido(vehiculoId: string) {
   revalidatePath('/panel')
 }
 
+export async function reactivarVehiculo(vehiculoId: string) {
+  const { supabase, userId } = await getAuthClient()
+  const { error } = await supabase
+    .from('vehiculos')
+    .update({ vendido: false, activo: true })
+    .eq('id', vehiculoId)
+    .eq('user_id', userId)
+  if (error) throw new Error(error.message)
+  revalidatePath('/panel/mis-publicaciones')
+  revalidatePath('/panel')
+}
+
 export async function deleteVehiculo(vehiculoId: string) {
   const { supabase, userId } = await getAuthClient()
   const { error } = await supabase

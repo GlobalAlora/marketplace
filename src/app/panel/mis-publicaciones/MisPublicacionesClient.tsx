@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { toggleActivo, marcarVendido, deleteVehiculo } from './actions'
+import { toggleActivo, marcarVendido, reactivarVehiculo, deleteVehiculo } from './actions'
 
 interface Vehiculo {
   id: string
@@ -58,6 +58,20 @@ export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehic
         await marcarVendido(id)
       } catch (err) {
         setActionError(err instanceof Error ? err.message : 'Error al marcar como vendido')
+      } finally {
+        setLoadingId(null)
+      }
+    })
+  }
+
+  function handleReactivar(id: string) {
+    setLoadingId(id)
+    setActionError(null)
+    startTransition(async () => {
+      try {
+        await reactivarVehiculo(id)
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : 'Error al reactivar')
       } finally {
         setLoadingId(null)
       }
@@ -125,75 +139,72 @@ export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehic
             </div>
 
             {/* Actions */}
-            {!v.vendido && (
-              <div className="flex items-center gap-2 shrink-0">
-                <Link
-                  href={`/panel/editar/${v.id}`}
-                  title="Editar"
-                  className="p-2 rounded-lg text-gray-400 hover:text-[#FFC107] hover:bg-[#FFC107]/5 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
-                  </svg>
-                </Link>
-                <button
-                  onClick={() => handleToggle(v.id, v.activo)}
-                  disabled={isLoading}
-                  title={v.activo ? 'Pausar' : 'Activar'}
-                  className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors disabled:opacity-40"
-                >
-                  {v.activo ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" />
-                    </svg>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => handleVendido(v.id)}
-                  disabled={isLoading}
-                  title="Marcar como vendido"
-                  className="p-2 rounded-lg text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/5 transition-colors disabled:opacity-40"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
-
-                {confirmDelete === v.id ? (
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleDelete(v.id)}
-                      disabled={isLoading}
-                      className="text-[11px] font-bold text-red-400 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-500/10 transition-colors"
-                    >
-                      Confirmar
-                    </button>
-                    <button
-                      onClick={() => setConfirmDelete(null)}
-                      className="text-[11px] text-gray-500 hover:text-gray-300 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                ) : (
+            <div className="flex items-center gap-2 shrink-0">
+              {v.vendido ? (
+                /* Vendido: reactivar o eliminar */
+                <>
                   <button
-                    onClick={() => setConfirmDelete(v.id)}
+                    onClick={() => handleReactivar(v.id)}
                     disabled={isLoading}
-                    title="Eliminar"
-                    className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition-colors disabled:opacity-40"
+                    title="Volver a publicar"
+                    className="p-2 rounded-lg text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/5 transition-colors disabled:opacity-40"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                     </svg>
                   </button>
-                )}
-              </div>
-            )}
+                  {confirmDelete === v.id ? (
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handleDelete(v.id)} disabled={isLoading} className="text-[11px] font-bold text-red-400 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-500/10 transition-colors">Confirmar</button>
+                      <button onClick={() => setConfirmDelete(null)} className="text-[11px] text-gray-500 hover:text-gray-300 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors">Cancelar</button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setConfirmDelete(v.id)} disabled={isLoading} title="Eliminar" className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition-colors disabled:opacity-40">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+                    </button>
+                  )}
+                </>
+              ) : (
+                /* No vendido: editar, pausar/activar, marcar vendido, eliminar */
+                <>
+                  <Link href={`/panel/editar/${v.id}`} title="Editar" className="p-2 rounded-lg text-gray-400 hover:text-[#FFC107] hover:bg-[#FFC107]/5 transition-colors">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                    </svg>
+                  </Link>
+                  <button onClick={() => handleToggle(v.id, v.activo)} disabled={isLoading} title={v.activo ? 'Pausar' : 'Activar'} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors disabled:opacity-40">
+                    {v.activo ? (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" />
+                      </svg>
+                    )}
+                  </button>
+                  <button onClick={() => handleVendido(v.id)} disabled={isLoading} title="Marcar como vendido" className="p-2 rounded-lg text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/5 transition-colors disabled:opacity-40">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  {confirmDelete === v.id ? (
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handleDelete(v.id)} disabled={isLoading} className="text-[11px] font-bold text-red-400 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-500/10 transition-colors">Confirmar</button>
+                      <button onClick={() => setConfirmDelete(null)} className="text-[11px] text-gray-500 hover:text-gray-300 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors">Cancelar</button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setConfirmDelete(v.id)} disabled={isLoading} title="Eliminar" className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition-colors disabled:opacity-40">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         )
       })}

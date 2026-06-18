@@ -73,7 +73,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${exo2.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#0D0F14]">{children}</body>
     </html>
   )
 }

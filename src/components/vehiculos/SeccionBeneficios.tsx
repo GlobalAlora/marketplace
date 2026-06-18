@@ -291,7 +291,7 @@ export default function SeccionBeneficios({ config = {} }: { config?: SiteConfig
               />
 
               {/* Contenido animado */}
-              <div ref={cardRef} className="relative z-10 p-8 sm:p-10 h-[340px] flex flex-col justify-between overflow-hidden">
+              <div ref={cardRef} className="relative z-10 p-8 sm:p-10 min-h-[280px] sm:min-h-[340px] flex flex-col justify-between">
                 <div>
                   {/* Ícono */}
                   <div

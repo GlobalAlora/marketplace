@@ -40,6 +40,7 @@ export default function PublicarForm({ userId }: { userId: string }) {
     e.preventDefault()
     setError(null)
     setUploading(true)
+    const formEl = e.currentTarget
 
     try {
       const supabase = createClient()
@@ -59,7 +60,7 @@ export default function PublicarForm({ userId }: { userId: string }) {
         urls.push(publicUrl)
       }
 
-      const fd = new FormData(e.currentTarget)
+      const fd = new FormData(formEl)
       fd.set('imagenes', JSON.stringify(urls))
 
       setUploading(false)

@@ -34,34 +34,58 @@ export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehic
   const [pending, startTransition] = useTransition()
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   function handleToggle(id: string, activo: boolean) {
     setLoadingId(id)
+    setActionError(null)
     startTransition(async () => {
-      await toggleActivo(id, !activo)
-      setLoadingId(null)
+      try {
+        await toggleActivo(id, !activo)
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : 'Error al actualizar')
+      } finally {
+        setLoadingId(null)
+      }
     })
   }
 
   function handleVendido(id: string) {
     setLoadingId(id)
+    setActionError(null)
     startTransition(async () => {
-      await marcarVendido(id)
-      setLoadingId(null)
+      try {
+        await marcarVendido(id)
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : 'Error al marcar como vendido')
+      } finally {
+        setLoadingId(null)
+      }
     })
   }
 
   function handleDelete(id: string) {
     setLoadingId(id)
     setConfirmDelete(null)
+    setActionError(null)
     startTransition(async () => {
-      await deleteVehiculo(id)
-      setLoadingId(null)
+      try {
+        await deleteVehiculo(id)
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : 'Error al eliminar')
+      } finally {
+        setLoadingId(null)
+      }
     })
   }
 
   return (
     <div className="space-y-3">
+      {actionError && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+          <p className="text-sm text-red-400">{actionError}</p>
+        </div>
+      )}
       {vehiculos.map(v => {
         const estado = getEstado(v)
         const cfg = ESTADO_CONFIG[estado]

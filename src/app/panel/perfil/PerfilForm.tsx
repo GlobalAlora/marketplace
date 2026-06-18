@@ -41,6 +41,7 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
     setError(null)
     setSuccess(false)
     setUploading(true)
+    const formEl = e.currentTarget
 
     try {
       let logoUrl = profile.logo_agencia ?? ''
@@ -61,7 +62,7 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
 
       setUploading(false)
 
-      const fd = new FormData(e.currentTarget)
+      const fd = new FormData(formEl)
       if (logoUrl) fd.set('logo_agencia', logoUrl)
 
       startTransition(async () => {

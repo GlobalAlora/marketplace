@@ -64,6 +64,7 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
     e.preventDefault()
     setError(null)
     setUploading(true)
+    const formEl = e.currentTarget
 
     try {
       const supabase = createClient()
@@ -84,7 +85,7 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
       }
 
       const allImages = [...existingImages, ...uploadedUrls]
-      const fd = new FormData(e.currentTarget)
+      const fd = new FormData(formEl)
       fd.set('imagenes', JSON.stringify(allImages))
 
       setUploading(false)

@@ -8,34 +8,56 @@ const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm round
 const SELECT = 'w-full appearance-none bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors cursor-pointer'
 const LABEL = 'block text-xs font-semibold text-gray-400 mb-1.5'
 
+interface ImageItem { file: File; preview: string }
+
 export default function PublicarForm({ userId }: { userId: string }) {
-  const [images, setImages] = useState<File[]>([])
-  const [previews, setPreviews] = useState<string[]>([])
+  const [items, setItems] = useState<ImageItem[]>([])
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
   const fileRef = useRef<HTMLInputElement>(null)
+  const dragIndex = useRef<number | null>(null)
+  const [dragOver, setDragOver] = useState<number | null>(null)
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
-    if (images.length + files.length > 8) {
+    if (items.length + files.length > 8) {
       setError('Máximo 8 imágenes')
       return
     }
-    setImages(prev => [...prev, ...files])
-    files.forEach(f => {
-      const url = URL.createObjectURL(f)
-      setPreviews(prev => [...prev, url])
-    })
+    setError(null)
+    setItems(prev => [
+      ...prev,
+      ...files.map(f => ({ file: f, preview: URL.createObjectURL(f) })),
+    ])
+    e.target.value = ''
   }
 
   function removeImage(i: number) {
-    setImages(prev => prev.filter((_, idx) => idx !== i))
-    setPreviews(prev => {
-      URL.revokeObjectURL(prev[i])
+    setItems(prev => {
+      URL.revokeObjectURL(prev[i].preview)
       return prev.filter((_, idx) => idx !== i)
     })
   }
+
+  function onDragStart(i: number) { dragIndex.current = i }
+  function onDragOver(e: React.DragEvent, i: number) {
+    e.preventDefault()
+    setDragOver(i)
+  }
+  function onDrop(i: number) {
+    const from = dragIndex.current
+    if (from === null || from === i) { setDragOver(null); return }
+    setItems(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(i, 0, moved)
+      return next
+    })
+    dragIndex.current = null
+    setDragOver(null)
+  }
+  function onDragEnd() { dragIndex.current = null; setDragOver(null) }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -47,12 +69,12 @@ export default function PublicarForm({ userId }: { userId: string }) {
       const supabase = createClient()
       const urls: string[] = []
 
-      for (const file of images) {
-        const ext = file.name.split('.').pop()
+      for (const item of items) {
+        const ext = item.file.name.split('.').pop()
         const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
         const { error: uploadError } = await supabase.storage
           .from('vehiculos-imagenes')
-          .upload(path, file)
+          .upload(path, item.file)
         if (uploadError) throw new Error(uploadError.message)
 
         const { data: { publicUrl } } = supabase.storage
@@ -81,11 +103,27 @@ export default function PublicarForm({ userId }: { userId: string }) {
 
       {/* Imágenes */}
       <div>
-        <label className={LABEL}>Fotos del vehículo <span className="text-gray-600">(máx. 8)</span></label>
+        <label className={LABEL}>
+          Fotos del vehículo <span className="text-gray-600">(máx. 8 · arrastrá para reordenar)</span>
+        </label>
         <div className="flex flex-wrap gap-3">
-          {previews.map((src, i) => (
-            <div key={i} className="relative w-24 h-20 rounded-xl overflow-hidden border border-white/10">
-              <img src={src} alt="" className="w-full h-full object-cover" />
+          {items.map((item, i) => (
+            <div
+              key={item.preview}
+              draggable
+              onDragStart={() => onDragStart(i)}
+              onDragOver={e => onDragOver(e, i)}
+              onDrop={() => onDrop(i)}
+              onDragEnd={onDragEnd}
+              className={`relative w-24 h-20 rounded-xl overflow-hidden border transition-all cursor-grab active:cursor-grabbing select-none
+                ${dragOver === i ? 'border-[#FFC107] scale-105 opacity-70' : 'border-white/10'}`}
+            >
+              <img src={item.preview} alt="" className="w-full h-full object-cover pointer-events-none" />
+              {i === 0 && (
+                <span className="absolute bottom-0 left-0 right-0 text-[9px] font-bold text-center bg-[#FFC107] text-[#0D0F14] py-0.5">
+                  PORTADA
+                </span>
+              )}
               <button
                 type="button"
                 onClick={() => removeImage(i)}
@@ -95,7 +133,7 @@ export default function PublicarForm({ userId }: { userId: string }) {
               </button>
             </div>
           ))}
-          {images.length < 8 && (
+          {items.length < 8 && (
             <button
               type="button"
               onClick={() => fileRef.current?.click()}

@@ -25,41 +25,60 @@ interface VehiculoData {
   imagenes: string[]
 }
 
+// Unified item: existing images have only src; new uploads also have file
+interface ImageItem { src: string; file?: File }
+
 export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoData; userId: string }) {
-  const [existingImages, setExistingImages] = useState<string[]>(vehiculo.imagenes ?? [])
-  const [newFiles, setNewFiles] = useState<File[]>([])
-  const [newPreviews, setNewPreviews] = useState<string[]>([])
+  const [items, setItems] = useState<ImageItem[]>(
+    (vehiculo.imagenes ?? []).map(src => ({ src }))
+  )
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
   const fileRef = useRef<HTMLInputElement>(null)
-
-  const totalImages = existingImages.length + newFiles.length
+  const dragIndex = useRef<number | null>(null)
+  const [dragOver, setDragOver] = useState<number | null>(null)
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
-    if (totalImages + files.length > 8) {
+    if (items.length + files.length > 8) {
       setError('Máximo 8 imágenes')
       return
     }
-    setNewFiles(prev => [...prev, ...files])
-    files.forEach(f => {
-      const url = URL.createObjectURL(f)
-      setNewPreviews(prev => [...prev, url])
-    })
+    setError(null)
+    setItems(prev => [
+      ...prev,
+      ...files.map(f => ({ src: URL.createObjectURL(f), file: f })),
+    ])
+    e.target.value = ''
   }
 
-  function removeExisting(i: number) {
-    setExistingImages(prev => prev.filter((_, idx) => idx !== i))
-  }
-
-  function removeNew(i: number) {
-    setNewFiles(prev => prev.filter((_, idx) => idx !== i))
-    setNewPreviews(prev => {
-      URL.revokeObjectURL(prev[i])
+  function removeItem(i: number) {
+    setItems(prev => {
+      const item = prev[i]
+      if (item.file) URL.revokeObjectURL(item.src)
       return prev.filter((_, idx) => idx !== i)
     })
   }
+
+  function onDragStart(i: number) { dragIndex.current = i }
+  function onDragOver(e: React.DragEvent, i: number) {
+    e.preventDefault()
+    setDragOver(i)
+  }
+  function onDrop(i: number) {
+    const from = dragIndex.current
+    if (from === null || from === i) { setDragOver(null); return }
+    setItems(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(i, 0, moved)
+      return next
+    })
+    dragIndex.current = null
+    setDragOver(null)
+  }
+  function onDragEnd() { dragIndex.current = null; setDragOver(null) }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -69,25 +88,28 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
 
     try {
       const supabase = createClient()
-      const uploadedUrls: string[] = []
+      const allUrls: string[] = []
 
-      for (const file of newFiles) {
-        const ext = file.name.split('.').pop()
-        const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-        const { error: uploadError } = await supabase.storage
-          .from('vehiculos-imagenes')
-          .upload(path, file)
-        if (uploadError) throw new Error(uploadError.message)
+      for (const item of items) {
+        if (!item.file) {
+          allUrls.push(item.src)
+        } else {
+          const ext = item.file.name.split('.').pop()
+          const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+          const { error: uploadError } = await supabase.storage
+            .from('vehiculos-imagenes')
+            .upload(path, item.file)
+          if (uploadError) throw new Error(uploadError.message)
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('vehiculos-imagenes')
-          .getPublicUrl(path)
-        uploadedUrls.push(publicUrl)
+          const { data: { publicUrl } } = supabase.storage
+            .from('vehiculos-imagenes')
+            .getPublicUrl(path)
+          allUrls.push(publicUrl)
+        }
       }
 
-      const allImages = [...existingImages, ...uploadedUrls]
       const fd = new FormData(formEl)
-      fd.set('imagenes', JSON.stringify(allImages))
+      fd.set('imagenes', JSON.stringify(allUrls))
 
       setUploading(false)
       startTransition(() => {
@@ -106,33 +128,38 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
 
       {/* Imágenes */}
       <div>
-        <label className={LABEL}>Fotos del vehículo <span className="text-gray-600">(máx. 8)</span></label>
+        <label className={LABEL}>
+          Fotos del vehículo <span className="text-gray-600">(máx. 8 · arrastrá para reordenar)</span>
+        </label>
         <div className="flex flex-wrap gap-3">
-          {existingImages.map((src, i) => (
-            <div key={`ex-${i}`} className="relative w-24 h-20 rounded-xl overflow-hidden border border-white/10">
-              <img src={src} alt="" className="w-full h-full object-cover" />
+          {items.map((item, i) => (
+            <div
+              key={item.src}
+              draggable
+              onDragStart={() => onDragStart(i)}
+              onDragOver={e => onDragOver(e, i)}
+              onDrop={() => onDrop(i)}
+              onDragEnd={onDragEnd}
+              className={`relative w-24 h-20 rounded-xl overflow-hidden border transition-all cursor-grab active:cursor-grabbing select-none
+                ${item.file ? 'border-[#FFC107]/30' : 'border-white/10'}
+                ${dragOver === i ? 'border-[#FFC107] scale-105 opacity-70' : ''}`}
+            >
+              <img src={item.src} alt="" className="w-full h-full object-cover pointer-events-none" />
+              {i === 0 && (
+                <span className="absolute bottom-0 left-0 right-0 text-[9px] font-bold text-center bg-[#FFC107] text-[#0D0F14] py-0.5">
+                  PORTADA
+                </span>
+              )}
               <button
                 type="button"
-                onClick={() => removeExisting(i)}
+                onClick={() => removeItem(i)}
                 className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
               >
                 ×
               </button>
             </div>
           ))}
-          {newPreviews.map((src, i) => (
-            <div key={`new-${i}`} className="relative w-24 h-20 rounded-xl overflow-hidden border border-[#FFC107]/30">
-              <img src={src} alt="" className="w-full h-full object-cover" />
-              <button
-                type="button"
-                onClick={() => removeNew(i)}
-                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          {totalImages < 8 && (
+          {items.length < 8 && (
             <button
               type="button"
               onClick={() => fileRef.current?.click()}

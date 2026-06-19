@@ -34,17 +34,17 @@ export default async function PanelPage() {
   const isAgencia = role === 'agencia_basica' || role === 'agencia_premium'
 
   return (
-    <div className="p-6 lg:p-8 max-w-4xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-white">
+      <div className="mb-6">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-white">
           Hola, {profile?.nombre} 👋
         </h1>
         <p className="text-sm text-gray-500 mt-1">Bienvenido a tu panel de AUTODUX</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
         <StatCard label="Activas" value={activas ?? 0} color="text-emerald-400" />
         <StatCard label="Pausadas" value={pausadas ?? 0} color="text-[#FFC107]" />
         <StatCard label="Vendidas" value={vendidas ?? 0} color="text-gray-400" />
@@ -102,9 +102,9 @@ export default async function PanelPage() {
 
 function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-5">
-      <p className={`text-3xl font-extrabold ${color}`}>{value}</p>
-      <p className="text-xs text-gray-500 mt-1">{label}</p>
+    <div className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-3 sm:p-5">
+      <p className={`text-2xl sm:text-3xl font-extrabold ${color}`}>{value}</p>
+      <p className="text-[11px] sm:text-xs text-gray-500 mt-1">{label}</p>
     </div>
   )
 }

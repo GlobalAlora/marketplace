@@ -69,25 +69,25 @@ export default async function AdminDashboardPage() {
   ]
 
   return (
-    <div className="p-8 max-w-[1400px]">
-      <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-white tracking-tight">Panel de control</h1>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px]">
+      <div className="mb-6">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Panel de control</h1>
         <p className="text-sm text-gray-500 mt-1">
           {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {metrics.map(m => (
           <Link
             key={m.label}
             href={m.href}
-            className={`bg-gradient-to-br ${m.color} border ${m.border} rounded-2xl p-5 hover:scale-[1.02] transition-transform`}
+            className={`bg-gradient-to-br ${m.color} border ${m.border} rounded-2xl p-4 sm:p-5 hover:scale-[1.02] transition-transform`}
           >
-            <div className="text-2xl mb-3">{m.icon}</div>
-            <p className="text-3xl font-extrabold text-white tabular-nums">{m.value.toLocaleString('es-AR')}</p>
-            <p className="text-xs text-gray-400 mt-1.5 leading-tight">{m.label}</p>
+            <div className="text-xl sm:text-2xl mb-2 sm:mb-3">{m.icon}</div>
+            <p className="text-2xl sm:text-3xl font-extrabold text-white tabular-nums">{m.value.toLocaleString('es-AR')}</p>
+            <p className="text-[11px] sm:text-xs text-gray-400 mt-1.5 leading-tight">{m.label}</p>
           </Link>
         ))}
       </div>

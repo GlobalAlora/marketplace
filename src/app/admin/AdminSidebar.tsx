@@ -161,7 +161,53 @@ export default function AdminSidebar({ profile, counts }: { profile: Profile; co
   }
 
   return (
-    <aside className="w-60 shrink-0 bg-[#0a0c14] border-r border-white/5 flex flex-col min-h-screen sticky top-0">
+    <>
+    {/* ── Mobile top bar ──────────────────────────────────────── */}
+    <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-[#0a0c14]/95 backdrop-blur border-b border-white/5 flex items-center justify-between px-4">
+      <a href="/" className="text-[15px] font-black tracking-widest text-white">
+        AUTO<span className="text-[#FFC107]">DUX</span>
+      </a>
+      <div className="flex items-center gap-2">
+        <span className="text-[9px] font-bold tracking-widest bg-[#282F8F] text-white px-2 py-0.5 rounded-full uppercase">Admin</span>
+        <div className="w-8 h-8 rounded-full bg-[#282F8F]/30 border border-[#282F8F]/50 flex items-center justify-center overflow-hidden">
+          {profile.avatar_url
+            ? <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+            : <span className="text-xs font-bold text-[#FFC107]">{profile.nombre.charAt(0).toUpperCase()}</span>
+          }
+        </div>
+      </div>
+    </header>
+
+    {/* ── Mobile bottom nav ───────────────────────────────────── */}
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0a0c14]/95 backdrop-blur border-t border-white/5 flex items-stretch"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      {CONTENIDO.map(item => {
+        const exact = item.href === '/admin'
+        const active = exact ? pathname === item.href : pathname.startsWith(item.href)
+        const count = item.countKey ? counts[item.countKey] : null
+        return (
+          <Link key={item.href} href={item.href}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 min-h-[56px] transition-colors relative ${active ? 'text-[#FFC107]' : 'text-gray-500'}`}
+          >
+            {item.icon}
+            <span className="text-[9px] font-semibold leading-none">{item.label}</span>
+            {item.badge && count && count > 0 && (
+              <span className="absolute top-1.5 right-[calc(50%-10px)] bg-red-500 text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{count}</span>
+            )}
+          </Link>
+        )
+      })}
+      <button onClick={handleLogout}
+        className="flex-1 flex flex-col items-center justify-center gap-1 py-2 min-h-[56px] text-gray-600 hover:text-red-400 transition-colors">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+        </svg>
+        <span className="text-[9px] font-semibold leading-none">Salir</span>
+      </button>
+    </nav>
+
+    {/* ── Desktop sidebar ─────────────────────────────────────── */}
+    <aside className="hidden lg:flex w-60 shrink-0 bg-[#0a0c14] border-r border-white/5 flex-col min-h-screen sticky top-0">
 
       {/* Logo */}
       <div className="px-5 pt-6 pb-5 border-b border-white/5">
@@ -235,5 +281,6 @@ export default function AdminSidebar({ profile, counts }: { profile: Profile; co
         </button>
       </div>
     </aside>
+    </>
   )
 }

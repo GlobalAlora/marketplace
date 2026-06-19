@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { updateVehiculo } from './actions'
 
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
-const SELECT = 'w-full appearance-none bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors cursor-pointer'
+const SELECT = 'w-full appearance-none [color-scheme:dark] bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] cursor-pointer'
 const LABEL = 'block text-xs font-semibold text-gray-400 mb-1.5'
 
 const MAX_PRECIO = 999_999_999

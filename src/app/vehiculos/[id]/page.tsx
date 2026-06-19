@@ -12,6 +12,7 @@ import BannerPublicitario from '@/components/ui/BannerPublicitario'
 import { createClient } from '@/lib/supabase/server'
 import { getBanners } from '@/lib/banners'
 import type { Vehiculo } from '@/types'
+import TrackView from './TrackView'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -137,6 +138,7 @@ export default async function VehiculoPage({ params }: PageProps) {
 
   return (
     <MainLayout>
+      <TrackView vehiculoId={vehiculo.id} />
       <div className="bg-[#0D0F14] min-h-screen">
         <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
 
@@ -169,6 +171,7 @@ export default async function VehiculoPage({ params }: PageProps) {
               <InfoVehiculo vehiculo={vehiculo} />
               {vehiculo.profiles?.telefono && (
                 <BotonWhatsApp
+                  vehiculoId={vehiculo.id}
                   telefono={vehiculo.profiles.telefono}
                   marca={vehiculo.marca}
                   modelo={vehiculo.modelo}

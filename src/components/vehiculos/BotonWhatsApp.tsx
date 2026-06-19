@@ -1,19 +1,21 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@/lib/mock-auth'
+import { useAuth } from '@/lib/supabase/AuthProvider'
+import { registrarMetrica } from '@/app/vehiculos/[id]/actions'
 
 interface BotonWhatsAppProps {
   telefono: string
   marca: string
   modelo: string
   año: number
+  vehiculoId: string
 }
 
-export default function BotonWhatsApp({ telefono, marca, modelo, año }: BotonWhatsAppProps) {
-  const { isLoggedIn } = useAuth()
+export default function BotonWhatsApp({ telefono, marca, modelo, año, vehiculoId }: BotonWhatsAppProps) {
+  const { user } = useAuth()
 
-  if (!isLoggedIn) {
+  if (!user) {
     return (
       <Link
         href="/auth/registro"
@@ -31,11 +33,16 @@ export default function BotonWhatsApp({ telefono, marca, modelo, año }: BotonWh
   const mensaje = `Hola, vi tu auto ${marca} ${modelo} ${año} en AUTODUX y me interesa. ¿Está disponible?`
   const href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
 
+  function handleClick() {
+    registrarMetrica(vehiculoId, 'whatsapp_click')
+  }
+
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className="flex items-center justify-center gap-3 w-full bg-[#25D366] text-white font-extrabold py-4 rounded-xl hover:bg-[#1DA851] active:scale-[0.99] transition-all text-base shadow-lg"
     >
       <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

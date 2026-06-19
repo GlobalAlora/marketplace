@@ -21,8 +21,15 @@ export default function PublicarForm({ userId }: { userId: string }) {
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
+    const oversized = files.filter(f => f.size > 5 * 1024 * 1024)
+    if (oversized.length > 0) {
+      setError(`Las siguientes imágenes superan el límite de 5 MB: ${oversized.map(f => f.name).join(', ')}`)
+      e.target.value = ''
+      return
+    }
     if (items.length + files.length > 8) {
       setError('Máximo 8 imágenes')
+      e.target.value = ''
       return
     }
     setError(null)
@@ -75,7 +82,11 @@ export default function PublicarForm({ userId }: { userId: string }) {
         const { error: uploadError } = await supabase.storage
           .from('vehiculos-imagenes')
           .upload(path, item.file)
-        if (uploadError) throw new Error(uploadError.message)
+        if (uploadError) throw new Error(
+          uploadError.message.toLowerCase().includes('size')
+            ? 'Una imagen supera el tamaño máximo permitido de 5 MB'
+            : uploadError.message
+        )
 
         const { data: { publicUrl } } = supabase.storage
           .from('vehiculos-imagenes')

@@ -8,6 +8,17 @@ const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm round
 const SELECT = 'w-full appearance-none bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors cursor-pointer'
 const LABEL = 'block text-xs font-semibold text-gray-400 mb-1.5'
 
+const MAX_PRECIO = 999_999_999
+
+function spanishValidity(e: React.InvalidEvent<HTMLInputElement>) {
+  const el = e.currentTarget
+  if (el.validity.valueMissing) el.setCustomValidity('Este campo es obligatorio')
+  else if (el.validity.rangeUnderflow) el.setCustomValidity(`El valor mínimo es ${el.min}`)
+  else if (el.validity.rangeOverflow) el.setCustomValidity(`El valor máximo es ${Number(el.max).toLocaleString('es-AR')}`)
+  else if (el.validity.typeMismatch) el.setCustomValidity('Ingresá un valor válido')
+  else el.setCustomValidity('')
+}
+
 interface ImageItem { file: File; preview: string }
 
 export default function PublicarForm({ userId }: { userId: string }) {
@@ -171,11 +182,15 @@ export default function PublicarForm({ userId }: { userId: string }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={LABEL}>Marca *</label>
-          <input name="marca" required placeholder="Toyota" className={INPUT} />
+          <input name="marca" required placeholder="Toyota" className={INPUT}
+            onInvalid={e => { const el = e.currentTarget; el.setCustomValidity(el.validity.valueMissing ? 'Este campo es obligatorio' : '') }}
+            onInput={e => e.currentTarget.setCustomValidity('')} />
         </div>
         <div>
           <label className={LABEL}>Modelo *</label>
-          <input name="modelo" required placeholder="Corolla" className={INPUT} />
+          <input name="modelo" required placeholder="Corolla" className={INPUT}
+            onInvalid={e => { const el = e.currentTarget; el.setCustomValidity(el.validity.valueMissing ? 'Este campo es obligatorio' : '') }}
+            onInput={e => e.currentTarget.setCustomValidity('')} />
         </div>
       </div>
 
@@ -183,18 +198,21 @@ export default function PublicarForm({ userId }: { userId: string }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={LABEL}>Año *</label>
-          <input name="año" type="number" required min={1900} max={2100} placeholder="2020" className={INPUT} />
+          <input name="año" type="number" required min={1900} max={2100} placeholder="2020" className={INPUT}
+            onInvalid={spanishValidity} onInput={e => e.currentTarget.setCustomValidity('')} />
         </div>
         <div>
           <label className={LABEL}>Kilometraje *</label>
-          <input name="kilometraje" type="number" required min={0} placeholder="45000" className={INPUT} />
+          <input name="kilometraje" type="number" required min={0} placeholder="45000" className={INPUT}
+            onInvalid={spanishValidity} onInput={e => e.currentTarget.setCustomValidity('')} />
         </div>
       </div>
 
       {/* Precio */}
       <div>
-        <label className={LABEL}>Precio (ARS) *</label>
-        <input name="precio" type="number" required min={1} placeholder="8500000" className={INPUT} />
+        <label className={LABEL}>Precio (ARS) * <span className="text-gray-600 font-normal">máx. $999.999.999</span></label>
+        <input name="precio" type="number" required min={1} max={MAX_PRECIO} placeholder="8500000" className={INPUT}
+          onInvalid={spanishValidity} onInput={e => e.currentTarget.setCustomValidity('')} />
       </div>
 
       {/* Condición / Transmisión */}

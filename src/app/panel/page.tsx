@@ -64,13 +64,19 @@ export default async function PanelPage() {
             style={{ width: `${pct}%` }}
           />
         </div>
-        {pct >= 80 && (
+        {pct >= 100 ? (
+          <p className="text-[11px] text-[#FFC107] mt-2">
+            Alcanzaste el límite de tu plan.{' '}
+            {role === 'particular' && 'Eliminá una publicación o actualizá a Agencia PRIME.'}
+            {role === 'agencia_basica' && 'Eliminá una publicación o actualizá a Agencia DUX.'}
+          </p>
+        ) : pct >= 80 ? (
           <p className="text-[11px] text-[#FFC107] mt-2">
             Estás cerca del límite de tu plan.{' '}
             {role === 'particular' && 'Considerá actualizar a Agencia PRIME.'}
             {role === 'agencia_basica' && 'Considerá actualizar a Agencia DUX.'}
           </p>
-        )}
+        ) : null}
       </div>
 
       {/* Accesos rápidos */}

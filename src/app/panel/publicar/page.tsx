@@ -40,7 +40,7 @@ export default async function PublicarPage() {
         <div className="bg-[#1a1a2e] border border-[#FFC107]/30 rounded-2xl p-6 text-center">
           <p className="text-[#FFC107] font-semibold mb-2">Límite de plan alcanzado</p>
           <p className="text-sm text-gray-400">
-            Pausá o eliminá una publicación existente para poder publicar una nueva,
+            Eliminá una publicación existente para poder publicar una nueva,
             o actualizá tu plan.
           </p>
         </div>

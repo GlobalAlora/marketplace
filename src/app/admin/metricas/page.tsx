@@ -45,7 +45,7 @@ export default async function AdminMetricasPage() {
     { count: vehiculosPausados },
     { count: vehiculosVendidos },
     { count: totalWhatsapp },
-    { data: topVistasRaw },
+    { count: totalVistas },
     { data: perfiles30dRaw },
     { data: agenciasRaw },
   ] = await Promise.all([
@@ -57,18 +57,20 @@ export default async function AdminMetricasPage() {
     supabase.from('vehiculos').select('*', { count: 'exact', head: true }).eq('activo', false).eq('vendido', false),
     supabase.from('vehiculos').select('*', { count: 'exact', head: true }).eq('vendido', true),
     supabase.from('metricas_vehiculos').select('*', { count: 'exact', head: true }).eq('tipo', 'whatsapp_click'),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase.from('vehiculos').select('id, marca, modelo, vistas').order('vistas', { ascending: false }).limit(5) as any) as Promise<{ data: AnyRecord[] | null }>,
+    supabase.from('metricas_vehiculos').select('*', { count: 'exact', head: true }).eq('tipo', 'view'),
     supabase.from('profiles').select('created_at').gte('created_at', startOf30d.toISOString()),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('profiles').select('id, nombre, avatar_url, role, vehiculos!vehiculos_user_id_fkey(count)').in('role', ['agencia_basica', 'agencia_premium']) as any) as Promise<{ data: AnyRecord[] | null }>,
   ])
 
-  // Top 5 por WhatsApp
-  const { data: topWhatsappRaw } = await supabase.rpc('admin_top_whatsapp', { n: 5 })
+  // Top 5 por vistas y por WhatsApp desde metricas_vehiculos
+  const [{ data: topVistasRaw }, { data: topWhatsappRaw }] = await Promise.all([
+    supabase.rpc('admin_top_views', { n: 5 }),
+    supabase.rpc('admin_top_whatsapp', { n: 5 }),
+  ])
 
   const topVistas: TopItem[] = (topVistasRaw ?? []).map((v: AnyRecord) => ({
-    id: v.id, marca: v.marca, modelo: v.modelo, count: v.vistas ?? 0,
+    id: v.vehiculo_id, marca: v.marca, modelo: v.modelo, count: Number(v.views ?? 0),
   }))
 
   const topWhatsapp: TopItem[] = (topWhatsappRaw ?? []).map((v: AnyRecord) => ({

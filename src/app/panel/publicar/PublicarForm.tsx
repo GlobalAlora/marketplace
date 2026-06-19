@@ -88,7 +88,10 @@ export default function PublicarForm({ userId }: { userId: string }) {
 
       setUploading(false)
       startTransition(() => {
-        createVehiculo(fd).catch(err => setError(err.message))
+        createVehiculo(fd).catch(err => {
+          if (err?.message === 'NEXT_REDIRECT') return
+          setError(err instanceof Error ? err.message : 'Error al publicar')
+        })
       })
     } catch (err: unknown) {
       setUploading(false)

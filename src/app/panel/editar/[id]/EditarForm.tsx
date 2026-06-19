@@ -113,7 +113,10 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
 
       setUploading(false)
       startTransition(() => {
-        updateVehiculo(vehiculo.id, fd).catch(err => setError(err instanceof Error ? err.message : 'Error al guardar'))
+        updateVehiculo(vehiculo.id, fd).catch(err => {
+          if (err?.message === 'NEXT_REDIRECT') return
+          setError(err instanceof Error ? err.message : 'Error al guardar')
+        })
       })
     } catch (err: unknown) {
       setUploading(false)

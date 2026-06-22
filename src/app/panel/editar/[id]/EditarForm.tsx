@@ -3,6 +3,7 @@
 import { useState, useRef, useTransition } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { updateVehiculo } from './actions'
+import { TIPOS_VEHICULO } from '@/lib/constants'
 
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
 const SELECT = 'w-full appearance-none [color-scheme:dark] bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] cursor-pointer'
@@ -34,6 +35,7 @@ interface VehiculoData {
   puertas: number | null
   color: string | null
   imagenes: string[]
+  tipo_vehiculo: string | null
 }
 
 // Unified item: existing images have only src; new uploads also have file
@@ -202,6 +204,14 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
           className="hidden"
           onChange={handleImageSelect}
         />
+      </div>
+
+      {/* Tipo de vehículo */}
+      <div>
+        <label className={LABEL}>Tipo de vehículo *</label>
+        <select name="tipo_vehiculo" required defaultValue={vehiculo.tipo_vehiculo ?? 'auto'} className={SELECT}>
+          {TIPOS_VEHICULO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+        </select>
       </div>
 
       {/* Marca / Modelo */}

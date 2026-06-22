@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { MARCAS } from '@/lib/constants'
+import { MARCAS, TIPOS_VEHICULO } from '@/lib/constants'
 
 // ── Constantes precio ──────────────────────────────────────────────────────────
 const PRICE_ABS_MIN = 0
@@ -53,6 +53,11 @@ const LOCALIDAD_OPTS: Option[] = [
 const MARCA_OPTS: Option[] = [
   { label: 'Todas las marcas', value: '' },
   ...MARCAS.map(m => ({ label: m, value: m })),
+]
+
+const TIPO_OPTS: Option[] = [
+  { label: 'Todos los tipos', value: '' },
+  ...TIPOS_VEHICULO.map(t => ({ label: t.label, value: t.value })),
 ]
 
 // ── Chevron ────────────────────────────────────────────────────────────────────
@@ -319,6 +324,7 @@ type Filters = {
   km:        string
   ubicacion: string
   condicion: string
+  tipo:      string
 }
 
 interface FiltrosHorizontalesProps { sticky?: boolean }
@@ -336,6 +342,7 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
     km:        searchParams.get('km_max')     ?? '',
     ubicacion: searchParams.get('ubicacion')  ?? '',
     condicion: searchParams.get('condicion')  ?? '',
+    tipo:      searchParams.get('tipo')       ?? '',
   })
 
   const hasFilters = Object.values(filters).some(Boolean)
@@ -349,6 +356,7 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
     if (f.km)        params.set('km_max',     f.km)
     if (f.ubicacion) params.set('ubicacion',  f.ubicacion)
     if (f.condicion) params.set('condicion',  f.condicion)
+    if (f.tipo)      params.set('tipo',       f.tipo)
     const qs = params.toString()
     return `/vehiculos${qs ? '?' + qs : ''}`
   }
@@ -369,13 +377,20 @@ export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizonta
   }
 
   function clearAll() {
-    navigate({ marca: '', precioMin: '', precioMax: '', año: '', km: '', ubicacion: '', condicion: '' })
+    navigate({ marca: '', precioMin: '', precioMax: '', año: '', km: '', ubicacion: '', condicion: '', tipo: '' })
   }
 
   return (
     <div className={sticky ? 'sticky top-14 z-40 bg-[#071526] border-b border-white/8' : ''}>
       <div className={sticky ? 'max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 py-3' : ''}>
         <div className="flex flex-wrap items-center gap-2">
+
+          <FilterChip
+            label="Todos los tipos"
+            value={filters.tipo}
+            options={TIPO_OPTS}
+            onChange={v => applyFilter('tipo', v)}
+          />
 
           <FilterChip
             label="Todas las marcas"

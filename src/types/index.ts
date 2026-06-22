@@ -1,5 +1,7 @@
 export type Role = 'particular' | 'agencia_basica' | 'agencia_premium' | 'admin'
 
+export type TipoVehiculo = 'auto' | 'pickup' | 'suv' | 'utilitario' | 'moto' | 'monovolumen'
+
 export type Profile = {
   id: string
   email: string
@@ -42,6 +44,7 @@ export type Vehiculo = {
   combustible?: 'nafta' | 'diesel' | 'gnc' | 'hibrido' | 'electrico'
   puertas?: number
   color?: string
+  tipo_vehiculo?: TipoVehiculo
   // Trust signal (mock: campo estático; prod: RPC increment en Supabase)
   vistas?: number
 }

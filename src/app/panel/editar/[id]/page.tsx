@@ -18,6 +18,7 @@ interface VehiculoRow {
   puertas: number | null
   color: string | null
   imagenes: string[]
+  tipo_vehiculo: string | null
 }
 
 interface PageProps {

@@ -54,16 +54,24 @@ export default async function AgenciaPage({ params }: PageProps) {
 
   if (!agencia) notFound()
 
-  const { data: rawVehiculos } = await supabase
-    .from('vehiculos')
-    .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
-    .eq('user_id', agencia.id)
-    .eq('activo', true)
-    .eq('vendido', false)
-    .order('destacado', { ascending: false })
-    .order('created_at', { ascending: false })
+  const [{ data: rawVehiculos }, { count: vendidosCount }] = await Promise.all([
+    supabase
+      .from('vehiculos')
+      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+      .eq('user_id', agencia.id)
+      .eq('activo', true)
+      .eq('vendido', false)
+      .order('destacado', { ascending: false })
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('vehiculos')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', agencia.id)
+      .eq('vendido', true),
+  ])
 
   const vehiculos = (rawVehiculos ?? []) as unknown as Vehiculo[]
+  const vendidos = vendidosCount ?? 0
   const nombre = agencia.nombre_agencia ?? `${agencia.nombre} ${agencia.apellido}`
   const iniciales = getIniciales(nombre)
   const logoUrl = agencia.logo_agencia
@@ -115,6 +123,11 @@ export default async function AgenciaPage({ params }: PageProps) {
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-extrabold text-white">{vehiculos.length}</span>
                       <span className="text-sm text-gray-400">vehículos</span>
+                    </div>
+                    <span className="text-gray-700" aria-hidden="true">|</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-extrabold text-emerald-400">{vendidos}</span>
+                      <span className="text-sm text-gray-400">vendidos</span>
                     </div>
                     <span className="text-gray-700" aria-hidden="true">|</span>
                     <div className="text-sm text-gray-400">Desde <span className="text-gray-300 font-medium">{formatFecha(agencia.created_at)}</span></div>

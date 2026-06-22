@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { MARCAS } from '@/lib/constants'
+import { MARCAS, TIPOS_VEHICULO } from '@/lib/constants'
 
 const PRECIOS = [
   { label: 'Sin límite', value: '' },
@@ -36,9 +36,10 @@ type Filters = {
   año: string
   km: string
   ubicacion: string
+  tipo: string
 }
 
-const EMPTY: Filters = { marca: '', precio: '', año: '', km: '', ubicacion: '' }
+const EMPTY: Filters = { marca: '', precio: '', año: '', km: '', ubicacion: '', tipo: '' }
 
 function buildHref(f: Filters): string {
   const params = new URLSearchParams()
@@ -47,6 +48,7 @@ function buildHref(f: Filters): string {
   if (f.año) params.set('año_desde', f.año)
   if (f.km) params.set('km_max', f.km)
   if (f.ubicacion) params.set('ubicacion', f.ubicacion)
+  if (f.tipo) params.set('tipo', f.tipo)
   const qs = params.toString()
   return `/vehiculos${qs ? '?' + qs : ''}`
 }
@@ -125,6 +127,11 @@ export default function SidebarFiltros() {
 
         {/* Filter fields */}
         <div className="flex flex-col gap-4">
+          <FilterGroup label="Tipo de vehículo" id="sf-tipo" value={filters.tipo} onChange={set('tipo')}>
+            <option value="">Todos los tipos</option>
+            {TIPOS_VEHICULO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </FilterGroup>
+
           <FilterGroup label="Marca" id="sf-marca" value={filters.marca} onChange={set('marca')}>
             <option value="">Todas las marcas</option>
             {MARCAS.map(m => <option key={m} value={m}>{m}</option>)}

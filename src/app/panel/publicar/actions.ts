@@ -29,6 +29,7 @@ export async function createVehiculo(formData: FormData) {
     throw new Error(`Límite de ${limite} publicaciones alcanzado para tu plan`)
   }
 
+  const tipo_vehiculo = formData.get('tipo_vehiculo') as string
   const marca       = formData.get('marca') as string
   const modelo      = formData.get('modelo') as string
   const año         = parseInt(formData.get('año') as string)
@@ -50,6 +51,7 @@ export async function createVehiculo(formData: FormData) {
     .insert({
       user_id: user.id,
       titulo,
+      tipo_vehiculo,
       marca,
       modelo,
       año,

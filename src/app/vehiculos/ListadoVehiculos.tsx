@@ -79,6 +79,7 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
   const kmMax     = searchParams.get('km_max')     ? Number(searchParams.get('km_max'))     : null
   const ubicacion = searchParams.get('ubicacion') ?? ''
   const condicion = searchParams.get('condicion') ?? ''
+  const tipo      = searchParams.get('tipo') ?? ''
   const sort      = searchParams.get('sort') ?? 'reciente'
 
   const filtered = useMemo(() => {
@@ -91,6 +92,7 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
       if (kmMax     !== null && v.kilometraje > kmMax) return false
       if (ubicacion && v.ubicacion !== ubicacion)      return false
       if (condicion && v.condicion !== condicion)      return false
+      if (tipo && v.tipo_vehiculo !== tipo)            return false
       return true
     })
     // Destacados siempre primero dentro de cada criterio de orden
@@ -115,9 +117,9 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
         return [...dest.sort(byDate), ...rest.sort(byDate)]
       }
     }
-  }, [vehiculos, q, marca, precioMin, precioMax, añoDesde, kmMax, ubicacion, condicion, sort])
+  }, [vehiculos, q, marca, precioMin, precioMax, añoDesde, kmMax, ubicacion, condicion, tipo, sort])
 
-  const hasFilters = !!(q || marca || precioMin || precioMax || añoDesde || kmMax || ubicacion || condicion)
+  const hasFilters = !!(q || marca || precioMin || precioMax || añoDesde || kmMax || ubicacion || condicion || tipo)
 
   function handleSortChange(value: string) {
     const params = new URLSearchParams(searchParams.toString())

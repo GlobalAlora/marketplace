@@ -9,6 +9,7 @@ export async function updateVehiculo(vehiculoId: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('No autenticado')
 
+  const tipo_vehiculo = formData.get('tipo_vehiculo') as string
   const marca       = formData.get('marca') as string
   const modelo      = formData.get('modelo') as string
   const año         = parseInt(formData.get('año') as string)
@@ -29,6 +30,7 @@ export async function updateVehiculo(vehiculoId: string, formData: FormData) {
     .from('vehiculos')
     .update({
       titulo,
+      tipo_vehiculo,
       marca,
       modelo,
       año,

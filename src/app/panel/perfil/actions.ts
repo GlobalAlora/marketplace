@@ -2,6 +2,28 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { slugify } from '@/lib/slug'
+
+async function generateUniqueSlug(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  base: string,
+  excludeUserId: string
+): Promise<string> {
+  let candidate = base
+  let suffix = 1
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('slug', candidate)
+      .neq('id', excludeUserId)
+      .maybeSingle()
+    if (!data) return candidate
+    suffix += 1
+    candidate = `${base}-${suffix}`
+  }
+}
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
@@ -20,6 +42,11 @@ export async function updateProfile(formData: FormData) {
   if (bio !== null) updates.bio = bio
   if (logo_agencia) updates.logo_agencia = logo_agencia
 
+  if (nombre_agencia !== null && nombre_agencia.trim()) {
+    const base = slugify(nombre_agencia) || 'agencia'
+    updates.slug = await generateUniqueSlug(supabase, base, user.id)
+  }
+
   const { error } = await supabase
     .from('profiles')
     .update(updates)
@@ -28,4 +55,5 @@ export async function updateProfile(formData: FormData) {
   if (error) throw new Error(error.message)
   revalidatePath('/panel/perfil')
   revalidatePath('/panel')
+  if (updates.slug) revalidatePath(`/agencias/${updates.slug}`)
 }

@@ -19,7 +19,7 @@ interface PageProps {
 }
 
 const SELECT_FIELDS =
-  '*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)'
+  '*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)'
 
 async function getVehiculo(id: string): Promise<Vehiculo | null> {
   const supabase = await createClient()
@@ -133,7 +133,7 @@ export default async function VehiculoPage({ params }: PageProps) {
   const nombreVendedor = vehiculo.profiles?.nombre_agencia ||
     `${vehiculo.profiles?.nombre ?? ''} ${vehiculo.profiles?.apellido ?? ''}`.trim() || 'este vendedor'
   const agenciaHref = esAgencia
-    ? `/agencias/${vehiculo.profiles?.id ?? vehiculo.user_id}`
+    ? `/agencias/${vehiculo.profiles?.slug ?? vehiculo.profiles?.id ?? vehiculo.user_id}`
     : `/usuarios/${vehiculo.profiles?.id ?? vehiculo.user_id}`
 
   return (

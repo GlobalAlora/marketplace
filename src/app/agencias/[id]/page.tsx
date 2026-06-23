@@ -1,11 +1,13 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import MainLayout from '@/components/layout/MainLayout'
 import PerfilVehiculosSection from '@/components/vehiculos/PerfilVehiculosSection'
 import BannerPublicitario from '@/components/ui/BannerPublicitario'
+import CompartirPerfil from './CompartirPerfil'
 import { createClient } from '@/lib/supabase/server'
 import { getBanners } from '@/lib/banners'
+import { isUuid } from '@/lib/slug'
 import type { Vehiculo, Profile } from '@/types'
 
 interface PageProps {
@@ -20,32 +22,61 @@ function getIniciales(nombre: string): string {
   return nombre.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
 }
 
-async function getAgencia(id: string): Promise<Profile | null> {
+// "id" acá puede ser el slug amigable ("automotores-sur") o el UUID legacy.
+async function getAgencia(idOrSlug: string): Promise<Profile | null> {
   const supabase = await createClient()
-  const { data } = await supabase
+  const base = supabase
     .from('profiles')
-    .select('id,email,nombre,apellido,telefono,role,avatar_url,nombre_agencia,logo_agencia,bio,verificado,activo,created_at')
-    .eq('id', id)
+    .select('id,email,nombre,apellido,telefono,role,avatar_url,nombre_agencia,logo_agencia,bio,slug,verificado,activo,created_at')
     .eq('activo', true)
     .in('role', ['agencia_basica', 'agencia_premium'])
-    .maybeSingle()
+
+  const { data } = isUuid(idOrSlug)
+    ? await base.eq('id', idOrSlug).maybeSingle()
+    : await base.eq('slug', idOrSlug).maybeSingle()
+
   return data as Profile | null
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
+  const supabase = await createClient()
   const agencia = await getAgencia(id)
   if (!agencia) return { title: 'Agencia no encontrada — AUTODUX' }
+
   const nombre = agencia.nombre_agencia ?? `${agencia.nombre} ${agencia.apellido}`
+
+  const { count } = await supabase
+    .from('vehiculos')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', agencia.id)
+    .eq('activo', true)
+    .eq('vendido', false)
+
+  const descripcion = `${count ?? 0} vehículos disponibles en AUTODUX`
+
   return {
     title: `${nombre} — AUTODUX`,
-    description: agencia.bio ?? `Vehículos publicados por ${nombre} en AUTODUX.`,
+    description: agencia.bio ?? descripcion,
+    openGraph: {
+      title: nombre,
+      description: descripcion,
+      type: 'profile',
+      ...(agencia.logo_agencia
+        ? { images: [{ url: agencia.logo_agencia, width: 800, height: 800, alt: `Logo ${nombre}` }] }
+        : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: nombre,
+      description: descripcion,
+      ...(agencia.logo_agencia ? { images: [agencia.logo_agencia] } : {}),
+    },
   }
 }
 
 export default async function AgenciaPage({ params }: PageProps) {
   const { id } = await params
-  const supabase = await createClient()
 
   const [agencia, banners] = await Promise.all([
     getAgencia(id),
@@ -54,10 +85,17 @@ export default async function AgenciaPage({ params }: PageProps) {
 
   if (!agencia) notFound()
 
+  // Si entraron con el UUID legacy y ya tiene slug, redirigir a la URL canónica.
+  if (isUuid(id) && agencia.slug) {
+    redirect(`/agencias/${agencia.slug}`)
+  }
+
+  const supabase = await createClient()
+
   const [{ data: rawVehiculos }, { count: vendidosCount }] = await Promise.all([
     supabase
       .from('vehiculos')
-      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)')
       .eq('user_id', agencia.id)
       .eq('activo', true)
       .eq('vendido', false)
@@ -145,6 +183,7 @@ export default async function AgenciaPage({ params }: PageProps) {
                       Contactar por WhatsApp
                     </a>
                   )}
+                  <CompartirPerfil slug={agencia.slug ?? agencia.id} nombre={nombre} />
                 </div>
               </div>
             </div>

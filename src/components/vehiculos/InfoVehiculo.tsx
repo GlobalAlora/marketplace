@@ -148,6 +148,10 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
     ? (vehiculo.profiles?.nombre_agencia ?? 'A').slice(0, 2).toUpperCase()
     : getIniciales(vehiculo.profiles?.nombre ?? 'V', vehiculo.profiles?.apellido ?? '')
 
+  const vendedorHref = esAgencia
+    ? `/agencias/${vehiculo.profiles?.slug ?? vehiculo.profiles?.id ?? vehiculo.user_id}`
+    : `/usuarios/${vehiculo.profiles?.id ?? vehiculo.user_id}`
+
   const verificado = vehiculo.profiles?.verificado ?? false
   const dias = diasDesde(vehiculo.created_at)
 
@@ -285,7 +289,7 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
             <div className="flex items-center gap-2 flex-wrap">
               {esAgencia ? (
                 <Link
-                  href={`/agencias/${vehiculo.profiles?.id ?? vehiculo.user_id}`}
+                  href={vendedorHref}
                   className="text-sm font-bold text-white hover:text-[#FFC107] transition-colors"
                 >
                   {nombreVendedor}
@@ -322,10 +326,7 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
         )}
 
         <Link
-          href={esAgencia
-            ? `/agencias/${vehiculo.profiles?.id ?? vehiculo.user_id}`
-            : `/usuarios/${vehiculo.profiles?.id ?? vehiculo.user_id}`
-          }
+          href={vendedorHref}
           className="mt-4 flex items-center justify-center gap-2 w-full border border-white/12 text-gray-300 text-sm font-semibold py-2.5 rounded-xl hover:border-white/25 hover:text-white hover:bg-white/[0.04] transition-all duration-150"
         >
           {esAgencia ? 'Ver perfil de agencia' : 'Ver perfil del vendedor'}

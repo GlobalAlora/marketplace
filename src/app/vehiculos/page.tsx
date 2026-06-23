@@ -19,7 +19,7 @@ export default async function VehiculosPage() {
   const [{ data: raw }, banners] = await Promise.all([
     supabase
       .from('vehiculos')
-      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)')
       .eq('activo', true)
       .eq('vendido', false)
       .order('destacado', { ascending: false })

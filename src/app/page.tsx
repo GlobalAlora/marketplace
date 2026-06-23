@@ -29,7 +29,7 @@ export default async function Home() {
     // Vitrina: solo destacados activos, máx 3
     supabase
       .from('vehiculos')
-      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)')
       .eq('activo', true).eq('vendido', false).eq('destacado', true)
       .order('created_at', { ascending: false })
       .limit(3),
@@ -37,7 +37,7 @@ export default async function Home() {
     // Últimos publicados: 4 más recientes
     supabase
       .from('vehiculos')
-      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)')
       .eq('activo', true).eq('vendido', false)
       .order('created_at', { ascending: false })
       .limit(4),
@@ -45,7 +45,7 @@ export default async function Home() {
     // Preview todos: destacados primero, 1 fila (máx 4)
     supabase
       .from('vehiculos')
-      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+      .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)')
       .eq('activo', true).eq('vendido', false)
       .order('destacado', { ascending: false })
       .order('created_at', { ascending: false })

@@ -50,7 +50,7 @@ export default async function UsuarioPage({ params }: PageProps) {
 
   const { data: rawVehiculos } = await supabase
     .from('vehiculos')
-    .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
+    .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)')
     .eq('user_id', perfil.id)
     .eq('activo', true)
     .eq('vendido', false)

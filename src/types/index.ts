@@ -15,6 +15,7 @@ export type Profile = {
   nombre_agencia?: string
   logo_agencia?: string
   bio?: string
+  slug?: string
   verificado: boolean
   activo: boolean
   created_at: string

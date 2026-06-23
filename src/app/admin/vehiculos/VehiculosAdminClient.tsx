@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import Link from 'next/link'
-import { toggleActivoVehiculo, toggleDestacado, deleteVehiculoAdmin, updatePrecioVehiculo } from './actions'
+import { toggleActivoVehiculo, toggleDestacado, deleteVehiculoAdmin, updatePrecioVehiculo, reorderImagenesVehiculo } from './actions'
 
 interface VehiculoAdmin {
   id: string
@@ -46,6 +46,78 @@ const ESTADO_STYLE: Record<string, string> = {
   vendido: 'text-gray-500 bg-white/5',
 }
 
+function ImagenesReorderPanel({ vehiculoId, imagenes, onClose }: { vehiculoId: string; imagenes: string[]; onClose: () => void }) {
+  const [items, setItems] = useState<string[]>(imagenes)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const dragIndex = useRef<number | null>(null)
+  const [dragOver, setDragOver] = useState<number | null>(null)
+
+  function onDragStart(i: number) { dragIndex.current = i }
+  function onDragOver(e: React.DragEvent, i: number) { e.preventDefault(); setDragOver(i) }
+  function onDrop(i: number) {
+    const from = dragIndex.current
+    if (from === null || from === i) { setDragOver(null); return }
+    setItems(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(i, 0, moved)
+      return next
+    })
+    dragIndex.current = null
+    setDragOver(null)
+  }
+  function onDragEnd() { dragIndex.current = null; setDragOver(null) }
+
+  async function handleSave() {
+    setSaving(true)
+    setError(null)
+    try {
+      await reorderImagenesVehiculo(vehiculoId, items)
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al guardar')
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="mt-3 pt-3 border-t border-white/8">
+      <p className="text-xs font-semibold text-gray-400 mb-2">Reordenar fotos <span className="text-gray-600 font-normal">(la primera es la portada)</span></p>
+      <div className="flex flex-wrap gap-2 mb-3">
+        {items.map((src, i) => (
+          <div
+            key={src}
+            draggable
+            onDragStart={() => onDragStart(i)}
+            onDragOver={e => onDragOver(e, i)}
+            onDrop={() => onDrop(i)}
+            onDragEnd={onDragEnd}
+            className={`relative w-20 h-14 rounded-lg overflow-hidden border transition-all cursor-grab active:cursor-grabbing select-none
+              ${dragOver === i ? 'border-[#FFC107] scale-105 opacity-70' : 'border-white/10'}`}
+          >
+            <img src={src} alt="" className="w-full h-full object-cover pointer-events-none" />
+            {i === 0 && (
+              <span className="absolute bottom-0 left-0 right-0 text-[8px] font-bold text-center bg-[#FFC107] text-[#0D0F14] py-0.5">
+                PORTADA
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+      {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
+      <div className="flex items-center gap-2">
+        <button onClick={handleSave} disabled={saving} className="text-xs font-bold text-[#0D0F14] bg-[#FFC107] hover:bg-[#e6ad00] disabled:opacity-50 px-3 py-1.5 rounded-lg transition-colors">
+          {saving ? 'Guardando…' : 'Guardar orden'}
+        </button>
+        <button onClick={onClose} disabled={saving} className="text-xs text-gray-500 hover:text-gray-300 px-3 py-1.5 rounded-lg transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function VehiculosAdminClient({ vehiculos }: { vehiculos: VehiculoAdmin[] }) {
   const [pending, startTransition] = useTransition()
   const [loadingId, setLoadingId] = useState<string | null>(null)
@@ -57,6 +129,7 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
   const [page, setPage] = useState(1)
   const [editPrecioId, setEditPrecioId] = useState<string | null>(null)
   const [precioInput, setPrecioInput] = useState('')
+  const [editImagesId, setEditImagesId] = useState<string | null>(null)
 
   const filtered = vehiculos.filter(v => {
     const estado = getEstado(v)
@@ -127,7 +200,8 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
             const editingPrecio = editPrecioId === v.id
 
             return (
-              <div key={v.id} className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-4 flex gap-4 items-center">
+              <div key={v.id} className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-4">
+              <div className="flex gap-4 items-center">
                 {/* Thumb */}
                 <div className="w-16 h-12 rounded-xl bg-white/5 shrink-0 overflow-hidden">
                   {thumb
@@ -207,6 +281,19 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
                     </button>
                   )}
 
+                  {/* Editar fotos */}
+                  {v.imagenes?.length > 1 && (
+                    <button
+                      onClick={() => setEditImagesId(editImagesId === v.id ? null : v.id)}
+                      title="Reordenar fotos"
+                      className={`p-2 rounded-lg transition-colors ${editImagesId === v.id ? 'text-[#FFC107] bg-[#FFC107]/10' : 'text-gray-400 hover:text-white hover:bg-white/8'}`}
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                      </svg>
+                    </button>
+                  )}
+
                   {/* Toggle destacado */}
                   <button
                     onClick={() => act(v.id, () => toggleDestacado(v.id, !v.destacado))}
@@ -242,6 +329,14 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
                     </button>
                   )}
                 </div>
+              </div>
+              {editImagesId === v.id && (
+                <ImagenesReorderPanel
+                  vehiculoId={v.id}
+                  imagenes={v.imagenes ?? []}
+                  onClose={() => setEditImagesId(null)}
+                />
+              )}
               </div>
             )
           })}

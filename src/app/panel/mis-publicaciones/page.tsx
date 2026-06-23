@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import MisPublicacionesClient from './MisPublicacionesClient'
+import { getDestacadosLimits } from '@/lib/plan-config'
 
 interface Vehiculo {
   id: string
@@ -13,6 +14,7 @@ interface Vehiculo {
   imagenes: string[]
   activo: boolean
   vendido: boolean
+  destacado: boolean
   created_at: string
   vistas: number
   pausado_por_admin: boolean
@@ -23,10 +25,19 @@ export default async function MisPublicacionesPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const destacadosLimits = await getDestacadosLimits()
+  const limiteDestacados = destacadosLimits[profile?.role ?? 'particular'] ?? 0
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: vehiculos } = await (supabase
     .from('vehiculos')
-    .select('id, titulo, marca, modelo, año, precio, imagenes, activo, vendido, created_at, vistas, pausado_por_admin')
+    .select('id, titulo, marca, modelo, año, precio, imagenes, activo, vendido, destacado, created_at, vistas, pausado_por_admin')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false }) as any) as { data: Vehiculo[] | null }
 
@@ -65,7 +76,7 @@ export default async function MisPublicacionesPage() {
           </Link>
         </div>
       ) : (
-        <MisPublicacionesClient vehiculos={vehiculos} />
+        <MisPublicacionesClient vehiculos={vehiculos} limiteDestacados={limiteDestacados} />
       )}
     </div>
   )

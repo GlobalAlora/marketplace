@@ -9,13 +9,19 @@ export default async function PlanesPage() {
 
   const { data: config } = await supabase
     .from('plan_config')
-    .select('role, max_publicaciones, updated_at')
+    .select('role, max_publicaciones, limite_destacados, updated_at')
     .order('role')
 
   const limits = {
     particular:      config?.find(c => c.role === 'particular')?.max_publicaciones ?? 3,
     agencia_basica:  config?.find(c => c.role === 'agencia_basica')?.max_publicaciones ?? 10,
     agencia_premium: config?.find(c => c.role === 'agencia_premium')?.max_publicaciones ?? 30,
+  }
+
+  const destacadosLimits = {
+    particular:      config?.find(c => c.role === 'particular')?.limite_destacados ?? 0,
+    agencia_basica:  config?.find(c => c.role === 'agencia_basica')?.limite_destacados ?? 1,
+    agencia_premium: config?.find(c => c.role === 'agencia_premium')?.limite_destacados ?? 3,
   }
 
   const updatedAt = config?.[0]?.updated_at
@@ -30,7 +36,7 @@ export default async function PlanesPage() {
       </div>
 
       <div className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-6">
-        <PlanesForm limits={limits} />
+        <PlanesForm limits={limits} destacadosLimits={destacadosLimits} />
       </div>
 
       {updatedAt && (

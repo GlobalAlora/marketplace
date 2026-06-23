@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { MARCAS } from '@/lib/constants'
 import LogoAutodux from '@/components/auth/LogoAutodux'
 import { useAuth } from '@/lib/supabase/AuthProvider'
@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
   { href: '/vehiculos', label: 'Vehículos' },
   { href: '/publicar', label: 'Publicar' },
+  { href: '/#sobre-nosotros', label: 'Sobre nosotros' },
 ]
 
 // Marca suggestions for search autocomplete
@@ -37,6 +38,8 @@ export default function Header() {
   const { user, signOut } = useAuth()
 
   const router           = useRouter()
+  const pathname         = usePathname()
+  const loginHref         = `/auth/login?redirect=${encodeURIComponent(pathname)}`
   const desktopSearchRef = useRef<HTMLDivElement>(null)
   const userDropdownRef  = useRef<HTMLDivElement>(null)
   const mobileInputRef   = useRef<HTMLInputElement>(null)
@@ -230,7 +233,7 @@ export default function Header() {
           ) : (
             /* Not logged in — Ingresar button */
             <Link
-              href="/auth/login"
+              href={loginHref}
               className="hidden md:block text-sm font-bold px-5 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors ml-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFC107] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0F14]"
             >
               Ingresar
@@ -355,7 +358,7 @@ export default function Header() {
             ) : (
               /* Mobile: not logged in */
               <Link
-                href="/auth/login"
+                href={loginHref}
                 className="mt-2 text-sm font-bold px-4 py-2 rounded-md bg-[#FFC107] text-[#0D0F14] hover:bg-yellow-400 transition-colors text-center"
                 onClick={() => setMenuOpen(false)}
               >

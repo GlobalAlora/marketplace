@@ -49,6 +49,14 @@ export async function updatePrecioVehiculo(id: string, precio: number) {
   revalidatePath('/admin/vehiculos')
 }
 
+export async function reorderImagenesVehiculo(id: string, imagenes: string[]) {
+  const supabase = await getAdminClient()
+  const { error } = await supabase.from('vehiculos').update({ imagenes }).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/vehiculos')
+  revalidatePath(`/vehiculos/${id}`)
+}
+
 export async function marcarVendido(id: string, vendido: boolean) {
   const supabase = await getAdminClient()
   const { error } = await supabase.from('vehiculos').update({ vendido }).eq('id', id)

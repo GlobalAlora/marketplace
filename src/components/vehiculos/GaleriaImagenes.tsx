@@ -116,7 +116,7 @@ export default function GaleriaImagenes({ imagenes, titulo }: GaleriaImagenesPro
 
         {/* Miniaturas */}
         {total > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory">
+          <div className="flex flex-wrap gap-2 overflow-x-auto scrollbar-hide pb-1 snap-x snap-mandatory">
             {imagenes.map((img, i) => (
               <button
                 key={i}
@@ -203,7 +203,7 @@ export default function GaleriaImagenes({ imagenes, titulo }: GaleriaImagenesPro
 
           {/* Miniaturas lightbox */}
           {total > 1 && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto max-w-[90vw] px-2 pb-1">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto scrollbar-hide max-w-[90vw] px-2 pb-1">
               {imagenes.map((img, i) => (
                 <button
                   key={i}

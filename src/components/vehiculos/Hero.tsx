@@ -52,7 +52,7 @@ const CARDS = [
     pregunta: '¿Querés vender tu auto?',
     descripcion: 'Publicá de forma rápida y sencilla en AUTODUX.',
     cta: 'Vendé tu auto',
-    href: '/auth/registro',
+    href: '/auth/registro?redirect=/panel/publicar',
   },
   {
     icon: <IconBuilding />,
@@ -61,7 +61,7 @@ const CARDS = [
     pregunta: '¿Tenés una agencia?',
     descripcion: 'Publicá tu stock, recibí consultas reales y gestioná tus vehículos desde un panel profesional.',
     cta: 'Publicá tu stock',
-    href: '/auth/registro',
+    href: '/auth/registro?redirect=/panel/publicar',
   },
 ]
 

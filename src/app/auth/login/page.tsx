@@ -1,9 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import AuthLayout from '@/components/auth/AuthLayout'
 import { createClient } from '@/lib/supabase/client'
+
+function safeRedirect(path: string | null): string | null {
+  if (!path) return null
+  if (!path.startsWith('/') || path.startsWith('//')) return null
+  return path
+}
 
 const INPUT_BASE =
   'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
@@ -17,6 +24,16 @@ interface FormErrors {
 }
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  )
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams()
+  const redirectTo = safeRedirect(searchParams.get('redirect'))
   const [email, setEmail]           = useState('')
   const [password, setPassword]     = useState('')
   const [showPw, setShowPw]         = useState(false)
@@ -60,7 +77,11 @@ export default function LoginPage() {
       .single()
 
     // Full reload para que el server component lea las cookies de sesión recién seteadas
-    window.location.href = profile?.role === 'admin' ? '/admin' : '/panel'
+    if (redirectTo) {
+      window.location.href = redirectTo
+    } else {
+      window.location.href = profile?.role === 'admin' ? '/admin' : '/panel'
+    }
   }
 
   return (
@@ -193,7 +214,7 @@ export default function LoginPage() {
         {/* Footer link */}
         <p className="mt-6 text-center text-sm text-gray-500">
           ¿No tenés cuenta?{' '}
-          <Link href="/auth/registro" className="text-[#FFC107] font-semibold hover:text-yellow-300 transition-colors">
+          <Link href={redirectTo ? `/auth/registro?redirect=${encodeURIComponent(redirectTo)}` : '/auth/registro'} className="text-[#FFC107] font-semibold hover:text-yellow-300 transition-colors">
             Registrate
           </Link>
         </p>

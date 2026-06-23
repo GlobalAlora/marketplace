@@ -11,6 +11,11 @@ interface Limits {
   agencia_premium: number
 }
 
+interface Props {
+  limits: Limits
+  destacadosLimits: Limits
+}
+
 const ROLE_INFO = [
   {
     key: 'particular' as const,
@@ -32,7 +37,7 @@ const ROLE_INFO = [
   },
 ]
 
-export default function PlanesForm({ limits }: { limits: Limits }) {
+export default function PlanesForm({ limits, destacadosLimits }: Props) {
   const [pending, startTransition] = useTransition()
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -62,17 +67,31 @@ export default function PlanesForm({ limits }: { limits: Limits }) {
             </div>
             <p className="text-[11px] text-gray-600">{desc}</p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <input
-              name={key}
-              type="number"
-              min={1}
-              max={9999}
-              defaultValue={limits[key]}
-              required
-              className={`${INPUT} w-20`}
-            />
-            <span className="text-xs text-gray-600 whitespace-nowrap">publicaciones</span>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2">
+              <input
+                name={key}
+                type="number"
+                min={1}
+                max={9999}
+                defaultValue={limits[key]}
+                required
+                className={`${INPUT} w-20`}
+              />
+              <span className="text-xs text-gray-600 whitespace-nowrap">publicaciones</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                name={`destacados_${key}`}
+                type="number"
+                min={0}
+                max={999}
+                defaultValue={destacadosLimits[key]}
+                required
+                className={`${INPUT} w-16`}
+              />
+              <span className="text-xs text-gray-600 whitespace-nowrap">destacados</span>
+            </div>
           </div>
         </div>
       ))}

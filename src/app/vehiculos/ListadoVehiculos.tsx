@@ -210,7 +210,7 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
 
             {/* Sidebar derecho — 3 banners verticales 220×300 */}
             <aside className="w-[220px] shrink-0 hidden xl:block">
-              <div className="space-y-4">
+              <div className="sticky top-20 space-y-4">
                 {banners.sidebar_derecho_1 && <BannerPublicitario banner={banners.sidebar_derecho_1} />}
                 {banners.sidebar_derecho_2 && <BannerPublicitario banner={banners.sidebar_derecho_2} />}
                 {banners.sidebar_derecho_3 && <BannerPublicitario banner={banners.sidebar_derecho_3} />}

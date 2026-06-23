@@ -1,10 +1,16 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, Suspense } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import AuthLayout from '@/components/auth/AuthLayout'
 import { createClient } from '@/lib/supabase/client'
+
+function safeRedirect(path: string | null): string | null {
+  if (!path) return null
+  if (!path.startsWith('/') || path.startsWith('//')) return null
+  return path
+}
 
 const INPUT_BASE =
   'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-3 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
@@ -37,7 +43,17 @@ const EMPTY: FormState = {
 }
 
 export default function RegistroPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegistroForm />
+    </Suspense>
+  )
+}
+
+function RegistroForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = safeRedirect(searchParams.get('redirect'))
   const [form, setForm]         = useState<FormState>(EMPTY)
   const [errors, setErrors]     = useState<FormErrors>({})
   const [showPw, setShowPw]     = useState(false)
@@ -116,7 +132,7 @@ export default function RegistroPage() {
             Revisá tu bandeja y hacé clic en el enlace para activar tu cuenta.
           </p>
           <Link
-            href="/auth/login"
+            href={redirectTo ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}` : '/auth/login'}
             className="inline-block bg-[#FFC107] text-[#0D0F14] font-extrabold py-3 px-6 rounded-xl hover:bg-yellow-400 transition-all text-sm"
           >
             Ir al inicio de sesión
@@ -331,7 +347,7 @@ export default function RegistroPage() {
         {/* Footer link */}
         <p className="mt-6 text-center text-sm text-gray-500">
           ¿Ya tenés cuenta?{' '}
-          <Link href="/auth/login" className="text-[#FFC107] font-semibold hover:text-yellow-300 transition-colors">
+          <Link href={redirectTo ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}` : '/auth/login'} className="text-[#FFC107] font-semibold hover:text-yellow-300 transition-colors">
             Iniciá sesión
           </Link>
         </p>

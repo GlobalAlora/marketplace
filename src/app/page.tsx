@@ -42,14 +42,14 @@ export default async function Home() {
       .order('created_at', { ascending: false })
       .limit(4),
 
-    // Preview todos: destacados primero, máx 12
+    // Preview todos: destacados primero, 1 fila (máx 4)
     supabase
       .from('vehiculos')
       .select('*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo)')
       .eq('activo', true).eq('vendido', false)
       .order('destacado', { ascending: false })
       .order('created_at', { ascending: false })
-      .limit(12),
+      .limit(4),
 
     // Total count
     supabase.from('vehiculos').select('*', { count: 'exact', head: true })
@@ -64,9 +64,7 @@ export default async function Home() {
 
   const destacados      = (rawDestacados ?? []) as unknown as Vehiculo[]
   const ultimos         = (rawUltimos    ?? []) as unknown as Vehiculo[]
-  const todosOrdenados  = (rawTodos      ?? []) as unknown as Vehiculo[]
-  const todosPreviewA   = todosOrdenados.slice(0, 8)
-  const todosPreviewB   = todosOrdenados.slice(8, 12)
+  const todosPreview    = (rawTodos      ?? []) as unknown as Vehiculo[]
   const total           = totalCount ?? 0
 
   return (
@@ -131,12 +129,7 @@ export default async function Home() {
                 Ver todos →
               </Link>
             </div>
-            <GrillaVehiculos vehiculos={todosPreviewA} />
-            {todosPreviewB.length > 0 && (
-              <div className="mt-6">
-                <GrillaVehiculos vehiculos={todosPreviewB} />
-              </div>
-            )}
+            <GrillaVehiculos vehiculos={todosPreview} />
             <div className="mt-8 flex justify-center">
               <Link
                 href="/vehiculos"
@@ -161,11 +154,11 @@ export default async function Home() {
         </div>
       )}
 
-      {/* ¿Por qué usar AUTODUX? — rediseñado con carrusel */}
-      <SeccionBeneficios config={siteConfig} />
-
       {/* Sobre Nosotros */}
       <SobreNosotros />
+
+      {/* ¿Por qué usar AUTODUX? — rediseñado con carrusel */}
+      <SeccionBeneficios config={siteConfig} />
 
       {/* Planes */}
       <SeccionPlanes config={siteConfig} />

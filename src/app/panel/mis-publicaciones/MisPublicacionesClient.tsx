@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { toggleActivo, marcarVendido, reactivarVehiculo, deleteVehiculo } from './actions'
+import { toggleActivo, marcarVendido, reactivarVehiculo, deleteVehiculo, toggleDestacado } from './actions'
 
 interface Vehiculo {
   id: string
@@ -17,6 +17,7 @@ interface Vehiculo {
   created_at: string
   vistas: number
   pausado_por_admin: boolean
+  destacado: boolean
 }
 
 const ESTADO_CONFIG = {
@@ -31,11 +32,27 @@ function getEstado(v: Vehiculo) {
   return 'activo'
 }
 
-export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehiculo[] }) {
+export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: { vehiculos: Vehiculo[]; limiteDestacados: number }) {
   const [pending, startTransition] = useTransition()
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+
+  const destacadosActivos = vehiculos.filter(v => v.destacado && v.activo && !v.vendido).length
+
+  function handleDestacar(id: string, destacado: boolean) {
+    setLoadingId(id)
+    setActionError(null)
+    startTransition(async () => {
+      try {
+        await toggleDestacado(id, !destacado)
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : 'Error al destacar')
+      } finally {
+        setLoadingId(null)
+      }
+    })
+  }
 
   function handleToggle(id: string, activo: boolean) {
     setLoadingId(id)
@@ -101,6 +118,11 @@ export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehic
           <p className="text-sm text-red-400">{actionError}</p>
         </div>
       )}
+      {limiteDestacados > 0 && (
+        <p className="text-xs text-gray-500 px-1">
+          Destacados: <span className="text-white font-semibold">{destacadosActivos}/{limiteDestacados}</span> de tu plan
+        </p>
+      )}
       {vehiculos.map(v => {
         const estado = getEstado(v)
         const cfg = ESTADO_CONFIG[estado]
@@ -133,6 +155,7 @@ export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehic
                   <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                   {cfg.label}
                 </span>
+                {v.destacado && <span className="text-[10px] font-bold text-[#FFC107] bg-[#FFC107]/10 px-2 py-0.5 rounded-full shrink-0">★ Destacado</span>}
               </div>
               <p className="text-xs text-gray-500">
                 ${v.precio.toLocaleString('es-AR')} · {v.vistas} vistas
@@ -203,6 +226,24 @@ export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehic
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </button>
+                  {v.activo && (
+                    <button
+                      onClick={() => handleDestacar(v.id, v.destacado)}
+                      disabled={isLoading || (!v.destacado && limiteDestacados === 0)}
+                      title={
+                        v.destacado
+                          ? 'Quitar de destacados'
+                          : limiteDestacados === 0
+                            ? 'Tu plan no incluye destacados'
+                            : 'Destacar publicación'
+                      }
+                      className={`p-2 rounded-lg transition-colors disabled:opacity-30 ${v.destacado ? 'text-[#FFC107] hover:bg-[#FFC107]/10' : 'text-gray-400 hover:text-[#FFC107] hover:bg-[#FFC107]/10'}`}
+                    >
+                      <svg className="w-4 h-4" fill={v.destacado ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                      </svg>
+                    </button>
+                  )}
                   {confirmDelete === v.id ? (
                     <div className="flex items-center gap-1">
                       <button onClick={() => handleDelete(v.id)} disabled={isLoading} className="text-[11px] font-bold text-red-400 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-500/10 transition-colors">Confirmar</button>

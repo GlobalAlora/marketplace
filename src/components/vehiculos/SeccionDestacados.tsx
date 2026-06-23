@@ -248,7 +248,7 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-row rounded-2xl overflow-hidden min-h-[130px] transition-all duration-300"
+      className="group flex flex-row rounded-2xl overflow-hidden min-h-[130px] h-full transition-all duration-300"
       style={{
         background: '#FFFFFF',
         border: `2px solid ${GOLD}`,
@@ -374,9 +374,11 @@ export default function SeccionDestacados({ vehiculos, titulo, subtitulo }: Secc
           </div>
 
           {resto.length > 0 && (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 h-full">
               {resto.map(v => (
-                <CardPequeña key={v.id} vehiculo={v} />
+                <div key={v.id} className="flex-1">
+                  <CardPequeña vehiculo={v} />
+                </div>
               ))}
             </div>
           )}

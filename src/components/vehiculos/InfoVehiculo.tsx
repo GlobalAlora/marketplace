@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
 import { TIPOS_VEHICULO, TIPOS_MOTO } from '@/lib/constants'
@@ -132,6 +133,8 @@ function IconoCandado() {
 
 export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
   const { isLoggedIn } = useAuth()
+  const pathname = usePathname()
+  const loginHref = `/auth/login?redirect=${encodeURIComponent(pathname)}`
 
   const esAgencia =
     vehiculo.profiles?.role === 'agencia_premium' ||
@@ -216,7 +219,7 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
               $&nbsp;·····
             </span>
             <Link
-              href="/auth/login"
+              href={loginHref}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FFC107] hover:text-yellow-300 transition-colors"
             >
               <IconoCandado />

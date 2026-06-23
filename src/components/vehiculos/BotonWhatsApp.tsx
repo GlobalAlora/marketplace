@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/supabase/AuthProvider'
 import { registrarMetrica } from '@/app/vehiculos/[id]/actions'
 
@@ -14,11 +15,12 @@ interface BotonWhatsAppProps {
 
 export default function BotonWhatsApp({ telefono, marca, modelo, año, vehiculoId }: BotonWhatsAppProps) {
   const { user } = useAuth()
+  const pathname = usePathname()
 
   if (!user) {
     return (
       <Link
-        href="/auth/registro"
+        href={`/auth/registro?redirect=${encodeURIComponent(pathname)}`}
         className="flex items-center justify-center gap-3 w-full bg-[#282F8F] text-white font-extrabold py-4 rounded-xl hover:bg-[#1f2570] active:scale-[0.99] transition-all text-base"
       >
         <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">

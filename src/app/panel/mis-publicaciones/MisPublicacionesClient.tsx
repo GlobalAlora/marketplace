@@ -16,6 +16,7 @@ interface Vehiculo {
   vendido: boolean
   created_at: string
   vistas: number
+  pausado_por_admin: boolean
 }
 
 const ESTADO_CONFIG = {
@@ -174,17 +175,29 @@ export default function MisPublicacionesClient({ vehiculos }: { vehiculos: Vehic
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                     </svg>
                   </Link>
-                  <button onClick={() => handleToggle(v.id, v.activo)} disabled={isLoading} title={v.activo ? 'Pausar' : 'Activar'} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors disabled:opacity-40">
-                    {v.activo ? (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                  {!v.activo && v.pausado_por_admin ? (
+                    <span
+                      title="Este vehículo fue pausado por AUTODUX"
+                      className="flex items-center gap-1.5 text-[11px] font-semibold text-red-400 bg-red-500/10 px-3 py-2 rounded-lg cursor-not-allowed"
+                    >
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                       </svg>
-                    ) : (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" />
-                      </svg>
-                    )}
-                  </button>
+                      Pausado por AUTODUX — contactanos
+                    </span>
+                  ) : (
+                    <button onClick={() => handleToggle(v.id, v.activo)} disabled={isLoading} title={v.activo ? 'Pausar' : 'Activar'} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors disabled:opacity-40">
+                      {v.activo ? (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
                   <button onClick={() => handleVendido(v.id)} disabled={isLoading} title="Marcar como vendido" className="p-2 rounded-lg text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/5 transition-colors disabled:opacity-40">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

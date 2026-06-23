@@ -12,6 +12,19 @@ async function getAuthClient() {
 
 export async function toggleActivo(vehiculoId: string, activo: boolean) {
   const { supabase, userId } = await getAuthClient()
+
+  if (activo) {
+    const { data: row } = await supabase
+      .from('vehiculos')
+      .select('pausado_por_admin')
+      .eq('id', vehiculoId)
+      .eq('user_id', userId)
+      .single()
+    if (row?.pausado_por_admin) {
+      throw new Error('Este vehículo fue pausado por AUTODUX. Contactanos para reactivarlo.')
+    }
+  }
+
   const { error } = await supabase
     .from('vehiculos')
     .update({ activo })

@@ -12,3 +12,12 @@ export const TIPOS_VEHICULO = [
   { value: 'moto',        label: 'Moto' },
   { value: 'monovolumen', label: 'Monovolumen' },
 ] as const
+
+export const TIPOS_MOTO = [
+  { value: 'calle',   label: 'Calle' },
+  { value: 'enduro',  label: 'Enduro' },
+  { value: 'cross',   label: 'Cross' },
+  { value: 'naked',   label: 'Naked' },
+  { value: 'scooter', label: 'Scooter' },
+  { value: 'touring', label: 'Touring' },
+] as const

@@ -2,6 +2,8 @@ export type Role = 'particular' | 'agencia_basica' | 'agencia_premium' | 'admin'
 
 export type TipoVehiculo = 'auto' | 'pickup' | 'suv' | 'utilitario' | 'moto' | 'monovolumen'
 
+export type TipoMoto = 'calle' | 'enduro' | 'cross' | 'naked' | 'scooter' | 'touring'
+
 export type Profile = {
   id: string
   email: string
@@ -45,6 +47,8 @@ export type Vehiculo = {
   puertas?: number
   color?: string
   tipo_vehiculo?: TipoVehiculo
+  cilindrada?: number
+  tipo_moto?: TipoMoto
   // Trust signal (mock: campo estático; prod: RPC increment en Supabase)
   vistas?: number
 }

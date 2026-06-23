@@ -161,6 +161,7 @@ export default async function AgenciaPage({ params }: PageProps) {
                 <PerfilVehiculosSection
                   vehiculos={vehiculos}
                   emptyText="Esta agencia no tiene vehículos disponibles."
+                  sticky
                 />
               </div>
               <aside className="w-full lg:w-[220px] shrink-0 hidden lg:block">

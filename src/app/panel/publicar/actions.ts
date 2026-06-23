@@ -43,6 +43,9 @@ export async function createVehiculo(formData: FormData) {
   const puertas     = formData.get('puertas') ? parseInt(formData.get('puertas') as string) : null
   const color       = formData.get('color') as string || null
   const imagenes    = JSON.parse(formData.get('imagenes') as string ?? '[]') as string[]
+  const cilindrada  = tipo_vehiculo === 'moto' && formData.get('cilindrada')
+    ? parseInt(formData.get('cilindrada') as string) : null
+  const tipo_moto   = tipo_vehiculo === 'moto' ? (formData.get('tipo_moto') as string || null) : null
 
   const titulo = `${marca} ${modelo} ${año}`
 
@@ -65,6 +68,8 @@ export async function createVehiculo(formData: FormData) {
       puertas,
       color,
       imagenes,
+      cilindrada,
+      tipo_moto,
     })
 
   if (error) throw new Error(error.message)

@@ -18,9 +18,10 @@ async function getAdminClient() {
 
 export async function toggleActivoVehiculo(id: string, activo: boolean) {
   const supabase = await getAdminClient()
-  const { error } = await supabase.from('vehiculos').update({ activo }).eq('id', id)
+  const { error } = await supabase.from('vehiculos').update({ activo, pausado_por_admin: !activo }).eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/vehiculos')
+  revalidatePath('/panel/mis-publicaciones')
   revalidatePath('/')
 }
 

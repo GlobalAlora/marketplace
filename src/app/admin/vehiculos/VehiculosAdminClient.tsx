@@ -20,6 +20,7 @@ interface VehiculoAdmin {
   seller_nombre: string
   seller_apellido: string
   seller_role: string
+  pausado_por_admin: boolean
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -141,6 +142,7 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
                     <p className="text-sm font-semibold text-white truncate">{v.marca} {v.modelo} {v.año}</p>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ESTADO_STYLE[estado]}`}>{estado}</span>
                     {v.destacado && <span className="text-[10px] font-bold text-[#FFC107] bg-[#FFC107]/10 px-2 py-0.5 rounded-full">★ Vitrina</span>}
+                    {v.pausado_por_admin && <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full">Pausado por admin</span>}
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     {editingPrecio ? (

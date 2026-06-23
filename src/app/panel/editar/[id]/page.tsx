@@ -19,6 +19,8 @@ interface VehiculoRow {
   color: string | null
   imagenes: string[]
   tipo_vehiculo: string | null
+  cilindrada: number | null
+  tipo_moto: string | null
 }
 
 interface PageProps {

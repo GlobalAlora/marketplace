@@ -3,7 +3,7 @@
 import { useState, useRef, useTransition } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { createVehiculo } from './actions'
-import { TIPOS_VEHICULO } from '@/lib/constants'
+import { TIPOS_VEHICULO, TIPOS_MOTO } from '@/lib/constants'
 
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
 const SELECT = 'w-full appearance-none [color-scheme:dark] bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] cursor-pointer'
@@ -30,6 +30,8 @@ export default function PublicarForm({ userId }: { userId: string }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const dragIndex = useRef<number | null>(null)
   const [dragOver, setDragOver] = useState<number | null>(null)
+  const [tipoVehiculo, setTipoVehiculo] = useState('auto')
+  const esMoto = tipoVehiculo === 'moto'
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
@@ -182,10 +184,33 @@ export default function PublicarForm({ userId }: { userId: string }) {
       {/* Tipo de vehículo */}
       <div>
         <label className={LABEL}>Tipo de vehículo *</label>
-        <select name="tipo_vehiculo" required defaultValue="auto" className={SELECT}>
+        <select
+          name="tipo_vehiculo"
+          required
+          value={tipoVehiculo}
+          onChange={e => setTipoVehiculo(e.target.value)}
+          className={SELECT}
+        >
           {TIPOS_VEHICULO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
         </select>
       </div>
+
+      {/* Campos específicos de moto */}
+      {esMoto && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={LABEL}>Cilindrada (cc)</label>
+            <input name="cilindrada" type="number" min={0} placeholder="150" className={INPUT} />
+          </div>
+          <div>
+            <label className={LABEL}>Tipo de moto</label>
+            <select name="tipo_moto" defaultValue="" className={SELECT}>
+              <option value="">Sin especificar</option>
+              {TIPOS_MOTO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
+          </div>
+        </div>
+      )}
 
       {/* Marca / Modelo */}
       <div className="grid grid-cols-2 gap-4">

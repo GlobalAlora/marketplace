@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
-import { TIPOS_VEHICULO } from '@/lib/constants'
+import { TIPOS_VEHICULO, TIPOS_MOTO } from '@/lib/constants'
 
 interface InfoVehiculoProps {
   vehiculo: Vehiculo
@@ -157,7 +157,14 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
     { icono: <IconoUbicacion />, label: 'Ubicación', value: vehiculo.ubicacion },
   ].filter(Boolean) as Array<{ icono: React.ReactNode; label: string; value: string }>
 
+  const tipoMotoLabel = TIPOS_MOTO.find(t => t.value === vehiculo.tipo_moto)?.label
+
   const specsOpcionales = [
+    vehiculo.condicion && {
+      icono: <IconoTipo />,
+      label: 'Condición',
+      value: vehiculo.condicion === 'nuevo' ? 'Nuevo' : 'Usado',
+    },
     vehiculo.transmision && {
       icono: <IconoEngranaje />,
       label: 'Transmisión',
@@ -177,6 +184,16 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
       icono: <IconoColor />,
       label: 'Color',
       value: vehiculo.color,
+    },
+    vehiculo.cilindrada && {
+      icono: <IconoEngranaje />,
+      label: 'Cilindrada',
+      value: `${vehiculo.cilindrada} cc`,
+    },
+    tipoMotoLabel && {
+      icono: <IconoTipo />,
+      label: 'Tipo de moto',
+      value: tipoMotoLabel,
     },
   ].filter(Boolean) as Array<{ icono: React.ReactNode; label: string; value: string }>
 

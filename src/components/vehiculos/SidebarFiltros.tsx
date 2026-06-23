@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { MARCAS, TIPOS_VEHICULO } from '@/lib/constants'
+import { TIPOS_VEHICULO } from '@/lib/constants'
+import { createClient } from '@/lib/supabase/client'
 
 const PRECIOS = [
   { label: 'Sin límite', value: '' },
@@ -21,13 +22,6 @@ const KMS = [
   { label: 'Hasta 50.000 km', value: '50000' },
   { label: 'Hasta 80.000 km', value: '80000' },
   { label: 'Hasta 120.000 km', value: '120000' },
-]
-
-const LOCALIDADES = [
-  'Comodoro Rivadavia',
-  'Rada Tilly',
-  'Caleta Olivia',
-  'Sarmiento',
 ]
 
 type Filters = {
@@ -84,7 +78,23 @@ function FilterGroup({ label, id, value, onChange, children }: FilterGroupProps)
 
 export default function SidebarFiltros() {
   const [filters, setFilters] = useState<Filters>(EMPTY)
+  const [marcas, setMarcas] = useState<string[]>([])
+  const [localidades, setLocalidades] = useState<string[]>([])
   const router = useRouter()
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase
+      .from('vehiculos')
+      .select('marca, ubicacion')
+      .eq('activo', true)
+      .eq('vendido', false)
+      .then(({ data }) => {
+        if (!data) return
+        setMarcas(Array.from(new Set(data.map(v => v.marca).filter(Boolean))).sort())
+        setLocalidades(Array.from(new Set(data.map(v => v.ubicacion).filter(Boolean))).sort())
+      })
+  }, [])
 
   const set = (key: keyof Filters) =>
     (e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -134,7 +144,7 @@ export default function SidebarFiltros() {
 
           <FilterGroup label="Marca" id="sf-marca" value={filters.marca} onChange={set('marca')}>
             <option value="">Todas las marcas</option>
-            {MARCAS.map(m => <option key={m} value={m}>{m}</option>)}
+            {marcas.map(m => <option key={m} value={m}>{m}</option>)}
           </FilterGroup>
 
           <FilterGroup label="Precio máximo" id="sf-precio" value={filters.precio} onChange={set('precio')}>
@@ -152,7 +162,7 @@ export default function SidebarFiltros() {
 
           <FilterGroup label="Localidad" id="sf-ubicacion" value={filters.ubicacion} onChange={set('ubicacion')}>
             <option value="">Todas</option>
-            {LOCALIDADES.map(u => <option key={u} value={u}>{u}</option>)}
+            {localidades.map(u => <option key={u} value={u}>{u}</option>)}
           </FilterGroup>
         </div>
 

@@ -15,6 +15,7 @@ interface Vehiculo {
   vendido: boolean
   created_at: string
   vistas: number
+  pausado_por_admin: boolean
 }
 
 export default async function MisPublicacionesPage() {
@@ -25,7 +26,7 @@ export default async function MisPublicacionesPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: vehiculos } = await (supabase
     .from('vehiculos')
-    .select('id, titulo, marca, modelo, año, precio, imagenes, activo, vendido, created_at, vistas')
+    .select('id, titulo, marca, modelo, año, precio, imagenes, activo, vendido, created_at, vistas, pausado_por_admin')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false }) as any) as { data: Vehiculo[] | null }
 

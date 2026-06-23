@@ -20,6 +20,7 @@ interface VehiculoAdmin {
   seller_nombre: string
   seller_apellido: string
   seller_role: string
+  pausado_por_admin: boolean
 }
 
 export default async function AdminVehiculosPage() {
@@ -50,6 +51,7 @@ export default async function AdminVehiculosPage() {
     seller_nombre: v.profiles?.nombre ?? '',
     seller_apellido: v.profiles?.apellido ?? '',
     seller_role: v.profiles?.role ?? '',
+    pausado_por_admin: v.pausado_por_admin ?? false,
   }))
 
   return (

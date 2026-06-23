@@ -267,12 +267,14 @@ interface Props {
   vehiculos: Vehiculo[]
   emptyText?: string
   pageSize?: number
+  sticky?: boolean
 }
 
 export default function PerfilVehiculosSection({
   vehiculos,
   emptyText = 'Este vendedor no tiene vehículos disponibles.',
   pageSize = 9,
+  sticky = false,
 }: Props) {
   const [marca,     setMarca]     = useState('')
   const [precioMin, setPrecioMin] = useState('')
@@ -328,7 +330,11 @@ export default function PerfilVehiculosSection({
   return (
     <div>
       {showFilters && (
-        <div className="flex flex-wrap items-center gap-2 mb-5 pb-5 border-b border-white/6">
+        <div className={
+          sticky
+            ? 'sticky top-14 z-40 bg-[#071526] border-b border-white/8 flex flex-wrap items-center gap-2 py-3 mb-5'
+            : 'flex flex-wrap items-center gap-2 mb-5 pb-5 border-b border-white/6'
+        }>
           {marcasDisponibles.length > 1 && (
             <FilterChip
               label="Todas las marcas"

@@ -5,20 +5,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
+import { GOLD, GOLD_LIGHT, GOLD_DARK, NAVY, NAVY_LIGHT, CornerRibbon, ShieldBadge, IconVitrina } from './destacadoStyles'
 
 interface SeccionDestacadosProps {
   vehiculos: Vehiculo[]
   titulo?: string
   subtitulo?: string
 }
-
-// ── Design tokens ────────────────────────────────────────────────────────────
-const GOLD        = '#FFC107'   // brand primary yellow
-const GOLD_LIGHT  = '#FFD033'   // lighter tint for gradients
-const GOLD_DARK   = '#E5A800'   // darker shade for gradients
-const NAVY        = '#0C1D36'
-const NAVY_MID    = '#0F2340'
-const NAVY_LIGHT  = '#162B4A'
 
 function formatPrecio(precio: number): string {
   return new Intl.NumberFormat('es-AR', {
@@ -34,71 +27,6 @@ function formatKm(km: number): string {
 
 // ── Decorative elements ───────────────────────────────────────────────────────
 
-/** Diagonal corner ribbon "VITRINA" in the top-left.
- *  Container at top-0/left-0 with overflow-hidden clips the strip.
- *  Strip is intentionally wider than needed so its ends always extend
- *  past the container corners — no gaps even with strip height. */
-function CornerRibbon({ small = false }: { small?: boolean }) {
-  const size   = small ? 90  : 110
-  const stripW = 300          // intentionally oversized — overflow-hidden clips
-  const stripH = small ? 18  : 24
-  const fsize  = small ? '8px' : '9.5px'
-
-  return (
-    <div
-      className="absolute top-0 left-0 overflow-hidden z-10 pointer-events-none"
-      style={{ width: size, height: size }}
-    >
-      <div
-        className="absolute font-black text-center select-none"
-        style={{
-          top:    small ? 18 : 27,
-          left:   Math.round((size - stripW) / 2),
-          width:  stripW,
-          height: stripH,
-          lineHeight: `${stripH}px`,
-          transform: 'rotate(-45deg)',
-          transformOrigin: 'center center',
-          background: `linear-gradient(180deg, ${GOLD_LIGHT} 0%, ${GOLD_DARK} 100%)`,
-          color: NAVY,
-          fontSize: fsize,
-          letterSpacing: '0.2em',
-        }}
-      >
-        VITRINA
-      </div>
-    </div>
-  )
-}
-
-/** Downward-shield badge with star in the top-right */
-function ShieldBadge({ small = false }: { small?: boolean }) {
-  const w = small ? 38 : 46
-  const h = small ? 46 : 56
-  return (
-    <div className="absolute top-0 right-4 z-10 pointer-events-none" style={{ width: w, height: h }}>
-      <div
-        className="w-full h-full flex items-center justify-center"
-        style={{
-          background: `linear-gradient(180deg, ${GOLD_LIGHT} 0%, ${GOLD_DARK} 100%)`,
-          clipPath: 'polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%)',
-          boxShadow: `0 4px 16px ${GOLD}66`,
-        }}
-      >
-        {/* star — solid fill for clean contrast on gold */}
-        <svg
-          viewBox="0 0 24 24"
-          fill={NAVY}
-          style={{ width: small ? 15 : 19, height: small ? 15 : 19, marginTop: small ? -4 : -6 }}
-          aria-hidden="true"
-        >
-          <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />
-        </svg>
-      </div>
-    </div>
-  )
-}
-
 /** Car placeholder for empty image slots */
 function CarPlaceholder({ large = false }: { large?: boolean }) {
   return (
@@ -113,15 +41,6 @@ function CarPlaceholder({ large = false }: { large?: boolean }) {
         <path d="M3.75 5.25h.386l1.295-3.235A2.25 2.25 0 017.5 0.75h9a2.25 2.25 0 012.069 1.265L19.864 5.25h.386A2.25 2.25 0 0122.5 7.5v6a2.25 2.25 0 01-2.25 2.25v1.5a.75.75 0 01-1.5 0V15.75h-13.5v1.5a.75.75 0 01-1.5 0V15.75A2.25 2.25 0 011.5 13.5v-6a2.25 2.25 0 012.25-2.25zM5.61 5.25h12.78l-.97-2.425a.75.75 0 00-.69-.575h-9a.75.75 0 00-.69.455L5.61 5.25zM6 10.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm12 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
       </svg>
     </div>
-  )
-}
-
-// ── Icon for section header ───────────────────────────────────────────────────
-function IconVitrina({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style} aria-hidden="true">
-      <path d="M12 2L14.2 9.8H22L15.9 14.4L18.1 22L12 17.4L5.9 22L8.1 14.4L2 9.8H9.8L12 2Z" />
-    </svg>
   )
 }
 

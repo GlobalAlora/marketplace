@@ -40,12 +40,12 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isPanel && !user) {
-    return NextResponse.redirect(new URL('/auth/login', request.url))
+    return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
   }
 
   if (isAdmin) {
     if (!user) {
-      return NextResponse.redirect(new URL('/auth/login', request.url))
+      return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
     }
 
     const { data: profile } = await supabase

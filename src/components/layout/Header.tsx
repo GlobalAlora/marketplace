@@ -10,7 +10,7 @@ import { useAuth } from '@/lib/supabase/AuthProvider'
 const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
   { href: '/vehiculos', label: 'Vehículos' },
-  { href: '/publicar', label: 'Publicar' },
+  { href: '/panel/publicar', label: 'Publicar' },
   { href: '/#sobre-nosotros', label: 'Sobre nosotros' },
 ]
 

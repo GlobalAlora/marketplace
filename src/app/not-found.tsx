@@ -34,7 +34,7 @@ export default function NotFound() {
       </p>
 
       {/* CTAs */}
-      <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-xs sm:max-w-none">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-xs sm:max-w-none sm:w-auto">
         <Link
           href="/"
           className="w-full sm:w-auto px-8 py-3 bg-[#FFC107] text-[#0D0F14] font-extrabold text-sm rounded-xl hover:bg-yellow-400 active:scale-[0.98] transition-all duration-150 text-center"

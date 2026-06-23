@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import MetricasChart from './MetricasChart'
+import ExportarExcelButton from './ExportarExcelButton'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRecord = Record<string, any>
@@ -89,19 +90,80 @@ export default async function AdminMetricasPage() {
     .sort((a: TopAgencia, b: TopAgencia) => b.count - a.count)
     .slice(0, 5)
 
-  // Agrupar por día para el gráfico
-  const dayMap = new Map<string, number>()
+  // Agrupar por día para el gráfico (registros de usuarios)
+  const dayKeys: string[] = []
   for (let i = 29; i >= 0; i--) {
     const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
-    const key = d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })
-    dayMap.set(key, 0)
+    dayKeys.push(d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }))
   }
+  const dayMap = new Map<string, number>(dayKeys.map(k => [k, 0]))
   for (const p of (perfiles30dRaw ?? [])) {
     const d = new Date(p.created_at)
     const key = d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })
     if (dayMap.has(key)) dayMap.set(key, (dayMap.get(key) ?? 0) + 1)
   }
   const chartData: DayData[] = Array.from(dayMap.entries()).map(([fecha, registros]) => ({ fecha, registros }))
+
+  // ── Datos extra para la exportación a Excel ────────────────────────────────
+  const topVistasIds = topVistas.map(v => v.id)
+  const topAgenciasIds = topAgencias.map(a => a.id)
+
+  const [{ data: clicksTopVistasRaw }, { data: vendidosTopAgenciasRaw }, { data: metricas30dRaw }] = await Promise.all([
+    supabase.from('metricas_vehiculos').select('vehiculo_id').in('vehiculo_id', topVistasIds.length ? topVistasIds : ['']).eq('tipo', 'whatsapp_click'),
+    supabase.from('vehiculos').select('user_id').eq('vendido', true).in('user_id', topAgenciasIds.length ? topAgenciasIds : ['']),
+    supabase.from('metricas_vehiculos').select('created_at, tipo').gte('created_at', startOf30d.toISOString()),
+  ])
+
+  const clicksPorVehiculo = new Map<string, number>()
+  for (const c of clicksTopVistasRaw ?? []) {
+    clicksPorVehiculo.set(c.vehiculo_id, (clicksPorVehiculo.get(c.vehiculo_id) ?? 0) + 1)
+  }
+
+  const vendidosPorAgencia = new Map<string, number>()
+  for (const v of vendidosTopAgenciasRaw ?? []) {
+    vendidosPorAgencia.set(v.user_id, (vendidosPorAgencia.get(v.user_id) ?? 0) + 1)
+  }
+
+  const vistasPorDia = new Map<string, number>(dayKeys.map(k => [k, 0]))
+  const whatsappPorDia = new Map<string, number>(dayKeys.map(k => [k, 0]))
+  for (const m of metricas30dRaw ?? []) {
+    const key = new Date(m.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })
+    if (m.tipo === 'view' && vistasPorDia.has(key)) vistasPorDia.set(key, (vistasPorDia.get(key) ?? 0) + 1)
+    if (m.tipo === 'whatsapp_click' && whatsappPorDia.has(key)) whatsappPorDia.set(key, (whatsappPorDia.get(key) ?? 0) + 1)
+  }
+
+  const resumenExport = {
+    totalUsuarios: totalUsuarios ?? 0,
+    usuariosHoy: usuariosHoy ?? 0,
+    usuariosSemana: usuariosSemana ?? 0,
+    usuariosMes: usuariosMes ?? 0,
+    vehiculosActivos: vehiculosActivos ?? 0,
+    vehiculosPausados: vehiculosPausados ?? 0,
+    vehiculosVendidos: vehiculosVendidos ?? 0,
+    totalVistas: totalVistas ?? 0,
+    totalWhatsapp: totalWhatsapp ?? 0,
+  }
+
+  const topVehiculosExport = topVistas.map(v => ({
+    titulo: `${v.marca} ${v.modelo}`,
+    marca: v.marca,
+    modelo: v.modelo,
+    views: v.count,
+    clicks: clicksPorVehiculo.get(v.id) ?? 0,
+  }))
+
+  const topAgenciasExport = topAgencias.map(a => ({
+    nombre: a.nombre,
+    vehiculosPublicados: a.count,
+    vehiculosVendidos: vendidosPorAgencia.get(a.id) ?? 0,
+  }))
+
+  const actividadExport = dayKeys.map(fecha => ({
+    fecha,
+    nuevosUsuarios: dayMap.get(fecha) ?? 0,
+    vistas: vistasPorDia.get(fecha) ?? 0,
+    whatsapp: whatsappPorDia.get(fecha) ?? 0,
+  }))
 
   const maxVistas = Math.max(...topVistas.map(v => v.count), 1)
   const maxWhatsapp = Math.max(...topWhatsapp.map(v => v.count), 1)
@@ -115,9 +177,17 @@ export default async function AdminMetricasPage() {
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-white">Métricas</h1>
-        <p className="text-sm text-gray-500 mt-1">Datos en tiempo real de Supabase</p>
+      <div className="flex items-start justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-extrabold text-white">Métricas</h1>
+          <p className="text-sm text-gray-500 mt-1">Datos en tiempo real de Supabase</p>
+        </div>
+        <ExportarExcelButton
+          resumen={resumenExport}
+          topVehiculos={topVehiculosExport}
+          topAgencias={topAgenciasExport}
+          actividad={actividadExport}
+        />
       </div>
 
       {/* KPIs fila 1: Usuarios */}

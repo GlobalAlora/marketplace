@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import ExportarExcelButton from './ExportarExcelButton'
 
 interface VehiculoMinimal {
   id: string
@@ -57,11 +58,27 @@ export default async function MetricasPage() {
 
   const isPremium = profile?.role === 'agencia_premium'
 
+  const vehiculosExport = (vehiculos ?? []).map(v => ({
+    titulo: `${v.marca} ${v.modelo} ${v.año}`,
+    marca: v.marca,
+    modelo: v.modelo,
+    año: v.año,
+    vistas: counts[v.id]?.views ?? 0,
+    whatsapp: counts[v.id]?.whatsapp ?? 0,
+  }))
+
   return (
     <div className="p-6 lg:p-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-white">Métricas</h1>
-        <p className="text-sm text-gray-500 mt-1">Rendimiento de tus publicaciones</p>
+      <div className="flex items-start justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-extrabold text-white">Métricas</h1>
+          <p className="text-sm text-gray-500 mt-1">Rendimiento de tus publicaciones</p>
+        </div>
+        <ExportarExcelButton
+          totalViews={totalViews}
+          totalWhatsapp={totalWhatsapp}
+          vehiculos={vehiculosExport}
+        />
       </div>
 
       {/* Summary cards */}

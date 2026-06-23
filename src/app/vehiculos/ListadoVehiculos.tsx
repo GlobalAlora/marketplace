@@ -82,6 +82,15 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
   const tipo      = searchParams.get('tipo') ?? ''
   const sort      = searchParams.get('sort') ?? 'reciente'
 
+  const marcasDisponibles = useMemo(
+    () => Array.from(new Set(vehiculos.map(v => v.marca).filter(Boolean))).sort(),
+    [vehiculos]
+  )
+  const ubicacionesDisponibles = useMemo(
+    () => Array.from(new Set(vehiculos.map(v => v.ubicacion).filter(Boolean))).sort(),
+    [vehiculos]
+  )
+
   const filtered = useMemo(() => {
     const result = vehiculos.filter(v => {
       if (q && !`${v.titulo} ${v.marca} ${v.modelo}`.toLowerCase().includes(q)) return false
@@ -152,7 +161,7 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
       </div>
 
       {/* Filtros sticky */}
-      <FiltrosHorizontales sticky />
+      <FiltrosHorizontales sticky marcas={marcasDisponibles} ubicaciones={ubicacionesDisponibles} />
 
       {/* Banner vehiculos_top */}
       {banners.vehiculos_top && (

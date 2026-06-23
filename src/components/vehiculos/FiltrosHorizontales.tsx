@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { MARCAS, TIPOS_VEHICULO } from '@/lib/constants'
+import { TIPOS_VEHICULO } from '@/lib/constants'
 
 // ── Constantes precio ──────────────────────────────────────────────────────────
 const PRICE_ABS_MIN = 0
@@ -40,19 +40,6 @@ const CONDICION_OPTS: Option[] = [
   { label: 'Nuevo o usado', value: '' },
   { label: 'Nuevo',         value: 'nuevo' },
   { label: 'Usado',         value: 'usado' },
-]
-
-const LOCALIDAD_OPTS: Option[] = [
-  { label: 'Todas las ciudades',  value: '' },
-  { label: 'Comodoro Rivadavia', value: 'Comodoro Rivadavia' },
-  { label: 'Rada Tilly',         value: 'Rada Tilly' },
-  { label: 'Caleta Olivia',      value: 'Caleta Olivia' },
-  { label: 'Sarmiento',          value: 'Sarmiento' },
-]
-
-const MARCA_OPTS: Option[] = [
-  { label: 'Todas las marcas', value: '' },
-  ...MARCAS.map(m => ({ label: m, value: m })),
 ]
 
 const TIPO_OPTS: Option[] = [
@@ -327,12 +314,26 @@ type Filters = {
   tipo:      string
 }
 
-interface FiltrosHorizontalesProps { sticky?: boolean }
+interface FiltrosHorizontalesProps {
+  sticky?: boolean
+  marcas?: string[]
+  ubicaciones?: string[]
+}
 
-export default function FiltrosHorizontales({ sticky = false }: FiltrosHorizontalesProps) {
+export default function FiltrosHorizontales({ sticky = false, marcas = [], ubicaciones = [] }: FiltrosHorizontalesProps) {
   const router       = useRouter()
   const pathname     = usePathname()
   const searchParams = useSearchParams()
+
+  const MARCA_OPTS: Option[] = useMemo(() => [
+    { label: 'Todas las marcas', value: '' },
+    ...marcas.map(m => ({ label: m, value: m })),
+  ], [marcas])
+
+  const LOCALIDAD_OPTS: Option[] = useMemo(() => [
+    { label: 'Todas las ciudades', value: '' },
+    ...ubicaciones.map(u => ({ label: u, value: u })),
+  ], [ubicaciones])
 
   const [filters, setFilters] = useState<Filters>({
     marca:     searchParams.get('marca')      ?? '',

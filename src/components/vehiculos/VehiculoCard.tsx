@@ -75,9 +75,9 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
           </>
         )}
 
-        {/* Badge tipo de vehículo */}
+        {/* Badge tipo de vehículo — en destacados se baja para no tapar el escudo */}
         {tipoLabel && (
-          <div className={`absolute top-2.5 right-2.5 font-semibold text-[10px] px-2.5 py-1 rounded-full tracking-wide ${d ? 'bg-black/60 text-white' : 'bg-black/70 text-white'}`}>
+          <div className={`absolute right-2.5 font-semibold text-[10px] px-2.5 py-1 rounded-full tracking-wide ${d ? 'top-[52px] bg-black/60 text-white' : 'top-2.5 bg-black/70 text-white'}`}>
             {tipoLabel}
           </div>
         )}

@@ -41,6 +41,21 @@ export default function Header() {
   const pathname         = usePathname()
   const loginHref         = `/auth/login?redirect=${encodeURIComponent(pathname)}`
   const desktopSearchRef = useRef<HTMLDivElement>(null)
+
+  // Links del tipo "/#anchor": si ya estamos en "/", Next no vuelve a
+  // scrollear porque la URL (con el mismo hash) no cambia. Forzamos el
+  // scroll manualmente en ese caso.
+  function handleAnchorClick(href: string) {
+    return (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (!href.includes('#')) return
+      const [path, anchorId] = href.split('#')
+      if ((path === '' || path === '/') && pathname === '/') {
+        e.preventDefault()
+        document.getElementById(anchorId)?.scrollIntoView({ behavior: 'smooth' })
+        window.history.replaceState(null, '', `/#${anchorId}`)
+      }
+    }
+  }
   const userDropdownRef  = useRef<HTMLDivElement>(null)
   const mobileInputRef   = useRef<HTMLInputElement>(null)
 
@@ -168,6 +183,7 @@ export default function Header() {
               <Link
                 key={href}
                 href={href}
+                onClick={handleAnchorClick(href)}
                 className="text-sm font-medium text-gray-300 hover:text-[#FFC107] transition-colors"
               >
                 {label}
@@ -314,7 +330,7 @@ export default function Header() {
                 key={href}
                 href={href}
                 className="py-2 text-sm font-medium text-gray-300 hover:text-[#FFC107] transition-colors"
-                onClick={() => setMenuOpen(false)}
+                onClick={e => { handleAnchorClick(href)(e); setMenuOpen(false) }}
               >
                 {label}
               </Link>

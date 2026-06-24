@@ -27,7 +27,7 @@ export default async function PlanesPage() {
   const updatedAt = config?.[0]?.updated_at
 
   return (
-    <div className="p-6 lg:p-8 max-w-xl">
+    <div className="p-6 lg:p-8 max-w-2xl">
       <div className="mb-8">
         <h1 className="text-2xl font-extrabold text-white">Configuración de planes</h1>
         <p className="text-sm text-gray-500 mt-1">

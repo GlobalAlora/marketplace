@@ -229,13 +229,15 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: 
                   {v.activo && (
                     <button
                       onClick={() => handleDestacar(v.id, v.destacado)}
-                      disabled={isLoading || (!v.destacado && limiteDestacados === 0)}
+                      disabled={isLoading || (!v.destacado && destacadosActivos >= limiteDestacados)}
                       title={
                         v.destacado
                           ? 'Quitar de destacados'
                           : limiteDestacados === 0
                             ? 'Tu plan no incluye destacados'
-                            : 'Destacar publicación'
+                            : destacadosActivos >= limiteDestacados
+                              ? `Alcanzaste el límite de ${limiteDestacados} destacado${limiteDestacados !== 1 ? 's' : ''} de tu plan`
+                              : 'Destacar publicación'
                       }
                       className={`p-2 rounded-lg transition-colors disabled:opacity-30 ${v.destacado ? 'text-[#FFC107] hover:bg-[#FFC107]/10' : 'text-gray-400 hover:text-[#FFC107] hover:bg-[#FFC107]/10'}`}
                     >

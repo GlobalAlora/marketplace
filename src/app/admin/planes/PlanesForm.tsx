@@ -48,26 +48,21 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
     setError(null)
     const fd = new FormData(e.currentTarget)
     startTransition(async () => {
-      try {
-        await updatePlanLimits(fd)
-        setSuccess(true)
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Error al guardar')
-      }
+      const result = await updatePlanLimits(fd)
+      if (result?.error) setError(result.error)
+      else setSuccess(true)
     })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {ROLE_INFO.map(({ key, label, desc, badge }) => (
-        <div key={key} className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badge}`}>{label}</span>
-            </div>
-            <p className="text-[11px] text-gray-600">{desc}</p>
+        <div key={key} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 py-4 border-b border-white/5 last:border-0">
+          <div className="sm:w-52 shrink-0">
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badge}`}>{label}</span>
+            <p className="text-[11px] text-gray-600 mt-1.5 leading-relaxed">{desc}</p>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-5 sm:ml-auto">
             <div className="flex items-center gap-2">
               <input
                 name={key}
@@ -78,7 +73,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
                 required
                 className={`${INPUT} w-20`}
               />
-              <span className="text-xs text-gray-600 whitespace-nowrap">publicaciones</span>
+              <span className="text-xs text-gray-500 whitespace-nowrap">publicaciones</span>
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -90,7 +85,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
                 required
                 className={`${INPUT} w-16`}
               />
-              <span className="text-xs text-gray-600 whitespace-nowrap">destacados</span>
+              <span className="text-xs text-gray-500 whitespace-nowrap">destacados</span>
             </div>
           </div>
         </div>

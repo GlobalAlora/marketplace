@@ -23,13 +23,22 @@ const SELECT_FIELDS =
 
 async function getVehiculo(id: string): Promise<Vehiculo | null> {
   const supabase = await createClient()
-  const { data } = await supabase
-    .from('vehiculos')
-    .select(SELECT_FIELDS)
-    .eq('id', id)
-    .eq('activo', true)
-    .eq('vendido', false)
-    .maybeSingle()
+
+  // El admin puede ver cualquier publicación (pausada, vendida) para
+  // moderarla; el resto solo ve publicaciones activas y no vendidas.
+  const { data: { user } } = await supabase.auth.getUser()
+  let isAdmin = false
+  if (user) {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    isAdmin = profile?.role === 'admin'
+  }
+
+  let query = supabase.from('vehiculos').select(SELECT_FIELDS).eq('id', id)
+  if (!isAdmin) {
+    query = query.eq('activo', true).eq('vendido', false)
+  }
+
+  const { data } = await query.maybeSingle()
   return data ? (data as unknown as Vehiculo) : null
 }
 

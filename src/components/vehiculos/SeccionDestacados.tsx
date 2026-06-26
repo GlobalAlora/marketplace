@@ -49,7 +49,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden min-h-[180px] transition-all duration-300"
+      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden min-h-[220px] h-full transition-all duration-300"
       style={{
         background: '#FFFFFF',
         border: `2px solid ${GOLD}`,
@@ -65,7 +65,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
       }}
     >
       {/* ── Image panel ── */}
-      <div className="relative w-full sm:w-[45%] aspect-[4/3] sm:aspect-auto sm:min-h-[180px] shrink-0 overflow-hidden" style={{ background: NAVY }}>
+      <div className="relative w-full sm:w-[45%] aspect-[4/3] sm:aspect-auto sm:min-h-[220px] shrink-0 overflow-hidden" style={{ background: NAVY }}>
         {vehiculo.imagenes[0] ? (
           <img
             src={vehiculo.imagenes[0]}
@@ -269,7 +269,7 @@ export default function SeccionDestacados({ vehiculos, titulo, subtitulo }: Secc
           className="grid grid-cols-1 lg:grid-cols-3 gap-5 transition-opacity duration-300"
           style={{ opacity: mounted ? 1 : 0 }}
         >
-          <div className={resto.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}>
+          <div className={`h-full ${resto.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
             <CardGrande vehiculo={principal} />
           </div>
 

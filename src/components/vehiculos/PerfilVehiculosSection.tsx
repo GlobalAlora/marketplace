@@ -187,6 +187,65 @@ function PriceRangeChip({ precioMin, precioMax, onChange }: {
     onChange(precioMin, clamped < PRICE_ABS_MAX ? String(clamped) : '')
   }
 
+  const panelContent = (
+    <>
+      {/* Valores actuales */}
+      <div className="flex justify-between items-center mb-5">
+        <div>
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Desde</p>
+          <p className="text-sm font-bold text-[#FFC107]">{formatPrecio(minVal)}</p>
+        </div>
+        <div className="h-6 w-px bg-white/10" />
+        <div className="text-right">
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Hasta</p>
+          <p className="text-sm font-bold text-[#FFC107]">
+            {maxVal >= PRICE_ABS_MAX ? 'Sin límite' : formatPrecio(maxVal)}
+          </p>
+        </div>
+      </div>
+
+      {/* Slider */}
+      <div className="relative h-10 flex items-center">
+        <div className="absolute inset-x-0 h-1.5 rounded-full bg-white/12">
+          <div
+            className="absolute h-full rounded-full bg-[#FFC107]"
+            style={{ left: `${leftPct}%`, right: `${rightPct}%` }}
+          />
+        </div>
+        <input
+          type="range"
+          min={PRICE_ABS_MIN} max={PRICE_ABS_MAX} step={PRICE_STEP}
+          value={minVal}
+          onChange={e => handleMin(Number(e.target.value))}
+          className={`${THUMB} ${minOnTop ? 'z-[3]' : 'z-[1]'}`}
+        />
+        <input
+          type="range"
+          min={PRICE_ABS_MIN} max={PRICE_ABS_MAX} step={PRICE_STEP}
+          value={maxVal}
+          onChange={e => handleMax(Number(e.target.value))}
+          className={`${THUMB} z-[2]`}
+        />
+      </div>
+
+      {/* Extremos */}
+      <div className="flex justify-between mt-1">
+        <span className="text-[10px] text-gray-600">$0</span>
+        <span className="text-[10px] text-gray-600">$60M+</span>
+      </div>
+
+      {isActive && (
+        <button
+          type="button"
+          onClick={() => onChange('', '')}
+          className="mt-4 w-full text-xs text-gray-500 hover:text-gray-300 transition-colors"
+        >
+          Limpiar precio
+        </button>
+      )}
+    </>
+  )
+
   return (
     <div ref={ref} className="relative shrink-0">
       <button
@@ -204,59 +263,33 @@ function PriceRangeChip({ precioMin, precioMax, onChange }: {
       </button>
 
       {open && (
-        <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-72 bg-[#0d2137] border border-white/15 rounded-2xl shadow-2xl shadow-black/60 p-5">
-          <div className="flex justify-between items-center mb-5">
-            <div>
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Desde</p>
-              <p className="text-sm font-bold text-[#FFC107]">{formatPrecio(minVal)}</p>
-            </div>
-            <div className="h-6 w-px bg-white/10" />
-            <div className="text-right">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Hasta</p>
-              <p className="text-sm font-bold text-[#FFC107]">
-                {maxVal >= PRICE_ABS_MAX ? 'Sin límite' : formatPrecio(maxVal)}
-              </p>
-            </div>
-          </div>
-
-          <div className="relative h-10 flex items-center">
-            <div className="absolute inset-x-0 h-1.5 rounded-full bg-white/12">
-              <div
-                className="absolute h-full rounded-full bg-[#FFC107]"
-                style={{ left: `${leftPct}%`, right: `${rightPct}%` }}
-              />
-            </div>
-            <input
-              type="range"
-              min={PRICE_ABS_MIN} max={PRICE_ABS_MAX} step={PRICE_STEP}
-              value={minVal}
-              onChange={e => handleMin(Number(e.target.value))}
-              className={`${THUMB} ${minOnTop ? 'z-[3]' : 'z-[1]'}`}
-            />
-            <input
-              type="range"
-              min={PRICE_ABS_MIN} max={PRICE_ABS_MAX} step={PRICE_STEP}
-              value={maxVal}
-              onChange={e => handleMax(Number(e.target.value))}
-              className={`${THUMB} z-[2]`}
-            />
-          </div>
-
-          <div className="flex justify-between mt-1">
-            <span className="text-[10px] text-gray-600">$0</span>
-            <span className="text-[10px] text-gray-600">$60M+</span>
-          </div>
-
-          {isActive && (
-            <button
-              type="button"
-              onClick={() => onChange('', '')}
-              className="mt-4 w-full text-xs text-gray-500 hover:text-gray-300 transition-colors"
+        <>
+          {/* Mobile: backdrop + bottom sheet centrado */}
+          <div
+            className="sm:hidden fixed inset-0 z-50 flex items-end justify-center bg-black/60"
+            onClick={() => setOpen(false)}
+          >
+            <div
+              className="w-full max-w-md bg-[#0d2137] border border-white/15 rounded-t-2xl shadow-2xl p-5 pb-8"
+              onClick={e => e.stopPropagation()}
             >
-              Limpiar precio
-            </button>
-          )}
-        </div>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-bold text-white">Rango de precio</p>
+                <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-white transition-colors">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              {panelContent}
+            </div>
+          </div>
+
+          {/* Desktop: dropdown absoluto */}
+          <div className="hidden sm:block absolute top-[calc(100%+6px)] left-0 z-50 w-72 bg-[#0d2137] border border-white/15 rounded-2xl shadow-2xl shadow-black/60 p-5">
+            {panelContent}
+          </div>
+        </>
       )}
     </div>
   )

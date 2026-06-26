@@ -47,7 +47,27 @@ export async function toggleActivo(userId: string, activo: boolean) {
     .update({ activo })
     .eq('id', userId)
   if (error) throw new Error(error.message)
+
+  // Al suspender un usuario, pausamos también sus publicaciones activas
+  // (marcadas como pausado_por_admin para que no las pueda reactivar él
+  // mismo). Al reactivar el usuario NO se reactivan automáticamente: el
+  // admin debe revisarlas una por una desde /admin/vehiculos.
+  if (!activo) {
+    const { error: vehiculosError } = await supabase
+      .from('vehiculos')
+      .update({ activo: false, pausado_por_admin: true })
+      .eq('user_id', userId)
+      .eq('activo', true)
+      .eq('vendido', false)
+    if (vehiculosError) throw new Error(vehiculosError.message)
+  }
+
   revalidatePath('/admin/usuarios')
+  revalidatePath(`/admin/usuarios/${userId}`)
+  revalidatePath('/admin/vehiculos')
+  revalidatePath('/panel/mis-publicaciones')
+  revalidatePath('/panel')
+  revalidatePath('/')
 }
 
 export async function setLimiteOverride(userId: string, value: number | null) {

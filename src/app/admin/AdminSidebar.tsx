@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -158,9 +159,18 @@ function NavLink({ item, pathname, counts }: { item: NavItem; pathname: string; 
   )
 }
 
+// Los primeros 3 quedan siempre visibles en el bottom nav; el resto (incluyendo
+// Usuarios y Moderación) vive en el sheet "Más" junto con Monetización y Sistema.
+// El badge de pendientes de Moderación se muestra en el botón "Más" para no perderlo de vista.
+const BOTTOM_NAV_PRINCIPAL = CONTENIDO.slice(0, 3)
+const BOTTOM_NAV_RESTO_CONTENIDO = CONTENIDO.slice(3)
+
 export default function AdminSidebar({ profile, counts }: { profile: Profile; counts: Counts }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [masOpen, setMasOpen] = useState(false)
+
+  const pendientesBadge = counts.pendientes > 0
 
   async function handleLogout() {
     const supabase = createClient()
@@ -190,7 +200,7 @@ export default function AdminSidebar({ profile, counts }: { profile: Profile; co
     {/* ── Mobile bottom nav ───────────────────────────────────── */}
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0a0c14]/95 backdrop-blur border-t border-white/5 flex items-stretch"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-      {CONTENIDO.map(item => {
+      {BOTTOM_NAV_PRINCIPAL.map(item => {
         const exact = item.href === '/admin'
         const active = exact ? pathname === item.href : pathname.startsWith(item.href)
         const count = item.countKey ? counts[item.countKey] : null
@@ -206,14 +216,81 @@ export default function AdminSidebar({ profile, counts }: { profile: Profile; co
           </Link>
         )
       })}
-      <button onClick={handleLogout}
-        className="flex-1 flex flex-col items-center justify-center gap-1 py-2 min-h-[56px] text-gray-600 hover:text-red-400 transition-colors">
+      <button onClick={() => setMasOpen(true)}
+        className="flex-1 flex flex-col items-center justify-center gap-1 py-2 min-h-[56px] text-gray-500 hover:text-white transition-colors relative">
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm6.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm6.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
         </svg>
-        <span className="text-[9px] font-semibold leading-none">Salir</span>
+        <span className="text-[9px] font-semibold leading-none">Más</span>
+        {pendientesBadge && (
+          <span className="absolute top-1.5 right-[calc(50%-10px)] bg-red-500 text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{counts.pendientes}</span>
+        )}
       </button>
     </nav>
+
+    {/* ── Mobile "Más" bottom sheet ───────────────────────────── */}
+    {masOpen && (
+      <div
+        className="lg:hidden fixed inset-0 z-50 flex items-end justify-center bg-black/60"
+        onClick={() => setMasOpen(false)}
+      >
+        <div
+          className="w-full max-h-[80vh] overflow-y-auto bg-[#0a0c14] border-t border-white/10 rounded-t-2xl shadow-2xl"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <p className="text-sm font-bold text-white">Más opciones</p>
+            <button onClick={() => setMasOpen(false)} className="text-gray-500 hover:text-white transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="px-3 space-y-5 pb-2">
+            {BOTTOM_NAV_RESTO_CONTENIDO.length > 0 && (
+              <div>
+                <p className="text-[9px] font-bold tracking-widest text-gray-700 uppercase px-3 mb-1.5">Contenido</p>
+                <div className="space-y-0.5" onClick={() => setMasOpen(false)}>
+                  {BOTTOM_NAV_RESTO_CONTENIDO.map(item => (
+                    <NavLink key={item.href} item={item} pathname={pathname} counts={counts} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <p className="text-[9px] font-bold tracking-widest text-gray-700 uppercase px-3 mb-1.5">Monetización</p>
+              <div className="space-y-0.5" onClick={() => setMasOpen(false)}>
+                {MONETIZACION.map(item => (
+                  <NavLink key={item.href} item={item} pathname={pathname} counts={counts} />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[9px] font-bold tracking-widest text-gray-700 uppercase px-3 mb-1.5">Sistema</p>
+              <div className="space-y-0.5" onClick={() => setMasOpen(false)}>
+                {SISTEMA.map(item => (
+                  <NavLink key={item.href} item={item} pathname={pathname} counts={counts} />
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/5 rounded-xl transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+              </svg>
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
 
     {/* ── Desktop sidebar ─────────────────────────────────────── */}
     <aside className="hidden lg:flex w-60 shrink-0 bg-[#0a0c14] border-r border-white/5 flex-col min-h-screen sticky top-0">

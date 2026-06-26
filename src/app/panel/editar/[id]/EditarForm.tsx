@@ -290,6 +290,32 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
         </div>
       </div>
 
+      {/* Ubicación */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className={LABEL}>Provincia *</label>
+          <ComboboxSelect
+            name="provincia"
+            value={provincia}
+            onChange={handleProvinciaChange}
+            options={PROVINCIA_OPTS}
+            placeholder="Seleccionar provincia"
+            searchPlaceholder="Buscar provincia..."
+          />
+        </div>
+        <div>
+          <label className={LABEL}>Ciudad *</label>
+          <ComboboxSelect
+            name="ciudad"
+            value={ciudad}
+            onChange={setCiudad}
+            options={ciudadOpts}
+            placeholder="Seleccionar ciudad"
+            searchPlaceholder="Buscar ciudad..."
+          />
+        </div>
+      </div>
+
       {/* Año / KM */}
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -361,32 +387,6 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
       <div>
         <label className={LABEL}>Descripción</label>
         <textarea name="descripcion" rows={4} defaultValue={vehiculo.descripcion ?? ''} placeholder="Describí el estado del vehículo, extras, historial de service..." className={`${INPUT} resize-none`} />
-      </div>
-
-      {/* Ubicación */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className={LABEL}>Provincia *</label>
-          <ComboboxSelect
-            name="provincia"
-            value={provincia}
-            onChange={handleProvinciaChange}
-            options={PROVINCIA_OPTS}
-            placeholder="Seleccionar provincia"
-            searchPlaceholder="Buscar provincia..."
-          />
-        </div>
-        <div>
-          <label className={LABEL}>Ciudad *</label>
-          <ComboboxSelect
-            name="ciudad"
-            value={ciudad}
-            onChange={setCiudad}
-            options={ciudadOpts}
-            placeholder="Seleccionar ciudad"
-            searchPlaceholder="Buscar ciudad..."
-          />
-        </div>
       </div>
 
       {error && (

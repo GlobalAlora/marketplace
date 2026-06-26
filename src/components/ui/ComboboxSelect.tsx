@@ -87,8 +87,8 @@ export default function ComboboxSelect({
       {open && (
         <div className={
           isLight
-            ? 'absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden'
-            : 'absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-[#0d2137] border border-white/15 rounded-xl shadow-2xl shadow-black/60 overflow-hidden'
+            ? 'relative mt-1.5 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden'
+            : 'relative mt-1.5 w-full bg-[#0d2137] border border-white/15 rounded-xl shadow-lg overflow-hidden'
         }>
           <div className={`p-2 border-b ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
             <input

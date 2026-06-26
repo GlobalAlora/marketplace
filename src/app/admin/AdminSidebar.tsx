@@ -133,7 +133,7 @@ interface NavItem {
 
 function NavLink({ item, pathname, counts }: { item: NavItem; pathname: string; counts: Counts }) {
   const exact = item.href === '/admin'
-  const active = exact ? pathname === item.href : pathname.startsWith(item.href)
+  const active = exact ? pathname === item.href : (pathname === item.href || pathname.startsWith(`${item.href}/`))
   const count = item.countKey ? counts[item.countKey] : null
   const showBadge = item.badge && count && count > 0
 
@@ -202,7 +202,7 @@ export default function AdminSidebar({ profile, counts }: { profile: Profile; co
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {BOTTOM_NAV_PRINCIPAL.map(item => {
         const exact = item.href === '/admin'
-        const active = exact ? pathname === item.href : pathname.startsWith(item.href)
+        const active = exact ? pathname === item.href : (pathname === item.href || pathname.startsWith(`${item.href}/`))
         const count = item.countKey ? counts[item.countKey] : null
         return (
           <Link key={item.href} href={item.href}

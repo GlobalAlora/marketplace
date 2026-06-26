@@ -111,7 +111,7 @@ export default function PanelSidebar({ profile }: { profile: Profile }) {
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {navItems.map(item => {
-            const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+            const active = item.exact ? pathname === item.href : (pathname === item.href || pathname.startsWith(`${item.href}/`))
             return (
               <Link
                 key={item.href}
@@ -184,7 +184,7 @@ export default function PanelSidebar({ profile }: { profile: Profile }) {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0a0c14]/95 backdrop-blur border-t border-white/5 flex items-stretch"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {navItems.map(item => {
-          const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+          const active = item.exact ? pathname === item.href : (pathname === item.href || pathname.startsWith(`${item.href}/`))
           return (
             <Link
               key={item.href}

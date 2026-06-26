@@ -201,58 +201,62 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
 
             return (
               <div key={v.id} className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-4">
-              <div className="flex gap-4 items-center">
-                {/* Thumb */}
-                <div className="w-16 h-12 rounded-xl bg-white/5 shrink-0 overflow-hidden">
-                  {thumb
-                    ? <img src={thumb} alt="" className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center text-gray-700 text-lg">◫</div>
-                  }
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <p className="text-sm font-semibold text-white truncate">{v.marca} {v.modelo} {v.año}</p>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ESTADO_STYLE[estado]}`}>{estado}</span>
-                    {v.destacado && <span className="text-[10px] font-bold text-[#FFC107] bg-[#FFC107]/10 px-2 py-0.5 rounded-full">★ Vitrina</span>}
-                    {v.pausado_por_admin && <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full">Pausado por admin</span>}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex gap-3 sm:gap-4 items-start sm:items-center flex-1 min-w-0">
+                  {/* Thumb */}
+                  <div className="w-16 h-12 rounded-xl bg-white/5 shrink-0 overflow-hidden">
+                    {thumb
+                      ? <img src={thumb} alt="" className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center text-gray-700 text-lg">◫</div>
+                    }
                   </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {editingPrecio ? (
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs text-gray-500">$</span>
-                        <input
-                          type="text"
-                          value={precioInput}
-                          onChange={e => setPrecioInput(e.target.value)}
-                          onKeyDown={e => { if (e.key === 'Enter') savePrecio(v.id); if (e.key === 'Escape') setEditPrecioId(null) }}
-                          autoFocus
-                          className="w-28 bg-white/10 border border-[#FFC107]/40 text-white text-xs rounded-lg px-2 py-0.5 focus:outline-none"
-                        />
-                        <button onClick={() => savePrecio(v.id)} className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 px-1.5 py-0.5 rounded transition-colors">OK</button>
-                        <button onClick={() => setEditPrecioId(null)} className="text-[10px] text-gray-500 hover:text-gray-300 px-1 py-0.5 rounded transition-colors">✕</button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => startEditPrecio(v)}
-                        title="Editar precio"
-                        className="text-xs text-gray-500 hover:text-white flex items-center gap-1 group transition-colors"
-                      >
-                        ${v.precio.toLocaleString('es-AR')}
-                        <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                        </svg>
-                      </button>
-                    )}
-                    <span className="text-gray-700">·</span>
-                    <span className="text-xs text-gray-500">{v.vistas} vistas · {v.seller_nombre} {v.seller_apellido}</span>
-                    <span className="text-[10px] text-gray-700">({ROLE_LABEL[v.seller_role] ?? v.seller_role})</span>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                      <p className="text-sm font-semibold text-white truncate">{v.marca} {v.modelo} {v.año}</p>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${ESTADO_STYLE[estado]}`}>{estado}</span>
+                      {v.destacado && <span className="text-[10px] font-bold text-[#FFC107] bg-[#FFC107]/10 px-2 py-0.5 rounded-full shrink-0">★ Vitrina</span>}
+                      {v.pausado_por_admin && <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full shrink-0">Pausado por admin</span>}
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap text-xs">
+                      {editingPrecio ? (
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-gray-500">$</span>
+                          <input
+                            type="text"
+                            value={precioInput}
+                            onChange={e => setPrecioInput(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') savePrecio(v.id); if (e.key === 'Escape') setEditPrecioId(null) }}
+                            autoFocus
+                            className="w-28 bg-white/10 border border-[#FFC107]/40 text-white text-xs rounded-lg px-2 py-0.5 focus:outline-none"
+                          />
+                          <button onClick={() => savePrecio(v.id)} className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 px-1.5 py-0.5 rounded transition-colors">OK</button>
+                          <button onClick={() => setEditPrecioId(null)} className="text-[10px] text-gray-500 hover:text-gray-300 px-1 py-0.5 rounded transition-colors">✕</button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => startEditPrecio(v)}
+                          title="Editar precio"
+                          className="text-gray-400 sm:text-gray-500 hover:text-white flex items-center gap-1 group transition-colors shrink-0"
+                        >
+                          ${v.precio.toLocaleString('es-AR')}
+                          <svg className="w-3 h-3 opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                          </svg>
+                        </button>
+                      )}
+                      <span className="text-gray-700 hidden sm:inline">·</span>
+                      <span className="text-gray-500">{v.vistas} vistas</span>
+                      <span className="text-gray-700">·</span>
+                      <span className="text-gray-500 truncate">{v.seller_nombre} {v.seller_apellido}</span>
+                      <span className="text-[10px] text-gray-700 shrink-0">({ROLE_LABEL[v.seller_role] ?? v.seller_role})</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-1 flex-wrap justify-end sm:justify-start sm:shrink-0 -mx-1 sm:mx-0">
                   {/* Ver publicación */}
                   <Link
                     href={`/vehiculos/${v.id}`}

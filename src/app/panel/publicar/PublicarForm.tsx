@@ -4,12 +4,36 @@ import { useState, useRef, useTransition } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { createVehiculo } from './actions'
 import { TIPOS_VEHICULO, TIPOS_MOTO } from '@/lib/constants'
+import CustomSelect from '@/components/ui/CustomSelect'
 
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
-const SELECT = 'w-full appearance-none [color-scheme:dark] bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] cursor-pointer'
 const LABEL = 'block text-xs font-semibold text-gray-400 mb-1.5'
 
 const MAX_PRECIO = 999_999_999
+
+const TIPO_VEHICULO_OPTS = TIPOS_VEHICULO.map(t => ({ value: t.value, label: t.label }))
+const TIPO_MOTO_OPTS = [{ value: '', label: 'Sin especificar' }, ...TIPOS_MOTO.map(t => ({ value: t.value, label: t.label }))]
+const CONDICION_OPTS = [{ value: 'usado', label: 'Usado' }, { value: 'nuevo', label: 'Nuevo' }]
+const TRANSMISION_OPTS = [
+  { value: '', label: 'Sin especificar' },
+  { value: 'manual', label: 'Manual' },
+  { value: 'automatica', label: 'Automática' },
+]
+const COMBUSTIBLE_OPTS = [
+  { value: '', label: 'Sin especificar' },
+  { value: 'nafta', label: 'Nafta' },
+  { value: 'diesel', label: 'Diésel' },
+  { value: 'gnc', label: 'GNC' },
+  { value: 'hibrido', label: 'Híbrido' },
+  { value: 'electrico', label: 'Eléctrico' },
+]
+const PUERTAS_OPTS = [
+  { value: '', label: 'Sin especificar' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
+]
 
 function spanishValidity(e: React.InvalidEvent<HTMLInputElement>) {
   const el = e.currentTarget
@@ -184,15 +208,12 @@ export default function PublicarForm({ userId }: { userId: string }) {
       {/* Tipo de vehículo */}
       <div>
         <label className={LABEL}>Tipo de vehículo *</label>
-        <select
+        <CustomSelect
           name="tipo_vehiculo"
-          required
+          options={TIPO_VEHICULO_OPTS}
           value={tipoVehiculo}
-          onChange={e => setTipoVehiculo(e.target.value)}
-          className={SELECT}
-        >
-          {TIPOS_VEHICULO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-        </select>
+          onChange={setTipoVehiculo}
+        />
       </div>
 
       {/* Campos específicos de moto */}
@@ -204,10 +225,7 @@ export default function PublicarForm({ userId }: { userId: string }) {
           </div>
           <div>
             <label className={LABEL}>Tipo de moto</label>
-            <select name="tipo_moto" defaultValue="" className={SELECT}>
-              <option value="">Sin especificar</option>
-              {TIPOS_MOTO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-            </select>
+            <CustomSelect name="tipo_moto" options={TIPO_MOTO_OPTS} defaultValue="" />
           </div>
         </div>
       )}
@@ -266,18 +284,11 @@ export default function PublicarForm({ userId }: { userId: string }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={LABEL}>Condición *</label>
-          <select name="condicion" required defaultValue="usado" className={SELECT}>
-            <option value="usado">Usado</option>
-            <option value="nuevo">Nuevo</option>
-          </select>
+          <CustomSelect name="condicion" options={CONDICION_OPTS} defaultValue="usado" />
         </div>
         <div>
           <label className={LABEL}>Transmisión</label>
-          <select name="transmision" className={SELECT}>
-            <option value="">Sin especificar</option>
-            <option value="manual">Manual</option>
-            <option value="automatica">Automática</option>
-          </select>
+          <CustomSelect name="transmision" options={TRANSMISION_OPTS} defaultValue="" />
         </div>
       </div>
 
@@ -285,24 +296,11 @@ export default function PublicarForm({ userId }: { userId: string }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={LABEL}>Combustible</label>
-          <select name="combustible" className={SELECT}>
-            <option value="">Sin especificar</option>
-            <option value="nafta">Nafta</option>
-            <option value="diesel">Diésel</option>
-            <option value="gnc">GNC</option>
-            <option value="hibrido">Híbrido</option>
-            <option value="electrico">Eléctrico</option>
-          </select>
+          <CustomSelect name="combustible" options={COMBUSTIBLE_OPTS} defaultValue="" />
         </div>
         <div>
           <label className={LABEL}>Puertas</label>
-          <select name="puertas" className={SELECT}>
-            <option value="">Sin especificar</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
+          <CustomSelect name="puertas" options={PUERTAS_OPTS} defaultValue="" />
         </div>
       </div>
 

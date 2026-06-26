@@ -45,6 +45,10 @@ const FECHA_LABELS: Record<FiltroFecha, string> = {
   '90d': 'Últimos 3 meses',
 }
 
+function formatFecha(iso: string): string {
+  return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
 function exportCSV(usuarios: Profile[]) {
   const header = ['ID', 'Nombre', 'Apellido', 'Email', 'Rol', 'Verificado', 'Activo', 'Vehículos', 'Registro']
   const rows = usuarios.map(u => [
@@ -149,33 +153,38 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
         </button>
       </div>
 
-      {/* Tabla */}
-      <div className="rounded-2xl border border-white/6 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-white/2 border-b border-white/6">
-              <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Usuario</th>
-              <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Rol</th>
-              <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Autos</th>
-              <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Verificado</th>
-              <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Estado</th>
-              <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Registro</th>
-              <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-600">
-                  No hay usuarios que coincidan con los filtros
-                </td>
-              </tr>
-            ) : (
-              filtered.map(u => <UsuarioRow key={u.id} usuario={u} />)
-            )}
-          </tbody>
-        </table>
-      </div>
+      {filtered.length === 0 ? (
+        <div className="rounded-2xl border border-white/6 px-5 py-12 text-center text-sm text-gray-600">
+          No hay usuarios que coincidan con los filtros
+        </div>
+      ) : (
+        <>
+          {/* Tabla — desktop */}
+          <div className="hidden md:block rounded-2xl border border-white/6 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-white/2 border-b border-white/6">
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Usuario</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Rol</th>
+                  <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Autos</th>
+                  <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Verificado</th>
+                  <th className="text-center px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Estado</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Registro</th>
+                  <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filtered.map(u => <UsuarioRow key={u.id} usuario={u} />)}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Cards — mobile */}
+          <div className="md:hidden space-y-3">
+            {filtered.map(u => <UsuarioCardMobile key={u.id} usuario={u} />)}
+          </div>
+        </>
+      )}
     </div>
   )
 }
@@ -254,7 +263,7 @@ function UsuarioRow({ usuario: u }: { usuario: Profile }) {
 
       {/* Fecha */}
       <td className="px-5 py-4 text-xs text-gray-500">
-        {new Date(u.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
+        {formatFecha(u.created_at)}
       </td>
 
       {/* Acciones */}
@@ -267,5 +276,77 @@ function UsuarioRow({ usuario: u }: { usuario: Profile }) {
         </Link>
       </td>
     </tr>
+  )
+}
+
+function UsuarioCardMobile({ usuario: u }: { usuario: Profile }) {
+  const [pending, startTransition] = useTransition()
+
+  return (
+    <div className={`bg-[#1a1a2e] border border-white/8 rounded-2xl p-4 ${pending ? 'opacity-50 pointer-events-none' : ''}`}>
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-9 h-9 rounded-full bg-[#282F8F]/20 border border-[#282F8F]/30 flex items-center justify-center shrink-0 overflow-hidden">
+          {u.avatar_url
+            ? <img src={u.avatar_url} alt="" className="w-full h-full object-cover" />
+            : <span className="text-xs font-bold text-[#FFC107]">{u.nombre.charAt(0).toUpperCase()}</span>
+          }
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-white truncate">{u.nombre} {u.apellido}</p>
+          <p className="text-xs text-gray-500 truncate">{u.email}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        <select
+          value={u.role}
+          onChange={e => startTransition(() => updateRole(u.id, e.target.value as Role))}
+          className={`text-xs font-bold px-2.5 py-2 rounded-lg border cursor-pointer focus:outline-none [color-scheme:dark] ${ROLE_STYLES[u.role]} bg-transparent`}
+        >
+          {ROLE_OPTIONS.map(o => (
+            <option key={o.value} value={o.value} className="bg-[#111827] text-white font-normal">
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <div className="flex items-center justify-center gap-1.5 text-xs bg-white/5 border border-white/10 rounded-lg px-2.5 py-2">
+          <span className={`font-bold tabular-nums ${u.vehiculos_count > 0 ? 'text-white' : 'text-gray-700'}`}>{u.vehiculos_count}</span>
+          <span className="text-gray-500">{u.vehiculos_count === 1 ? 'auto' : 'autos'}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={() => startTransition(() => toggleVerificado(u.id, !u.verificado))}
+          className={`flex-1 text-xs font-semibold px-3 py-2 rounded-xl border transition-colors ${
+            u.verificado
+              ? 'bg-green-500/10 text-green-400 border-green-500/25 hover:bg-green-500/20'
+              : 'bg-gray-500/10 text-gray-500 border-gray-500/20 hover:bg-gray-500/20'
+          }`}
+        >
+          {u.verificado ? '✓ Verificado' : 'Sin verificar'}
+        </button>
+        <button
+          onClick={() => startTransition(() => toggleActivo(u.id, !u.activo))}
+          className={`flex-1 text-xs font-semibold px-3 py-2 rounded-xl border transition-colors ${
+            u.activo
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
+              : 'bg-red-500/10 text-red-400 border-red-500/25'
+          }`}
+        >
+          {u.activo ? 'Activo' : 'Suspendido'}
+        </button>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] text-gray-600">Registro: {formatFecha(u.created_at)}</span>
+        <Link
+          href={`/admin/usuarios/${u.id}`}
+          className="text-xs font-semibold text-[#282F8F] hover:text-blue-400 transition-colors px-3 py-1.5 rounded-lg border border-[#282F8F]/30 hover:border-blue-400/30"
+        >
+          Ver perfil →
+        </Link>
+      </div>
+    </div>
   )
 }

@@ -1,5 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import ReactivarUsuarioButton from './ReactivarUsuarioButton'
+
+const ROLE_LABEL: Record<string, string> = {
+  particular: 'Particular',
+  agencia_basica: 'Agencia PRIME',
+  agencia_premium: 'Agencia DUX',
+  admin: 'Admin',
+}
 
 interface Reporte {
   id: string
@@ -19,6 +27,7 @@ export default async function AdminModeracionPage() {
   const [
     { data: reportesRaw },
     { data: pausadosRaw },
+    { data: suspendidosRaw },
   ] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase
@@ -39,6 +48,14 @@ export default async function AdminModeracionPage() {
       .eq('vendido', false)
       .order('created_at', { ascending: false })
       .limit(20) as any) as Promise<{ data: any[] | null }>,
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase
+      .from('profiles')
+      .select('id, nombre, apellido, email, role, created_at')
+      .eq('activo', false)
+      .order('created_at', { ascending: false })
+      .limit(50) as any) as Promise<{ data: any[] | null }>,
   ])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,6 +198,55 @@ export default async function AdminModeracionPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                         </svg>
                       </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Usuarios suspendidos */}
+      <section className="mb-8">
+        <h2 className="text-sm font-bold text-white mb-3">Usuarios suspendidos ({suspendidosRaw?.length ?? 0})</h2>
+        {!suspendidosRaw || suspendidosRaw.length === 0 ? (
+          <div className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-6 text-center">
+            <p className="text-sm text-gray-600">No hay usuarios suspendidos actualmente</p>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-white/6 overflow-x-auto">
+            <table className="w-full min-w-[560px] text-sm">
+              <thead>
+                <tr className="bg-white/2 border-b border-white/6">
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Usuario</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Rol</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Suspendido desde</th>
+                  <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {(suspendidosRaw ?? []).map((u: any) => (
+                  <tr key={u.id} className="hover:bg-white/2 transition-colors">
+                    <td className="px-5 py-4">
+                      <p className="font-semibold text-white">{u.nombre} {u.apellido}</p>
+                      <p className="text-xs text-gray-500">{u.email}</p>
+                    </td>
+                    <td className="px-5 py-4 text-xs text-gray-400">{ROLE_LABEL[u.role] ?? u.role}</td>
+                    <td className="px-5 py-4 text-xs text-gray-600">
+                      {new Date(u.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <Link
+                          href={`/admin/usuarios/${u.id}`}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg transition-colors"
+                        >
+                          Ver perfil
+                        </Link>
+                        <ReactivarUsuarioButton userId={u.id} />
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -65,6 +65,7 @@ export async function toggleActivo(userId: string, activo: boolean) {
   revalidatePath('/admin/usuarios')
   revalidatePath(`/admin/usuarios/${userId}`)
   revalidatePath('/admin/vehiculos')
+  revalidatePath('/admin/moderacion')
   revalidatePath('/panel/mis-publicaciones')
   revalidatePath('/panel')
   revalidatePath('/')

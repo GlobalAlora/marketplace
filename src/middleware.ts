@@ -43,20 +43,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
   }
 
-  if (isAdmin) {
-    if (!user) {
-      return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
-    }
-
+  if ((isPanel || isAdmin) && user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, activo')
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin') {
+    // Cuenta suspendida después de loguearse: cerrar sesión y mandar al login.
+    if (profile && profile.activo === false) {
+      await supabase.auth.signOut()
+      return NextResponse.redirect(new URL('/auth/login?suspendida=1', request.url))
+    }
+
+    if (isAdmin && (!profile || profile.role !== 'admin')) {
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }
+  } else if (isAdmin && !user) {
+    return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
   }
 
   return supabaseResponse

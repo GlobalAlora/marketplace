@@ -39,7 +39,9 @@ function LoginForm() {
   const [showPw, setShowPw]         = useState(false)
   const [errors, setErrors]         = useState<FormErrors>({})
   const [loading, setLoading]       = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(
+    searchParams.get('suspendida') ? 'Tu cuenta fue suspendida. Contactanos si creés que es un error.' : null
+  )
 
   function validate(): boolean {
     const next: FormErrors = {}
@@ -69,12 +71,18 @@ function LoginForm() {
       }
       return
     }
-    // Fetch role to redirect correctly
+    // Fetch role + activo para redirigir y para bloquear cuentas suspendidas
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, activo')
       .eq('id', data.user!.id)
       .single()
+
+    if (profile && profile.activo === false) {
+      await supabase.auth.signOut()
+      setServerError('Tu cuenta fue suspendida. Contactanos si creés que es un error.')
+      return
+    }
 
     // Full reload para que el server component lea las cookies de sesión recién seteadas
     if (redirectTo) {

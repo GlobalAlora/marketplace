@@ -109,7 +109,8 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
         {(vehiculos ?? []).length === 0 ? (
           <p className="px-6 py-10 text-center text-sm text-gray-600">Sin publicaciones</p>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px] text-sm">
             <thead>
               <tr className="bg-white/2 border-b border-white/5">
                 <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Vehículo</th>
@@ -145,6 +146,7 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

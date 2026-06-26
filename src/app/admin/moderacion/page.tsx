@@ -91,8 +91,8 @@ export default async function AdminModeracionPage() {
             <p className="text-xs text-gray-600 mt-1">Todo en orden por ahora</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/6 overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="rounded-2xl border border-white/6 overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="bg-white/2 border-b border-white/6">
                   <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Vehículo reportado</th>
@@ -148,8 +148,8 @@ export default async function AdminModeracionPage() {
             <p className="text-sm text-gray-600">No hay vehículos pausados actualmente</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/6 overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="rounded-2xl border border-white/6 overflow-x-auto">
+            <table className="w-full min-w-[480px] text-sm">
               <thead>
                 <tr className="bg-white/2 border-b border-white/6">
                   <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Vehículo</th>
@@ -194,8 +194,8 @@ export default async function AdminModeracionPage() {
       {revisados.length > 0 && (
         <section>
           <h2 className="text-sm font-bold text-gray-600 mb-3">Historial de reportes procesados ({revisados.length})</h2>
-          <div className="rounded-2xl border border-white/4 overflow-hidden">
-            <table className="w-full text-sm opacity-60">
+          <div className="rounded-2xl border border-white/4 overflow-x-auto">
+            <table className="w-full min-w-[480px] text-sm opacity-60">
               <tbody className="divide-y divide-white/3">
                 {revisados.map(r => (
                   <tr key={r.id}>

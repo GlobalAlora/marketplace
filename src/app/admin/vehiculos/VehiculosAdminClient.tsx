@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef } from 'react'
 import Link from 'next/link'
 import { toggleActivoVehiculo, toggleDestacado, deleteVehiculoAdmin, updatePrecioVehiculo, reorderImagenesVehiculo } from './actions'
+import CustomSelect from '@/components/ui/CustomSelect'
 
 interface VehiculoAdmin {
   id: string
@@ -29,9 +30,23 @@ const ROLE_LABEL: Record<string, string> = {
   agencia_premium: 'Ag. DUX',
 }
 
-const FILTER_ESTADO = ['todos', 'activo', 'pausado', 'vendido']
-const FILTER_DESTACADO = ['todos', 'destacado', 'no_destacado']
-const FILTER_ROL = ['todos', 'particular', 'agencia_basica', 'agencia_premium']
+const FILTER_ESTADO_OPTS = [
+  { value: 'todos', label: 'Estado: todos' },
+  { value: 'activo', label: 'Activo' },
+  { value: 'pausado', label: 'Pausado' },
+  { value: 'vendido', label: 'Vendido' },
+]
+const FILTER_DESTACADO_OPTS = [
+  { value: 'todos', label: 'Destacado: todos' },
+  { value: 'destacado', label: 'Vitrina ★' },
+  { value: 'no_destacado', label: 'Sin vitrina' },
+]
+const FILTER_ROL_OPTS = [
+  { value: 'todos', label: 'Vendedor: todos' },
+  { value: 'particular', label: 'Particular' },
+  { value: 'agencia_basica', label: 'Ag. PRIME' },
+  { value: 'agencia_premium', label: 'Ag. DUX' },
+]
 const PAGE_SIZE = 20
 
 function getEstado(v: VehiculoAdmin) {
@@ -163,8 +178,6 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
     setEditPrecioId(null)
   }
 
-  const SELECT = 'bg-white/5 border border-white/10 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-[#FFC107] transition-colors'
-
   return (
     <div>
       {/* Filtros */}
@@ -175,17 +188,27 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
           placeholder="Buscar marca, modelo, vendedor…"
           className="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:border-[#FFC107] transition-colors w-56"
         />
-        <select value={filterEstado} onChange={e => { setFilterEstado(e.target.value); resetPage() }} className={SELECT}>
-          {FILTER_ESTADO.map(v => <option key={v} value={v}>{v === 'todos' ? 'Estado: todos' : v.charAt(0).toUpperCase() + v.slice(1)}</option>)}
-        </select>
-        <select value={filterDestacado} onChange={e => { setFilterDestacado(e.target.value); resetPage() }} className={SELECT}>
-          <option value="todos">Destacado: todos</option>
-          <option value="destacado">Vitrina ★</option>
-          <option value="no_destacado">Sin vitrina</option>
-        </select>
-        <select value={filterRol} onChange={e => { setFilterRol(e.target.value); resetPage() }} className={SELECT}>
-          {FILTER_ROL.map(v => <option key={v} value={v}>{v === 'todos' ? 'Vendedor: todos' : ROLE_LABEL[v]}</option>)}
-        </select>
+        <div className="w-44">
+          <CustomSelect
+            options={FILTER_ESTADO_OPTS}
+            value={filterEstado}
+            onChange={v => { setFilterEstado(v); resetPage() }}
+          />
+        </div>
+        <div className="w-44">
+          <CustomSelect
+            options={FILTER_DESTACADO_OPTS}
+            value={filterDestacado}
+            onChange={v => { setFilterDestacado(v); resetPage() }}
+          />
+        </div>
+        <div className="w-44">
+          <CustomSelect
+            options={FILTER_ROL_OPTS}
+            value={filterRol}
+            onChange={v => { setFilterRol(v); resetPage() }}
+          />
+        </div>
         <span className="ml-auto text-xs text-gray-600 self-center">{filtered.length} resultados</span>
       </div>
 

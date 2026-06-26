@@ -6,19 +6,12 @@ import { useRouter } from 'next/navigation'
 import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
 import { GOLD, GOLD_LIGHT, GOLD_DARK, NAVY, NAVY_LIGHT, CornerRibbon, ShieldBadge, IconVitrina } from './destacadoStyles'
+import { formatPrecio } from '@/lib/format'
 
 interface SeccionDestacadosProps {
   vehiculos: Vehiculo[]
   titulo?: string
   subtitulo?: string
-}
-
-function formatPrecio(precio: number): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits: 0,
-  }).format(precio)
 }
 
 function formatKm(km: number): string {
@@ -56,7 +49,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
   return (
     <Link
       href={`/vehiculos/${vehiculo.id}`}
-      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden min-h-[260px] transition-all duration-300"
+      className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden min-h-[180px] transition-all duration-300"
       style={{
         background: '#FFFFFF',
         border: `2px solid ${GOLD}`,
@@ -72,7 +65,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
       }}
     >
       {/* ── Image panel ── */}
-      <div className="relative w-full sm:w-[55%] aspect-[4/3] sm:aspect-auto sm:min-h-[260px] shrink-0 overflow-hidden" style={{ background: NAVY }}>
+      <div className="relative w-full sm:w-[45%] aspect-[4/3] sm:aspect-auto sm:min-h-[180px] shrink-0 overflow-hidden" style={{ background: NAVY }}>
         {vehiculo.imagenes[0] ? (
           <img
             src={vehiculo.imagenes[0]}
@@ -91,44 +84,32 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
 
       {/* ── Info panel ── */}
       <div
-        className="flex flex-col justify-between p-6 lg:p-8 flex-1 min-w-0"
+        className="flex flex-col justify-between p-4 lg:p-5 flex-1 min-w-0"
         style={{ borderLeft: `1px solid ${GOLD}44` }}
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1.5">
           <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold tracking-[0.18em] uppercase" style={{ color: GOLD_DARK }}>
             <IconVitrina className="w-2.5 h-2.5" />
             Destacado
           </span>
 
-          <h3 className="text-xl lg:text-2xl font-bold text-gray-900 leading-tight group-hover:text-[#282F8F] transition-colors">
+          <h3 className="text-base lg:text-lg font-bold text-gray-900 leading-tight group-hover:text-[#282F8F] transition-colors line-clamp-2">
             {vehiculo.titulo}
           </h3>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
             <span>{vehiculo.año}</span>
             <span className="opacity-40">·</span>
             <span>{formatKm(vehiculo.kilometraje)}</span>
             <span className="opacity-40">·</span>
             <span>{vehiculo.ubicacion}</span>
-            {vehiculo.transmision && (
-              <>
-                <span className="opacity-40">·</span>
-                <span className="capitalize">{vehiculo.transmision}</span>
-              </>
-            )}
           </div>
-
-          {vehiculo.descripcion && (
-            <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed hidden sm:block">
-              {vehiculo.descripcion}
-            </p>
-          )}
         </div>
 
-        <div className="flex flex-col gap-4 mt-5">
+        <div className="flex flex-col gap-2.5 mt-3">
           {isLoggedIn ? (
-            <p className="text-3xl font-black tracking-tight leading-none text-gray-900">
-              {formatPrecio(vehiculo.precio)}
+            <p className="text-xl lg:text-2xl font-black tracking-tight leading-none text-gray-900">
+              {formatPrecio(vehiculo.precio, vehiculo.moneda)}
             </p>
           ) : (
             <button
@@ -145,7 +126,7 @@ function CardGrande({ vehiculo }: { vehiculo: Vehiculo }) {
 
           <div className="flex items-center gap-3 flex-wrap">
             <span
-              className="inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl transition-all duration-200"
+              className="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl transition-all duration-200"
               style={{ background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD_DARK})`, color: NAVY }}
             >
               Ver vehículo →
@@ -223,7 +204,7 @@ function CardPequeña({ vehiculo }: { vehiculo: Vehiculo }) {
 
         {isLoggedIn ? (
           <p className="text-base font-black mt-2 leading-none text-gray-900">
-            {formatPrecio(vehiculo.precio)}
+            {formatPrecio(vehiculo.precio, vehiculo.moneda)}
           </p>
         ) : (
           <button

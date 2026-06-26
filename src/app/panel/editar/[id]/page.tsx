@@ -21,6 +21,9 @@ interface VehiculoRow {
   tipo_vehiculo: string | null
   cilindrada: number | null
   tipo_moto: string | null
+  ciudad: string | null
+  provincia: string | null
+  moneda: string | null
 }
 
 interface PageProps {

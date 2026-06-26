@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import MisPublicacionesClient from './MisPublicacionesClient'
-import { getDestacadosLimits } from '@/lib/plan-config'
+import { getDestacadosLimits, resolveDestacadosLimit } from '@/lib/plan-config'
 
 interface Vehiculo {
   id: string
@@ -27,12 +27,12 @@ export default async function MisPublicacionesPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, limite_destacados_custom')
     .eq('id', user.id)
     .single()
 
   const destacadosLimits = await getDestacadosLimits()
-  const limiteDestacados = destacadosLimits[profile?.role ?? 'particular'] ?? 0
+  const limiteDestacados = resolveDestacadosLimit(profile ?? { role: 'particular' }, destacadosLimits)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: vehiculos } = await (supabase

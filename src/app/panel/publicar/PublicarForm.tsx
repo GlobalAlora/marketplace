@@ -4,7 +4,9 @@ import { useState, useRef, useTransition } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { createVehiculo } from './actions'
 import { TIPOS_VEHICULO, TIPOS_MOTO } from '@/lib/constants'
+import { PROVINCIAS, ciudadesDeProvincia } from '@/lib/localidades'
 import CustomSelect from '@/components/ui/CustomSelect'
+import ComboboxSelect from '@/components/ui/ComboboxSelect'
 
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
 const LABEL = 'block text-xs font-semibold text-gray-400 mb-1.5'
@@ -34,6 +36,8 @@ const PUERTAS_OPTS = [
   { value: '4', label: '4' },
   { value: '5', label: '5' },
 ]
+const MONEDA_OPTS = [{ value: 'ARS', label: 'Pesos (ARS)' }, { value: 'USD', label: 'Dólares (USD)' }]
+const PROVINCIA_OPTS = PROVINCIAS.map(p => ({ value: p, label: p }))
 
 function spanishValidity(e: React.InvalidEvent<HTMLInputElement>) {
   const el = e.currentTarget
@@ -56,6 +60,14 @@ export default function PublicarForm({ userId }: { userId: string }) {
   const [dragOver, setDragOver] = useState<number | null>(null)
   const [tipoVehiculo, setTipoVehiculo] = useState('auto')
   const esMoto = tipoVehiculo === 'moto'
+  const [provincia, setProvincia] = useState('Chubut')
+  const [ciudad, setCiudad] = useState('Comodoro Rivadavia')
+  const ciudadOpts = ciudadesDeProvincia(provincia).map(c => ({ value: c, label: c }))
+
+  function handleProvinciaChange(v: string) {
+    setProvincia(v)
+    setCiudad(ciudadesDeProvincia(v)[0] ?? '')
+  }
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
@@ -262,9 +274,12 @@ export default function PublicarForm({ userId }: { userId: string }) {
 
       {/* Precio */}
       <div>
-        <label className={LABEL}>Precio (ARS) * <span className="text-gray-600 font-normal">máx. $999.999.999</span></label>
-        <input name="precio" type="number" required min={1} max={MAX_PRECIO} placeholder="8500000" className={INPUT}
-          onInvalid={spanishValidity} onInput={e => e.currentTarget.setCustomValidity('')} />
+        <label className={LABEL}>Precio * <span className="text-gray-600 font-normal">máx. 999.999.999</span></label>
+        <div className="grid grid-cols-[1fr_140px] gap-3">
+          <input name="precio" type="number" required min={1} max={MAX_PRECIO} placeholder="8500000" className={INPUT}
+            onInvalid={spanishValidity} onInput={e => e.currentTarget.setCustomValidity('')} />
+          <CustomSelect name="moneda" options={MONEDA_OPTS} defaultValue="ARS" />
+        </div>
         <div className="mt-2.5 flex items-start gap-2.5 bg-white/3 border border-white/8 rounded-xl px-4 py-3">
           <svg className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
@@ -317,9 +332,29 @@ export default function PublicarForm({ userId }: { userId: string }) {
       </div>
 
       {/* Ubicación */}
-      <div>
-        <label className={LABEL}>Ubicación *</label>
-        <input name="ubicacion" required placeholder="Comodoro Rivadavia, Chubut" className={INPUT} />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className={LABEL}>Provincia *</label>
+          <ComboboxSelect
+            name="provincia"
+            value={provincia}
+            onChange={handleProvinciaChange}
+            options={PROVINCIA_OPTS}
+            placeholder="Seleccionar provincia"
+            searchPlaceholder="Buscar provincia..."
+          />
+        </div>
+        <div>
+          <label className={LABEL}>Ciudad *</label>
+          <ComboboxSelect
+            name="ciudad"
+            value={ciudad}
+            onChange={setCiudad}
+            options={ciudadOpts}
+            placeholder="Seleccionar ciudad"
+            searchPlaceholder="Buscar ciudad..."
+          />
+        </div>
       </div>
 
       {error && (

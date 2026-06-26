@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TIPOS_VEHICULO } from '@/lib/constants'
 import { createClient } from '@/lib/supabase/client'
+import ComboboxSelect from '@/components/ui/ComboboxSelect'
 
 const PRECIOS = [
   { label: 'Sin límite', value: '' },
@@ -100,6 +101,9 @@ export default function SidebarFiltros() {
     (e: React.ChangeEvent<HTMLSelectElement>) =>
       setFilters(f => ({ ...f, [key]: e.target.value }))
 
+  const setValue = (key: keyof Filters) => (value: string) =>
+    setFilters(f => ({ ...f, [key]: value }))
+
   const hasFilters = Object.values(filters).some(Boolean)
 
   function handleApply() {
@@ -142,10 +146,17 @@ export default function SidebarFiltros() {
             {TIPOS_VEHICULO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </FilterGroup>
 
-          <FilterGroup label="Marca" id="sf-marca" value={filters.marca} onChange={set('marca')}>
-            <option value="">Todas las marcas</option>
-            {marcas.map(m => <option key={m} value={m}>{m}</option>)}
-          </FilterGroup>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Marca</label>
+            <ComboboxSelect
+              theme="light"
+              value={filters.marca}
+              onChange={setValue('marca')}
+              placeholder="Todas las marcas"
+              searchPlaceholder="Buscar marca..."
+              options={marcas.map(m => ({ value: m, label: m }))}
+            />
+          </div>
 
           <FilterGroup label="Precio máximo" id="sf-precio" value={filters.precio} onChange={set('precio')}>
             {PRECIOS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
@@ -160,10 +171,17 @@ export default function SidebarFiltros() {
             {KMS.map(k => <option key={k.value} value={k.value}>{k.label}</option>)}
           </FilterGroup>
 
-          <FilterGroup label="Localidad" id="sf-ubicacion" value={filters.ubicacion} onChange={set('ubicacion')}>
-            <option value="">Todas</option>
-            {localidades.map(u => <option key={u} value={u}>{u}</option>)}
-          </FilterGroup>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Localidad</label>
+            <ComboboxSelect
+              theme="light"
+              value={filters.ubicacion}
+              onChange={setValue('ubicacion')}
+              placeholder="Todas"
+              searchPlaceholder="Buscar localidad..."
+              options={localidades.map(u => ({ value: u, label: u }))}
+            />
+          </div>
         </div>
 
         {/* Apply button */}

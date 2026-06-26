@@ -16,7 +16,10 @@ export async function updateVehiculo(vehiculoId: string, formData: FormData) {
   const kilometraje = parseInt(formData.get('kilometraje') as string)
   const precio      = parseInt(formData.get('precio') as string)
   const descripcion = formData.get('descripcion') as string
-  const ubicacion   = formData.get('ubicacion') as string
+  const ciudad      = formData.get('ciudad') as string
+  const provincia   = formData.get('provincia') as string
+  const ubicacion   = `${ciudad}, ${provincia}`
+  const moneda      = (formData.get('moneda') as string) || 'ARS'
   const condicion   = formData.get('condicion') as string
   const transmision = formData.get('transmision') as string || null
   const combustible = formData.get('combustible') as string || null
@@ -39,8 +42,11 @@ export async function updateVehiculo(vehiculoId: string, formData: FormData) {
       año,
       kilometraje,
       precio,
+      moneda,
       descripcion,
       ubicacion,
+      ciudad,
+      provincia,
       condicion,
       transmision,
       combustible,

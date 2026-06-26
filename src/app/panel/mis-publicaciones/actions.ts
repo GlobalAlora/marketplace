@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { getDestacadosLimits } from '@/lib/plan-config'
+import { getDestacadosLimits, resolveDestacadosLimit } from '@/lib/plan-config'
 
 async function getAuthClient() {
   const supabase = await createClient()
@@ -42,12 +42,12 @@ export async function toggleDestacado(vehiculoId: string, destacado: boolean) {
   if (destacado) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, limite_destacados_custom')
       .eq('id', userId)
       .single()
 
     const destacadosLimits = await getDestacadosLimits()
-    const limite = destacadosLimits[profile?.role ?? 'particular'] ?? 0
+    const limite = resolveDestacadosLimit(profile ?? { role: 'particular' }, destacadosLimits)
 
     const { count } = await supabase
       .from('vehiculos')

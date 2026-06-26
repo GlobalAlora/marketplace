@@ -134,17 +134,17 @@ export default async function AgenciaPage({ params }: PageProps) {
               <span className="text-gray-300 truncate max-w-[160px]">{nombre}</span>
             </nav>
 
-            <div className="flex flex-col sm:flex-row gap-8 sm:items-start">
+            <div className="flex flex-col items-center text-center gap-5">
               {/* Logo */}
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden shadow-2xl shadow-[#FFC107]/10 border-2 border-[#FFC107]/30" style={{ background: 'linear-gradient(135deg, #FFC107 0%, #f59e0b 100%)' }} aria-hidden="true">
+              <div className="w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] rounded-2xl flex items-center justify-center shrink-0 overflow-hidden shadow-2xl shadow-[#FFC107]/10 border-2 border-[#FFC107]/30" style={{ background: 'linear-gradient(135deg, #FFC107 0%, #f59e0b 100%)' }} aria-hidden="true">
                 {logoUrl
                   ? <img src={logoUrl} alt={`Logo ${nombre}`} className="w-full h-full object-cover" />
-                  : <span className="text-[#0D0F14] font-extrabold text-3xl">{iniciales}</span>
+                  : <span className="text-[#0D0F14] font-extrabold text-5xl">{iniciales}</span>
                 }
               </div>
 
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-3 mb-2">
+              <div className="max-w-2xl">
+                <div className="flex flex-wrap items-center justify-center gap-3 mb-2">
                   <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">{nombre}</h1>
                   {agencia.verificado && (
                     <span className="inline-flex items-center gap-1.5 bg-[#FFC107] text-[#0D0F14] text-xs font-extrabold px-3 py-1.5 rounded-full shrink-0 uppercase tracking-wide">
@@ -154,9 +154,9 @@ export default async function AgenciaPage({ params }: PageProps) {
                   )}
                 </div>
 
-                {agencia.bio && <p className="text-gray-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-6">{agencia.bio}</p>}
+                {agencia.bio && <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">{agencia.bio}</p>}
 
-                <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-wrap items-center justify-center gap-4">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-extrabold text-white">{vehiculos.length}</span>

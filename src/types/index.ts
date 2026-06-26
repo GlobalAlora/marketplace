@@ -19,6 +19,7 @@ export type Profile = {
   verificado: boolean
   activo: boolean
   created_at: string
+  limite_destacados_custom?: number | null
 }
 
 export type Vehiculo = {
@@ -32,6 +33,9 @@ export type Vehiculo = {
   precio: number
   descripcion: string
   ubicacion: string
+  ciudad?: string
+  provincia?: string
+  moneda?: 'ARS' | 'USD'
   imagenes: string[]
   activo: boolean
   // ADMIN ONLY: solo un usuario con role === 'admin' puede cambiar este campo.

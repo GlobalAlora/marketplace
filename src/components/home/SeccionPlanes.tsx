@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import RevealSection from '@/components/ui/RevealSection'
 import type { SiteConfig } from '@/lib/site-config'
+import type { PlanHome } from '@/lib/planes-home'
 
 const WHATSAPP_MSG = encodeURIComponent('Hola! Me interesa conocer más sobre los planes de AUTODUX para agencias.')
 
@@ -94,9 +95,21 @@ function WhatsAppIcon() {
   )
 }
 
-export default function SeccionPlanes({ config }: { config?: SiteConfig }) {
+export default function SeccionPlanes({ config, planesHome }: { config?: SiteConfig; planesHome?: PlanHome[] }) {
   const whatsappUrl = buildWhatsappUrl(config?.whatsapp_num ?? '5492974000000')
-  const planes = buildPlanes(whatsappUrl)
+  const planes: Plan[] = planesHome?.length
+    ? planesHome.map(p => ({
+        nombre: p.nombre,
+        subtitulo: p.subtitulo,
+        precio: p.precio,
+        precioSub: p.precio_sub,
+        destacado: p.destacado,
+        features: p.features,
+        ctaLabel: p.cta_label,
+        ctaHref: p.cta_href,
+        ctaExterno: p.cta_externo,
+      }))
+    : buildPlanes(whatsappUrl)
   return (
     <section
       className="bg-[#071526] py-16 sm:py-20"

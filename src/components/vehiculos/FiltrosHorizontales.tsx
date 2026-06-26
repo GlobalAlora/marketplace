@@ -61,14 +61,18 @@ function Chevron({ open }: { open: boolean }) {
 }
 
 // ── Dropdown chip estándar ─────────────────────────────────────────────────────
-function FilterChip({ label, value, options, onChange }: {
+function FilterChip({ label, value, options, onChange, searchable = false, searchPlaceholder = 'Buscar...' }: {
   label: string
   value: string
   options: Option[]
   onChange: (v: string) => void
+  searchable?: boolean
+  searchPlaceholder?: string
 }) {
   const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const ref = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -79,8 +83,19 @@ function FilterChip({ label, value, options, onChange }: {
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
 
+  useEffect(() => {
+    if (open && searchable) {
+      setQuery('')
+      const t = setTimeout(() => inputRef.current?.focus(), 30)
+      return () => clearTimeout(t)
+    }
+  }, [open, searchable])
+
   const active   = !!value
   const selected = options.find(o => o.value === value)
+  const visibleOptions = searchable && query.trim()
+    ? options.filter(o => o.label.toLowerCase().includes(query.trim().toLowerCase()))
+    : options
 
   return (
     <div ref={ref} className="relative shrink-0">
@@ -99,29 +114,46 @@ function FilterChip({ label, value, options, onChange }: {
       </button>
 
       {open && (
-        <ul
-          role="listbox"
-          className="absolute top-[calc(100%+6px)] left-0 z-50 min-w-[190px] max-h-64 overflow-y-auto bg-[#0d2137] border border-white/15 rounded-xl shadow-2xl shadow-black/60"
+        <div
+          className="absolute top-[calc(100%+6px)] left-0 z-50 min-w-[220px] bg-[#0d2137] border border-white/15 rounded-xl shadow-2xl shadow-black/60 overflow-hidden"
         >
-          {options.map(opt => (
-            <li key={opt.value}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={opt.value === value}
-                onClick={() => { onChange(opt.value); setOpen(false) }}
-                className={[
-                  'w-full text-left px-4 py-2.5 text-sm transition-colors',
-                  opt.value === value
-                    ? 'bg-[#FFC107]/15 text-[#FFC107] font-semibold'
-                    : 'text-gray-300 hover:bg-white/8 hover:text-white',
-                ].join(' ')}
-              >
-                {opt.label}
-              </button>
-            </li>
-          ))}
-        </ul>
+          {searchable && (
+            <div className="p-2 border-b border-white/10">
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder={searchPlaceholder}
+                className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2 placeholder-gray-500 focus:outline-none focus:border-[#FFC107]/60"
+              />
+            </div>
+          )}
+          <ul role="listbox" className="max-h-64 overflow-y-auto">
+            {visibleOptions.length === 0 ? (
+              <li className="px-4 py-3 text-sm text-gray-600">Sin resultados</li>
+            ) : (
+              visibleOptions.map(opt => (
+                <li key={opt.value}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={opt.value === value}
+                    onClick={() => { onChange(opt.value); setOpen(false) }}
+                    className={[
+                      'w-full text-left px-4 py-2.5 text-sm transition-colors',
+                      opt.value === value
+                        ? 'bg-[#FFC107]/15 text-[#FFC107] font-semibold'
+                        : 'text-gray-300 hover:bg-white/8 hover:text-white',
+                    ].join(' ')}
+                  >
+                    {opt.label}
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
       )}
     </div>
   )
@@ -398,6 +430,8 @@ export default function FiltrosHorizontales({ sticky = false, marcas = [], ubica
             value={filters.marca}
             options={MARCA_OPTS}
             onChange={v => applyFilter('marca', v)}
+            searchable
+            searchPlaceholder="Buscar marca..."
           />
 
           <PriceRangeChip
@@ -432,6 +466,8 @@ export default function FiltrosHorizontales({ sticky = false, marcas = [], ubica
             value={filters.ubicacion}
             options={LOCALIDAD_OPTS}
             onChange={v => applyFilter('ubicacion', v)}
+            searchable
+            searchPlaceholder="Buscar ciudad..."
           />
 
           {hasFilters && (

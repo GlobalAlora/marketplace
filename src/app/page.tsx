@@ -11,6 +11,7 @@ import RevealSection from '@/components/ui/RevealSection'
 import { createClient } from '@/lib/supabase/server'
 import { getBanners } from '@/lib/banners'
 import { getSiteConfig } from '@/lib/site-config'
+import { getPlanesHome } from '@/lib/planes-home'
 import type { Vehiculo } from '@/types'
 
 export const revalidate = 300 // 5 min cache
@@ -25,6 +26,7 @@ export default async function Home() {
     { count: totalCount },
     banners,
     siteConfig,
+    planesHome,
   ] = await Promise.all([
     // Vitrina: solo destacados activos, máx 3
     supabase
@@ -60,6 +62,9 @@ export default async function Home() {
 
     // Config del sitio (CMS)
     getSiteConfig(),
+
+    // Planes editables desde /admin/planes-home
+    getPlanesHome(),
   ])
 
   const destacados      = (rawDestacados ?? []) as unknown as Vehiculo[]
@@ -161,7 +166,7 @@ export default async function Home() {
       <SeccionBeneficios config={siteConfig} />
 
       {/* Planes */}
-      <SeccionPlanes config={siteConfig} />
+      <SeccionPlanes config={siteConfig} planesHome={planesHome} />
 
     </MainLayout>
   )

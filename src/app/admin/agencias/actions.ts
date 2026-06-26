@@ -22,3 +22,15 @@ export async function toggleVerificadoAgencia(id: string, verificado: boolean) {
   if (error) throw new Error(error.message)
   revalidatePath('/admin/agencias')
 }
+
+export async function setLimiteDestacadosCustom(id: string, value: number | null) {
+  const supabase = await getAdminClient()
+  if (value !== null && (!Number.isFinite(value) || value < 0)) {
+    throw new Error('Valor inválido')
+  }
+  const { error } = await supabase.from('profiles').update({ limite_destacados_custom: value }).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/agencias')
+  revalidatePath(`/admin/agencias/${id}`)
+  revalidatePath('/panel/mis-publicaciones')
+}

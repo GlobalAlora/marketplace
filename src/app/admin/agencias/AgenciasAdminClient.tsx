@@ -156,16 +156,24 @@ function AgenciaRow({ agencia: a }: { agencia: Agencia }) {
 
       {/* Acciones */}
       <td className="px-5 py-4 text-right">
-        <Link
-          href={`/agencia/${a.id}`}
-          target="_blank"
-          className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
-        >
-          Ver perfil
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-          </svg>
-        </Link>
+        <div className="inline-flex items-center gap-2">
+          <Link
+            href={`/admin/agencias/${a.id}`}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            Ver detalle
+          </Link>
+          <Link
+            href={`/agencias/${a.id}`}
+            target="_blank"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            Ver perfil
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+          </Link>
+        </div>
       </td>
     </tr>
   )

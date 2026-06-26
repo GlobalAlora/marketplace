@@ -5,17 +5,10 @@ import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
 import { TIPOS_VEHICULO } from '@/lib/constants'
 import { NAVY, GOLD_DARK, CornerRibbon, ShieldBadge, IconVitrina } from './destacadoStyles'
+import { formatPrecio } from '@/lib/format'
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo
-}
-
-function formatPrecio(precio: number): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits: 0,
-  }).format(precio)
 }
 
 function formatKm(km: number): string {
@@ -107,7 +100,7 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
         <div className={`mt-auto pt-2.5 flex items-center justify-between border-t ${d ? 'border-gray-100' : 'border-white/8'}`}>
           {isLoggedIn ? (
             <p className={`text-base font-black tracking-tight leading-none ${d ? 'text-gray-900' : 'text-[#FFC107]'}`}>
-              {formatPrecio(vehiculo.precio)}
+              {formatPrecio(vehiculo.precio, vehiculo.moneda)}
             </p>
           ) : (
             <span className={`inline-flex items-center gap-1 text-xs font-semibold ${d ? 'text-gray-500' : 'text-[#FFC107]'}`}>

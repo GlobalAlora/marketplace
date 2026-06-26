@@ -37,8 +37,15 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: 
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [busqueda, setBusqueda] = useState('')
 
   const destacadosActivos = vehiculos.filter(v => v.destacado && v.activo && !v.vendido).length
+
+  const vehiculosFiltrados = busqueda.trim()
+    ? vehiculos.filter(v =>
+        `${v.titulo} ${v.marca} ${v.modelo}`.toLowerCase().includes(busqueda.trim().toLowerCase())
+      )
+    : vehiculos
 
   function handleDestacar(id: string, destacado: boolean) {
     setLoadingId(id)
@@ -118,12 +125,27 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: 
           <p className="text-sm text-red-400">{actionError}</p>
         </div>
       )}
+      <div className="relative">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        <input
+          type="text"
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          placeholder="Buscar por título, marca o modelo..."
+          className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl pl-9 pr-4 py-2.5 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors"
+        />
+      </div>
       {limiteDestacados > 0 && (
         <p className="text-xs text-gray-500 px-1">
           Destacados: <span className="text-white font-semibold">{destacadosActivos}/{limiteDestacados}</span> de tu plan
         </p>
       )}
-      {vehiculos.map(v => {
+      {vehiculosFiltrados.length === 0 && (
+        <p className="text-sm text-gray-600 text-center py-8">No hay publicaciones que coincidan con &quot;{busqueda}&quot;</p>
+      )}
+      {vehiculosFiltrados.map(v => {
         const estado = getEstado(v)
         const cfg = ESTADO_CONFIG[estado]
         const isLoading = loadingId === v.id && pending

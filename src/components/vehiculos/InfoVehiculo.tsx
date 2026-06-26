@@ -5,17 +5,10 @@ import { usePathname } from 'next/navigation'
 import type { Vehiculo } from '@/types'
 import { useAuth } from '@/lib/mock-auth'
 import { TIPOS_VEHICULO, TIPOS_MOTO } from '@/lib/constants'
+import { formatPrecio } from '@/lib/format'
 
 interface InfoVehiculoProps {
   vehiculo: Vehiculo
-}
-
-function formatPrecio(precio: number): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits: 0,
-  }).format(precio)
 }
 
 function formatKm(km: number): string {
@@ -215,7 +208,7 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
 
         {isLoggedIn ? (
           <p className="text-4xl font-extrabold text-white leading-none tracking-tight">
-            {formatPrecio(vehiculo.precio)}
+            {formatPrecio(vehiculo.precio, vehiculo.moneda)}
           </p>
         ) : (
           <div className="flex items-center gap-3">

@@ -37,3 +37,11 @@ export function resolveLimit(
   if (profile.max_publicaciones_override != null) return profile.max_publicaciones_override
   return planLimits[profile.role] ?? PLAN_FALLBACKS[profile.role] ?? 3
 }
+
+export function resolveDestacadosLimit(
+  profile: { role: string; limite_destacados_custom?: number | null },
+  destacadosLimits: Record<string, number>
+): number {
+  if (profile.limite_destacados_custom != null) return profile.limite_destacados_custom
+  return destacadosLimits[profile.role] ?? DESTACADOS_FALLBACKS[profile.role] ?? 0
+}

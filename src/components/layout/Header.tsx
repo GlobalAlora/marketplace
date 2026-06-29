@@ -218,11 +218,30 @@ export default function Header() {
               {/* Dropdown */}
               {userDropdownOpen && (
                 <div className="absolute top-full right-0 mt-2 w-52 bg-[#16182a] border border-white/15 rounded-xl shadow-2xl overflow-hidden z-50">
-                  {/* User info */}
-                  <div className="px-4 py-3 border-b border-white/10">
-                    <p className="text-xs font-bold text-white truncate">{user.nombre} {user.apellido}</p>
-                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                  </div>
+                  {/* User info — clickeable al perfil público (salvo admin) */}
+                  {user.role === 'admin' ? (
+                    <div className="px-4 py-3 border-b border-white/10">
+                      <p className="text-xs font-bold text-white truncate">{user.nombre} {user.apellido}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                  ) : (
+                    <Link
+                      href={user.role === 'particular' ? `/usuarios/${user.id}` : `/agencias/${user.id}`}
+                      className="flex items-center justify-between gap-2 px-4 py-3 border-b border-white/10 hover:bg-white/5 transition-colors group"
+                      onClick={() => setUserDropdownOpen(false)}
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-white truncate">{user.nombre} {user.apellido}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </div>
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-[#FFC107] shrink-0 group-hover:text-yellow-300 transition-colors">
+                        Perfil
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </span>
+                    </Link>
+                  )}
                   <Link
                     href={user?.role === 'admin' ? '/admin' : '/panel'}
                     className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
@@ -233,18 +252,6 @@ export default function Header() {
                     </svg>
                     {user?.role === 'admin' ? 'Panel Admin' : 'Mi panel'}
                   </Link>
-                  {user && user.role !== 'admin' && (
-                    <Link
-                      href={user.role === 'particular' ? `/usuarios/${user.id}` : `/agencias/${user.id}`}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
-                      onClick={() => setUserDropdownOpen(false)}
-                    >
-                      <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                      </svg>
-                      Ver mi perfil
-                    </Link>
-                  )}
                   <button
                     type="button"
                     onClick={handleSignOut}
@@ -352,15 +359,39 @@ export default function Header() {
               /* Mobile: logged in */
               <>
                 <div className="mt-2 pt-2 border-t border-white/10">
-                  <div className="flex items-center gap-2.5 py-2">
-                    <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
-                      {getInitials(user.nombre, user.apellido)}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-white truncate">{user.nombre} {user.apellido}</p>
-                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  {user.role === 'admin' ? (
+                    <div className="flex items-center gap-2.5 py-2">
+                      <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                        {getInitials(user.nombre, user.apellido)}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{user.nombre} {user.apellido}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <Link
+                      href={user.role === 'particular' ? `/usuarios/${user.id}` : `/agencias/${user.id}`}
+                      className="flex items-center justify-between gap-2 py-2"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                          {getInitials(user.nombre, user.apellido)}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-white truncate">{user.nombre} {user.apellido}</p>
+                          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                        </div>
+                      </div>
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-[#FFC107] shrink-0">
+                        Perfil
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </span>
+                    </Link>
+                  )}
                   <Link
                     href={user?.role === 'admin' ? '/admin' : '/panel'}
                     className="flex items-center gap-2 py-2.5 text-sm text-gray-300 hover:text-[#FFC107] transition-colors"
@@ -371,18 +402,6 @@ export default function Header() {
                     </svg>
                     {user?.role === 'admin' ? 'Panel Admin' : 'Mi panel'}
                   </Link>
-                  {user && user.role !== 'admin' && (
-                    <Link
-                      href={user.role === 'particular' ? `/usuarios/${user.id}` : `/agencias/${user.id}`}
-                      className="flex items-center gap-2 py-2.5 text-sm text-gray-300 hover:text-[#FFC107] transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                      </svg>
-                      Ver mi perfil
-                    </Link>
-                  )}
                   <button
                     type="button"
                     onClick={handleSignOut}

@@ -43,6 +43,7 @@ const SECTIONS = [
 export default function ConfiguracionClient({ config }: { config: SiteConfig }) {
   const [values, setValues] = useState<SiteConfig>({ ...config })
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   function handleChange(key: string, value: string) {
@@ -52,9 +53,14 @@ export default function ConfiguracionClient({ config }: { config: SiteConfig }) 
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError(null)
     startTransition(async () => {
-      await updateSiteConfig(values)
-      setSaved(true)
+      const result = await updateSiteConfig(values)
+      if (result?.error) {
+        setError(result.error)
+      } else {
+        setSaved(true)
+      }
     })
   }
 
@@ -108,6 +114,12 @@ export default function ConfiguracionClient({ config }: { config: SiteConfig }) 
           </div>
         )
       })}
+
+      {error && (
+        <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-4 py-3">
+          {error}
+        </div>
+      )}
 
       <div className="flex items-center gap-4 pt-2">
         <button

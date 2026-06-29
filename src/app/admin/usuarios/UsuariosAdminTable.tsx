@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { updateRole, toggleVerificado, toggleActivo } from '@/app/admin/usuarios/actions'
+import CustomSelect from '@/components/ui/CustomSelect'
 
 type Role = 'particular' | 'agencia_basica' | 'agencia_premium' | 'admin'
 
@@ -99,7 +100,16 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
     return true
   })
 
-  const SELECT = 'px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-[#282F8F]/60'
+  const FILTRO_ROL_OPTS = [
+    { value: 'todos', label: 'Todos los roles' },
+    ...ROLE_OPTIONS,
+  ]
+  const FILTRO_ESTADO_OPTS = [
+    { value: 'todos', label: 'Todos los estados' },
+    { value: 'activo', label: 'Activos' },
+    { value: 'suspendido', label: 'Suspendidos' },
+  ]
+  const FILTRO_FECHA_OPTS = (Object.keys(FECHA_LABELS) as FiltroFecha[]).map(k => ({ value: k, label: FECHA_LABELS[k] }))
 
   return (
     <div>
@@ -118,24 +128,17 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
           />
         </div>
 
-        <select value={filtroRol} onChange={e => setFiltroRol(e.target.value as FiltroRol)} className={SELECT}>
-          <option value="todos" className="bg-[#111827]">Todos los roles</option>
-          {ROLE_OPTIONS.map(o => (
-            <option key={o.value} value={o.value} className="bg-[#111827]">{o.label}</option>
-          ))}
-        </select>
+        <div className="w-40">
+          <CustomSelect options={FILTRO_ROL_OPTS} value={filtroRol} onChange={v => setFiltroRol(v as FiltroRol)} />
+        </div>
 
-        <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value as FiltroEstado)} className={SELECT}>
-          <option value="todos" className="bg-[#111827]">Todos los estados</option>
-          <option value="activo" className="bg-[#111827]">Activos</option>
-          <option value="suspendido" className="bg-[#111827]">Suspendidos</option>
-        </select>
+        <div className="w-40">
+          <CustomSelect options={FILTRO_ESTADO_OPTS} value={filtroEstado} onChange={v => setFiltroEstado(v as FiltroEstado)} />
+        </div>
 
-        <select value={filtroFecha} onChange={e => setFiltroFecha(e.target.value as FiltroFecha)} className={SELECT}>
-          {(Object.keys(FECHA_LABELS) as FiltroFecha[]).map(k => (
-            <option key={k} value={k} className="bg-[#111827]">{FECHA_LABELS[k]}</option>
-          ))}
-        </select>
+        <div className="w-44">
+          <CustomSelect options={FILTRO_FECHA_OPTS} value={filtroFecha} onChange={v => setFiltroFecha(v as FiltroFecha)} />
+        </div>
 
         <span className="text-xs text-gray-600">
           {filtered.length} de {usuarios.length} usuarios
@@ -212,17 +215,12 @@ function UsuarioRow({ usuario: u }: { usuario: Profile }) {
 
       {/* Rol */}
       <td className="px-5 py-4">
-        <select
+        <CustomSelect
+          options={ROLE_OPTIONS}
           value={u.role}
-          onChange={e => startTransition(() => updateRole(u.id, e.target.value as Role))}
-          className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none ${ROLE_STYLES[u.role]} bg-transparent`}
-        >
-          {ROLE_OPTIONS.map(o => (
-            <option key={o.value} value={o.value} className="bg-[#111827] text-white font-normal">
-              {o.label}
-            </option>
-          ))}
-        </select>
+          onChange={v => startTransition(() => updateRole(u.id, v as Role))}
+          buttonClassName={`flex items-center justify-between gap-2 text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none ${ROLE_STYLES[u.role]}`}
+        />
       </td>
 
       {/* Vehículos count */}
@@ -298,17 +296,12 @@ function UsuarioCardMobile({ usuario: u }: { usuario: Profile }) {
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <select
+        <CustomSelect
+          options={ROLE_OPTIONS}
           value={u.role}
-          onChange={e => startTransition(() => updateRole(u.id, e.target.value as Role))}
-          className={`text-xs font-bold px-2.5 py-2 rounded-lg border cursor-pointer focus:outline-none [color-scheme:dark] ${ROLE_STYLES[u.role]} bg-transparent`}
-        >
-          {ROLE_OPTIONS.map(o => (
-            <option key={o.value} value={o.value} className="bg-[#111827] text-white font-normal">
-              {o.label}
-            </option>
-          ))}
-        </select>
+          onChange={v => startTransition(() => updateRole(u.id, v as Role))}
+          buttonClassName={`flex items-center justify-between gap-2 text-xs font-bold px-2.5 py-2 rounded-lg border cursor-pointer focus:outline-none ${ROLE_STYLES[u.role]}`}
+        />
         <div className="flex items-center justify-center gap-1.5 text-xs bg-white/5 border border-white/10 rounded-lg px-2.5 py-2">
           <span className={`font-bold tabular-nums ${u.vehiculos_count > 0 ? 'text-white' : 'text-gray-700'}`}>{u.vehiculos_count}</span>
           <span className="text-gray-500">{u.vehiculos_count === 1 ? 'auto' : 'autos'}</span>

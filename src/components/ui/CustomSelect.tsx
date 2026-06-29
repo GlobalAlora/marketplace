@@ -14,6 +14,7 @@ interface CustomSelectProps {
   defaultValue?: string
   onChange?: (value: string) => void
   placeholder?: string
+  buttonClassName?: string
 }
 
 // Dropdown 100% custom — evita el flicker/render nativo del <select> del
@@ -25,6 +26,7 @@ export default function CustomSelect({
   defaultValue = '',
   onChange,
   placeholder = 'Seleccionar',
+  buttonClassName,
 }: CustomSelectProps) {
   const [internalValue, setInternalValue] = useState(defaultValue)
   const value = controlledValue !== undefined ? controlledValue : internalValue
@@ -54,9 +56,9 @@ export default function CustomSelect({
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between gap-2 bg-[#1a1a2e] border border-white/10 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors"
+        className={buttonClassName ?? 'w-full flex items-center justify-between gap-2 bg-[#1a1a2e] border border-white/10 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors'}
       >
-        <span className={selected ? 'text-white' : 'text-gray-500'}>{selected?.label ?? placeholder}</span>
+        <span className={buttonClassName ? '' : (selected ? 'text-white' : 'text-gray-500')}>{selected?.label ?? placeholder}</span>
         <svg className={`w-3.5 h-3.5 shrink-0 text-gray-400 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>

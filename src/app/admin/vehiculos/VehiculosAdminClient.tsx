@@ -4,6 +4,7 @@ import { useState, useTransition, useRef } from 'react'
 import Link from 'next/link'
 import { toggleActivoVehiculo, toggleDestacado, deleteVehiculoAdmin, updatePrecioVehiculo, reorderImagenesVehiculo } from './actions'
 import CustomSelect from '@/components/ui/CustomSelect'
+import { formatPrecio } from '@/lib/format'
 
 interface VehiculoAdmin {
   id: string
@@ -12,6 +13,7 @@ interface VehiculoAdmin {
   modelo: string
   año: number
   precio: number
+  moneda: string
   activo: boolean
   destacado: boolean
   vendido: boolean
@@ -245,7 +247,7 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
                     <div className="flex items-center gap-1.5 flex-wrap text-xs">
                       {editingPrecio ? (
                         <div className="flex items-center gap-1">
-                          <span className="text-xs text-gray-500">$</span>
+                          <span className="text-xs text-gray-500">{v.moneda === 'USD' ? 'US$' : '$'}</span>
                           <input
                             type="text"
                             value={precioInput}
@@ -263,7 +265,7 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
                           title="Editar precio"
                           className="text-gray-400 sm:text-gray-500 hover:text-white flex items-center gap-1 group transition-colors shrink-0"
                         >
-                          ${v.precio.toLocaleString('es-AR')}
+                          {formatPrecio(v.precio, v.moneda)}
                           <svg className="w-3 h-3 opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                           </svg>

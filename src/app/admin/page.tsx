@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { formatPrecio } from '@/lib/format'
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
@@ -24,7 +25,7 @@ export default async function AdminDashboardPage() {
     supabase.from('profiles').select('*', { count: 'exact', head: true })
       .gte('created_at', weekAgo.toISOString()),
     supabase.from('vehiculos')
-      .select('id, titulo, marca, modelo, precio, activo, destacado, created_at, imagenes, profiles(nombre, apellido, role)')
+      .select('id, titulo, marca, modelo, precio, moneda, activo, destacado, created_at, imagenes, profiles(nombre, apellido, role)')
       .order('created_at', { ascending: false })
       .limit(6),
     supabase.from('profiles')
@@ -122,7 +123,7 @@ export default async function AdminDashboardPage() {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-[#FFC107]">
-                      ${(v.precio / 1_000_000).toFixed(1)}M
+                      {formatPrecio(v.precio, v.moneda)}
                     </p>
                     <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${v.activo ? 'bg-green-500/15 text-green-400' : 'bg-gray-500/15 text-gray-500'}`}>
                       {v.activo ? 'activo' : 'inactivo'}

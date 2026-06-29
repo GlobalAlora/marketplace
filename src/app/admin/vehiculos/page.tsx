@@ -11,6 +11,7 @@ interface VehiculoAdmin {
   modelo: string
   año: number
   precio: number
+  moneda: string
   activo: boolean
   destacado: boolean
   vendido: boolean
@@ -42,6 +43,7 @@ export default async function AdminVehiculosPage() {
     modelo: v.modelo,
     año: v.año,
     precio: v.precio,
+    moneda: v.moneda ?? 'ARS',
     activo: v.activo,
     destacado: v.destacado,
     vendido: v.vendido,

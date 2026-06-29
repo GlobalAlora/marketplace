@@ -24,11 +24,11 @@ export default async function AdminDashboardPage() {
     supabase.from('profiles').select('*', { count: 'exact', head: true })
       .gte('created_at', weekAgo.toISOString()),
     supabase.from('vehiculos')
-      .select('id, titulo, marca, modelo, precio, activo, destacado, created_at, profiles(nombre, apellido, role)')
+      .select('id, titulo, marca, modelo, precio, activo, destacado, created_at, imagenes, profiles(nombre, apellido, role)')
       .order('created_at', { ascending: false })
       .limit(6),
     supabase.from('profiles')
-      .select('id, nombre, apellido, email, role, verificado, activo, created_at')
+      .select('id, nombre, apellido, email, role, verificado, activo, created_at, avatar_url')
       .order('created_at', { ascending: false })
       .limit(6),
   ])
@@ -107,8 +107,12 @@ export default async function AdminDashboardPage() {
             ) : (
               (ultimosVehiculos ?? []).map((v: any) => (
                 <div key={v.id} className="flex items-center gap-4 px-6 py-3.5 hover:bg-white/2 transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-[#282F8F]/20 flex items-center justify-center shrink-0">
-                    <span className="text-xs">🚗</span>
+                  <div className="w-8 h-8 rounded-lg bg-[#282F8F]/20 flex items-center justify-center shrink-0 overflow-hidden">
+                    {v.imagenes?.[0] ? (
+                      <img src={v.imagenes[0]} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xs">🚗</span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">{v.titulo}</p>
@@ -148,8 +152,12 @@ export default async function AdminDashboardPage() {
                   href={`/admin/usuarios/${u.id}`}
                   className="flex items-center gap-4 px-6 py-3.5 hover:bg-white/2 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#282F8F]/20 border border-[#282F8F]/30 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-[#FFC107]">{u.nombre.charAt(0).toUpperCase()}</span>
+                  <div className="w-8 h-8 rounded-full bg-[#282F8F]/20 border border-[#282F8F]/30 flex items-center justify-center shrink-0 overflow-hidden">
+                    {u.avatar_url ? (
+                      <img src={u.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xs font-bold text-[#FFC107]">{u.nombre.charAt(0).toUpperCase()}</span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">{u.nombre} {u.apellido}</p>

@@ -96,7 +96,7 @@ function WhatsAppIcon() {
 }
 
 export default function SeccionPlanes({ config, planesHome }: { config?: SiteConfig; planesHome?: PlanHome[] }) {
-  const whatsappUrl = buildWhatsappUrl(config?.whatsapp_num ?? '5492974000000')
+  const whatsappUrl = buildWhatsappUrl(config?.whatsapp_num ?? '5492974015243')
   const planes: Plan[] = planesHome?.length
     ? planesHome.map(p => ({
         nombre: p.nombre,

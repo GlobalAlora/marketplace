@@ -21,11 +21,13 @@ interface Profile {
   vehiculos_count: number
 }
 
+// "admin" se excluye deliberadamente de este selector rápido: el cliente
+// pidió que no sea posible hacer admin a alguien por error en este listado
+// masivo. Para promover a admin hay que entrar al detalle del usuario.
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
   { value: 'particular', label: 'Particular' },
   { value: 'agencia_basica', label: 'Agencia PRIME' },
   { value: 'agencia_premium', label: 'Agencia DUX' },
-  { value: 'admin', label: 'Admin' },
 ]
 
 const ROLE_STYLES: Record<Role, string> = {
@@ -103,6 +105,7 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
   const FILTRO_ROL_OPTS = [
     { value: 'todos', label: 'Todos los roles' },
     ...ROLE_OPTIONS,
+    { value: 'admin', label: 'Admin' },
   ]
   const FILTRO_ESTADO_OPTS = [
     { value: 'todos', label: 'Todos los estados' },
@@ -215,12 +218,21 @@ function UsuarioRow({ usuario: u }: { usuario: Profile }) {
 
       {/* Rol */}
       <td className="px-5 py-4">
-        <CustomSelect
-          options={ROLE_OPTIONS}
-          value={u.role}
-          onChange={v => startTransition(() => updateRole(u.id, v as Role))}
-          buttonClassName={`flex items-center justify-between gap-2 text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none ${ROLE_STYLES[u.role]}`}
-        />
+        {u.role === 'admin' ? (
+          <span
+            title="Para cambiar el rol de un admin, entrá al detalle del usuario"
+            className={`inline-flex items-center text-xs font-bold px-2.5 py-1.5 rounded-lg border ${ROLE_STYLES.admin}`}
+          >
+            Admin
+          </span>
+        ) : (
+          <CustomSelect
+            options={ROLE_OPTIONS}
+            value={u.role}
+            onChange={v => startTransition(() => updateRole(u.id, v as Role))}
+            buttonClassName={`flex items-center justify-between gap-2 text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none ${ROLE_STYLES[u.role]}`}
+          />
+        )}
       </td>
 
       {/* Vehículos count */}
@@ -296,12 +308,21 @@ function UsuarioCardMobile({ usuario: u }: { usuario: Profile }) {
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <CustomSelect
-          options={ROLE_OPTIONS}
-          value={u.role}
-          onChange={v => startTransition(() => updateRole(u.id, v as Role))}
-          buttonClassName={`flex items-center justify-between gap-2 text-xs font-bold px-2.5 py-2 rounded-lg border cursor-pointer focus:outline-none ${ROLE_STYLES[u.role]}`}
-        />
+        {u.role === 'admin' ? (
+          <span
+            title="Para cambiar el rol de un admin, entrá al detalle del usuario"
+            className={`flex items-center justify-center text-xs font-bold px-2.5 py-2 rounded-lg border ${ROLE_STYLES.admin}`}
+          >
+            Admin
+          </span>
+        ) : (
+          <CustomSelect
+            options={ROLE_OPTIONS}
+            value={u.role}
+            onChange={v => startTransition(() => updateRole(u.id, v as Role))}
+            buttonClassName={`flex items-center justify-between gap-2 text-xs font-bold px-2.5 py-2 rounded-lg border cursor-pointer focus:outline-none ${ROLE_STYLES[u.role]}`}
+          />
+        )}
         <div className="flex items-center justify-center gap-1.5 text-xs bg-white/5 border border-white/10 rounded-lg px-2.5 py-2">
           <span className={`font-bold tabular-nums ${u.vehiculos_count > 0 ? 'text-white' : 'text-gray-700'}`}>{u.vehiculos_count}</span>
           <span className="text-gray-500">{u.vehiculos_count === 1 ? 'auto' : 'autos'}</span>

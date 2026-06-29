@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { updatePlanLimits } from './actions'
 
-const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors text-center font-bold tabular-nums'
+const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-2 py-3 focus:outline-none focus:border-[#FFC107] transition-colors text-center font-bold tabular-nums'
 
 interface Limits {
   particular: number
@@ -62,7 +62,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badge}`}>{label}</span>
             <p className="text-[11px] text-gray-600 mt-1.5 leading-relaxed">{desc}</p>
           </div>
-          <div className="flex items-center gap-5 sm:ml-auto">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-5 sm:ml-auto">
             <div className="flex items-center gap-2">
               <input
                 name={key}
@@ -71,7 +71,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
                 max={9999}
                 defaultValue={limits[key]}
                 required
-                className={`${INPUT} w-20`}
+                className={`${INPUT} w-[4.5rem] sm:w-24`}
               />
               <span className="text-xs text-gray-500 whitespace-nowrap">publicaciones</span>
             </div>
@@ -83,7 +83,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
                 max={999}
                 defaultValue={destacadosLimits[key]}
                 required
-                className={`${INPUT} w-16`}
+                className={`${INPUT} w-16 sm:w-20`}
               />
               <span className="text-xs text-gray-500 whitespace-nowrap">destacados</span>
             </div>

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getPlanLimits, PLAN_FALLBACKS } from '@/lib/plan-config'
 import RoleSelector from './RoleSelector'
 import LimiteOverrideForm from './LimiteOverrideForm'
+import ReactivarPublicacionesButton from './ReactivarPublicacionesButton'
 
 export default async function UsuarioDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -17,13 +18,15 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
       .single(),
     supabase
       .from('vehiculos')
-      .select('id, titulo, marca, modelo, año, precio, activo, vendido, destacado, vistas, created_at')
+      .select('id, titulo, marca, modelo, año, precio, activo, vendido, destacado, vistas, created_at, pausado_por_admin')
       .eq('user_id', id)
       .order('created_at', { ascending: false }),
     getPlanLimits(),
   ])
 
   if (!perfil) notFound()
+
+  const pausadasPorAdmin = (vehiculos ?? []).filter((v: any) => v.pausado_por_admin).length
 
   const ROLE_LABELS: Record<string, string> = {
     admin: 'Administrador',
@@ -84,6 +87,7 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
         {/* Acciones */}
         <div className="mt-5 pt-5 border-t border-white/6 flex flex-wrap gap-3">
           <RoleSelector userId={perfil.id} currentRole={perfil.role} />
+          <ReactivarPublicacionesButton userId={perfil.id} count={pausadasPorAdmin} />
         </div>
       </div>
 

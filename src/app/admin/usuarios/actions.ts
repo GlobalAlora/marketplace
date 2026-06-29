@@ -71,6 +71,25 @@ export async function toggleActivo(userId: string, activo: boolean) {
   revalidatePath('/')
 }
 
+export async function reactivarPublicacionesUsuario(userId: string) {
+  const supabase = await getAdminClient()
+  const { error } = await supabase
+    .from('vehiculos')
+    .update({ activo: true, pausado_por_admin: false })
+    .eq('user_id', userId)
+    .eq('pausado_por_admin', true)
+    .eq('vendido', false)
+  if (error) throw new Error(error.message)
+
+  revalidatePath('/admin/usuarios')
+  revalidatePath(`/admin/usuarios/${userId}`)
+  revalidatePath('/admin/vehiculos')
+  revalidatePath('/admin/moderacion')
+  revalidatePath('/panel/mis-publicaciones')
+  revalidatePath('/panel')
+  revalidatePath('/')
+}
+
 export async function setLimiteOverride(userId: string, value: number | null) {
   const supabase = await getAdminClient()
   const { error } = await supabase

@@ -65,6 +65,9 @@ export default async function Footer() {
           </div>
 
           <nav className="flex items-center gap-6 text-sm text-gray-400" aria-label="Links del pie de página">
+            <Link href="/privacidad" className="hover:text-white transition-colors">
+              Privacidad
+            </Link>
             <Link href="/terminos" className="hover:text-white transition-colors">
               Términos y condiciones
             </Link>

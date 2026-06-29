@@ -8,7 +8,7 @@ export interface CustomSelectOption {
 }
 
 interface CustomSelectProps {
-  name: string
+  name?: string
   options: CustomSelectOption[]
   value?: string
   defaultValue?: string
@@ -50,7 +50,7 @@ export default function CustomSelect({
 
   return (
     <div ref={ref} className="relative">
-      <input type="hidden" name={name} value={value} />
+      {name && <input type="hidden" name={name} value={value} />}
       <button
         type="button"
         onClick={() => setOpen(v => !v)}

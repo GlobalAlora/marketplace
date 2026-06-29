@@ -28,7 +28,7 @@ export default async function AdminDashboardPage() {
       .order('created_at', { ascending: false })
       .limit(6),
     supabase.from('profiles')
-      .select('id, nombre, apellido, email, role, verificado, activo, created_at, avatar_url')
+      .select('id, nombre, apellido, email, role, verificado, activo, created_at, avatar_url, logo_agencia')
       .order('created_at', { ascending: false })
       .limit(6),
   ])
@@ -153,8 +153,8 @@ export default async function AdminDashboardPage() {
                   className="flex items-center gap-4 px-6 py-3.5 hover:bg-white/2 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full bg-[#282F8F]/20 border border-[#282F8F]/30 flex items-center justify-center shrink-0 overflow-hidden">
-                    {u.avatar_url ? (
-                      <img src={u.avatar_url} alt="" className="w-full h-full object-cover" />
+                    {u.logo_agencia || u.avatar_url ? (
+                      <img src={u.logo_agencia || u.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-xs font-bold text-[#FFC107]">{u.nombre.charAt(0).toUpperCase()}</span>
                     )}

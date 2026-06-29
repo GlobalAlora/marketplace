@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { toggleVerificadoAgencia } from './actions'
+import CustomSelect from '@/components/ui/CustomSelect'
 
 type Role = 'agencia_basica' | 'agencia_premium'
 
@@ -44,7 +45,11 @@ export default function AgenciasAdminClient({ agencias }: { agencias: Agencia[] 
     return true
   })
 
-  const SELECT = 'px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-[#282F8F]/60'
+  const PLAN_OPTS = [
+    { value: 'todos', label: 'Todos los planes' },
+    { value: 'agencia_basica', label: 'Agencia PRIME' },
+    { value: 'agencia_premium', label: 'Agencia DUX' },
+  ]
 
   return (
     <div>
@@ -63,11 +68,13 @@ export default function AgenciasAdminClient({ agencias }: { agencias: Agencia[] 
           />
         </div>
 
-        <select value={filtroRole} onChange={e => setFiltroRole(e.target.value as 'todos' | Role)} className={SELECT}>
-          <option value="todos" className="bg-[#111827]">Todos los planes</option>
-          <option value="agencia_basica" className="bg-[#111827]">Agencia PRIME</option>
-          <option value="agencia_premium" className="bg-[#111827]">Agencia DUX</option>
-        </select>
+        <div className="w-44">
+          <CustomSelect
+            options={PLAN_OPTS}
+            value={filtroRole}
+            onChange={v => setFiltroRole(v as 'todos' | Role)}
+          />
+        </div>
 
         <span className="text-xs text-gray-600">
           {filtered.length} de {agencias.length} agencias

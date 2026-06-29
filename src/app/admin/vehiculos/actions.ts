@@ -21,6 +21,7 @@ export async function toggleActivoVehiculo(id: string, activo: boolean) {
   const { error } = await supabase.from('vehiculos').update({ activo, pausado_por_admin: !activo }).eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/vehiculos')
+  revalidatePath('/admin/moderacion')
   revalidatePath('/panel/mis-publicaciones')
   revalidatePath('/')
 }

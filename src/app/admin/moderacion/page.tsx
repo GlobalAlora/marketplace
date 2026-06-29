@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import ReactivarUsuarioButton from './ReactivarUsuarioButton'
+import ReactivarVehiculoButton from './ReactivarVehiculoButton'
 
 const ROLE_LABEL: Record<string, string> = {
   particular: 'Particular',
@@ -172,7 +173,7 @@ export default async function AdminModeracionPage() {
                   <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Vehículo</th>
                   <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Año</th>
                   <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Publicado</th>
-                  <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Ver</th>
+                  <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -188,16 +189,19 @@ export default async function AdminModeracionPage() {
                       {new Date(v.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-5 py-4 text-right">
-                      <Link
-                        href={`/vehiculos/${v.id}`}
-                        target="_blank"
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg transition-colors"
-                      >
-                        Ver
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                        </svg>
-                      </Link>
+                      <div className="inline-flex items-center gap-2">
+                        <Link
+                          href={`/vehiculos/${v.id}`}
+                          target="_blank"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg transition-colors"
+                        >
+                          Ver
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                          </svg>
+                        </Link>
+                        <ReactivarVehiculoButton vehiculoId={v.id} />
+                      </div>
                     </td>
                   </tr>
                 ))}

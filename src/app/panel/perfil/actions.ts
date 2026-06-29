@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { slugify } from '@/lib/slug'
 
 async function generateUniqueSlug(
@@ -56,4 +56,30 @@ export async function updateProfile(formData: FormData) {
   revalidatePath('/panel/perfil')
   revalidatePath('/panel')
   if (updates.slug) revalidatePath(`/agencias/${updates.slug}`)
+}
+
+export async function deleteAccount(): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  const admin = createAdminClient()
+
+  const { error: vehiculosError } = await admin
+    .from('vehiculos')
+    .delete()
+    .eq('user_id', user.id)
+  if (vehiculosError) return { error: vehiculosError.message }
+
+  const { error: profileError } = await admin
+    .from('profiles')
+    .delete()
+    .eq('id', user.id)
+  if (profileError) return { error: profileError.message }
+
+  const { error: authError } = await admin.auth.admin.deleteUser(user.id)
+  if (authError) return { error: authError.message }
+
+  revalidatePath('/')
+  return {}
 }

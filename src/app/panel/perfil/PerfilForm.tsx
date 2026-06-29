@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { updateProfile } from './actions'
+import { updateProfile, deleteAccount } from './actions'
 
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:border-[#FFC107] transition-colors'
 const LABEL = 'block text-xs font-semibold text-gray-400 mb-1.5'
@@ -26,8 +27,28 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
   const fileRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
+
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const isAgencia = profile.role === 'agencia_basica' || profile.role === 'agencia_premium'
+
+  async function handleDeleteAccount() {
+    setDeleteError(null)
+    setDeleting(true)
+    const result = await deleteAccount()
+    if (result?.error) {
+      setDeleting(false)
+      setDeleteError(result.error)
+      return
+    }
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+    router.refresh()
+  }
 
   function handleLogoSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -169,6 +190,47 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
       >
         {isLoading ? (uploading ? 'Subiendo logo…' : 'Guardando…') : 'Guardar cambios'}
       </button>
+
+      {/* Eliminar cuenta */}
+      <div className="mt-10 pt-6 border-t border-white/10">
+        <h2 className="text-sm font-bold text-red-400 mb-1">Eliminar cuenta</h2>
+        <p className="text-xs text-gray-500 mb-4">
+          Esta acción es permanente. Se eliminarán tu perfil y todas tus publicaciones, y no podrás recuperarlos.
+        </p>
+
+        {deleteError && (
+          <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-3">{deleteError}</p>
+        )}
+
+        {confirmDelete ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+              className="bg-red-500/15 hover:bg-red-500/25 disabled:opacity-50 text-red-400 font-bold text-sm px-4 py-2.5 rounded-xl border border-red-500/30 transition-colors"
+            >
+              {deleting ? 'Eliminando…' : 'Sí, eliminar mi cuenta definitivamente'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(false)}
+              disabled={deleting}
+              className="text-sm text-gray-500 hover:text-gray-300 px-4 py-2.5 rounded-xl hover:bg-white/5 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setConfirmDelete(true)}
+            className="text-sm text-red-400 hover:text-red-300 font-semibold px-4 py-2.5 rounded-xl border border-red-500/25 hover:bg-red-500/5 transition-colors"
+          >
+            Eliminar mi cuenta
+          </button>
+        )}
+      </div>
     </form>
   )
 }

@@ -157,7 +157,7 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: 
             className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-4 flex gap-4 items-center"
           >
             {/* Thumbnail */}
-            <div className="w-20 h-14 rounded-xl bg-white/5 shrink-0 overflow-hidden">
+            <Link href={`/vehiculos/${v.id}`} className="w-20 h-14 rounded-xl bg-white/5 shrink-0 overflow-hidden block">
               {thumb ? (
                 <img src={thumb} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -167,12 +167,12 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: 
                   </svg>
                 </div>
               )}
-            </div>
+            </Link>
 
             {/* Info */}
-            <div className="flex-1 min-w-0">
+            <Link href={`/vehiculos/${v.id}`} className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <p className="text-sm font-semibold text-white truncate">{v.marca} {v.modelo} {v.año}</p>
+                <p className="text-sm font-semibold text-white truncate hover:text-[#FFC107] transition-colors">{v.marca} {v.modelo} {v.año}</p>
                 <span className={`flex items-center gap-1 text-[10px] font-bold ${cfg.text}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                   {cfg.label}
@@ -182,7 +182,7 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: 
               <p className="text-xs text-gray-500">
                 ${v.precio.toLocaleString('es-AR')} · {v.vistas} vistas
               </p>
-            </div>
+            </Link>
 
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">

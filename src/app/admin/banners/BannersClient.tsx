@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useRef, useTransition } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { createBanner, updateBanner, deleteBanner, toggleActivoBanner } from './actions'
+import CustomSelect from '@/components/ui/CustomSelect'
 
 interface Banner {
   id: string
@@ -18,7 +20,22 @@ const POSICIONES = [
   { value: 'sidebar',     label: 'Sidebar' },
 ]
 
+const ESTADOS = [
+  { value: 'true',  label: 'Activo' },
+  { value: 'false', label: 'Inactivo' },
+]
+
 const INPUT = 'w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-3 py-2.5 placeholder-gray-600 focus:outline-none focus:border-[#FFC107] transition-colors'
+
+async function uploadImagen(file: File): Promise<string> {
+  const supabase = createClient()
+  const ext = file.name.split('.').pop()
+  const path = `${crypto.randomUUID()}.${ext}`
+  const { error: uploadError } = await supabase.storage.from('banners').upload(path, file, { upsert: true })
+  if (uploadError) throw new Error(uploadError.message)
+  const { data: { publicUrl } } = supabase.storage.from('banners').getPublicUrl(path)
+  return publicUrl
+}
 
 function BannerForm({
   initial,
@@ -31,22 +48,86 @@ function BannerForm({
   onCancel?: () => void
   pending: boolean
 }) {
+  const [imagenFile, setImagenFile] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string | null>(initial?.imagen_url ?? null)
+  const [posicion, setPosicion] = useState(initial?.posicion ?? 'home_top')
+  const [activo, setActivo] = useState(initial ? String(initial.activo) : 'true')
+  const [linkUrl, setLinkUrl] = useState(initial?.link_url ?? '')
+  const [error, setError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImagenFile(file)
+    setPreview(URL.createObjectURL(file))
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
+
+    if (!imagenFile && !initial?.imagen_url) {
+      setError('Subí una imagen para el banner')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const imagenUrl = imagenFile ? await uploadImagen(imagenFile) : initial!.imagen_url
+      const fd = new FormData()
+      fd.set('imagen_url', imagenUrl)
+      fd.set('link_url', linkUrl)
+      fd.set('posicion', posicion)
+      fd.set('activo', activo)
+      setUploading(false)
+      onSubmit(fd)
+    } catch (err) {
+      setUploading(false)
+      setError(err instanceof Error ? err.message : 'Error al subir la imagen')
+    }
+  }
+
+  const isPending = pending || uploading
+
   return (
-    <form action={onSubmit} className="grid grid-cols-1 gap-3">
-      <input name="imagen_url" required defaultValue={initial?.imagen_url} placeholder="URL de imagen (https://…)" className={INPUT} />
-      <input name="link_url" defaultValue={initial?.link_url} placeholder="Link destino (opcional)" className={INPUT} />
-      <div className="grid grid-cols-2 gap-3">
-        <select name="posicion" defaultValue={initial?.posicion ?? 'home_top'} className={INPUT}>
-          {POSICIONES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-        </select>
-        <select name="activo" defaultValue={initial ? String(initial.activo) : 'true'} className={INPUT}>
-          <option value="true">Activo</option>
-          <option value="false">Inactivo</option>
-        </select>
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3">
+      {error && (
+        <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/25 rounded-lg px-3 py-2">{error}</p>
+      )}
+
+      <div>
+        <input ref={fileRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="w-full flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 hover:border-[#FFC107]/40 transition-colors"
+        >
+          {preview ? (
+            <img src={preview} alt="" className="w-16 h-9 rounded-lg object-cover shrink-0" />
+          ) : (
+            <div className="w-16 h-9 rounded-lg bg-white/5 shrink-0" />
+          )}
+          <span className="text-sm text-gray-400">{imagenFile ? imagenFile.name : preview ? 'Cambiar imagen' : 'Subir imagen…'}</span>
+        </button>
       </div>
+
+      <input
+        value={linkUrl}
+        onChange={e => setLinkUrl(e.target.value)}
+        placeholder="Link destino (opcional)"
+        className={INPUT}
+      />
+
+      <div className="grid grid-cols-2 gap-3">
+        <CustomSelect options={POSICIONES} value={posicion} onChange={setPosicion} />
+        <CustomSelect options={ESTADOS} value={activo} onChange={setActivo} />
+      </div>
+
       <div className="flex gap-2">
-        <button type="submit" disabled={pending} className="bg-[#FFC107] hover:bg-[#e6ad00] disabled:opacity-50 text-[#0D0F14] text-xs font-extrabold px-4 py-2.5 rounded-xl transition-colors">
-          {pending ? 'Guardando…' : initial ? 'Guardar cambios' : 'Crear banner'}
+        <button type="submit" disabled={isPending} className="bg-[#FFC107] hover:bg-[#e6ad00] disabled:opacity-50 text-[#0D0F14] text-xs font-extrabold px-4 py-2.5 rounded-xl transition-colors">
+          {uploading ? 'Subiendo…' : isPending ? 'Guardando…' : initial ? 'Guardar cambios' : 'Crear banner'}
         </button>
         {onCancel && (
           <button type="button" onClick={onCancel} className="text-xs text-gray-500 hover:text-white px-4 py-2.5 rounded-xl hover:bg-white/5 transition-colors">
@@ -64,32 +145,56 @@ export default function BannersClient({ banners: initial }: { banners: Banner[] 
   const [editingId, setEditingId] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
-  function act(id: string | null, fn: () => Promise<void>) {
+  function act(id: string | null, fn: () => Promise<{ error?: string } | void>) {
+    setActionError(null)
     setLoadingId(id)
-    startTransition(async () => { await fn(); setLoadingId(null) })
+    startTransition(async () => {
+      const result = await fn()
+      if (result?.error) setActionError(result.error)
+      setLoadingId(null)
+    })
   }
 
   function handleCreate(fd: FormData) {
-    act(null, async () => { await createBanner(fd); setShowCreate(false) })
+    act(null, async () => {
+      const result = await createBanner(fd)
+      if (!result.error) setShowCreate(false)
+      return result
+    })
   }
 
   function handleUpdate(id: string, fd: FormData) {
-    act(id, async () => { await updateBanner(id, fd); setEditingId(null) })
+    act(id, async () => {
+      const result = await updateBanner(id, fd)
+      if (!result.error) setEditingId(null)
+      return result
+    })
   }
 
   function handleDelete(id: string) {
-    act(id, async () => { await deleteBanner(id); setConfirmDelete(null) })
+    act(id, async () => {
+      const result = await deleteBanner(id)
+      if (!result.error) setConfirmDelete(null)
+      return result
+    })
   }
 
   const POSICION_LABEL = Object.fromEntries(POSICIONES.map(p => [p.value, p.label]))
 
   return (
     <div>
+      {actionError && (
+        <div className="mb-4 text-sm text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-4 py-3">
+          {actionError}
+        </div>
+      )}
+
       {/* Crear */}
       <div className="mb-6">
         {showCreate ? (
-          <div className="bg-[#1a1a2e] border border-[#282F8F]/40 rounded-2xl p-5">
+          <div className="bg-[#1a1a2e] border border-[#282F8F]/40 rounded-2xl p-4 sm:p-5">
             <p className="text-sm font-bold text-white mb-4">Nuevo banner</p>
             <BannerForm onSubmit={handleCreate} onCancel={() => setShowCreate(false)} pending={pending && !loadingId} />
           </div>
@@ -110,33 +215,35 @@ export default function BannersClient({ banners: initial }: { banners: Banner[] 
       {initial.length === 0 ? (
         <div className="text-center py-16 text-gray-600 text-sm">No hay banners aún</div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4 sm:space-y-3">
           {initial.map(b => {
             const isLoading = loadingId === b.id && pending
 
             return (
               <div key={b.id} className="bg-[#1a1a2e] border border-white/8 rounded-2xl overflow-hidden">
-                <div className="flex gap-4 items-center p-4">
-                  {/* Preview */}
-                  <div className="w-24 h-14 rounded-xl bg-white/5 shrink-0 overflow-hidden">
-                    <img src={b.imagen_url} alt="" className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2' }} />
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-bold text-gray-400 bg-white/5 px-2 py-0.5 rounded-full">
-                        {POSICION_LABEL[b.posicion] ?? b.posicion}
-                      </span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.activo ? 'text-emerald-400 bg-emerald-400/10' : 'text-gray-500 bg-white/5'}`}>
-                        {b.activo ? 'Activo' : 'Inactivo'}
-                      </span>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center p-4">
+                  <div className="flex gap-3 items-center">
+                    {/* Preview */}
+                    <div className="w-20 h-12 sm:w-24 sm:h-14 rounded-xl bg-white/5 shrink-0 overflow-hidden">
+                      <img src={b.imagen_url} alt="" className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2' }} />
                     </div>
-                    <p className="text-xs text-gray-500 truncate">{b.link_url || 'Sin link'}</p>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                        <span className="text-[10px] font-bold text-gray-400 bg-white/5 px-2 py-0.5 rounded-full">
+                          {POSICION_LABEL[b.posicion] ?? b.posicion}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.activo ? 'text-emerald-400 bg-emerald-400/10' : 'text-gray-500 bg-white/5'}`}>
+                          {b.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 truncate max-w-[200px] sm:max-w-none">{b.link_url || 'Sin link'}</p>
+                    </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-1 shrink-0 self-end sm:self-auto sm:ml-auto">
                     {/* Toggle activo */}
                     <button
                       onClick={() => act(b.id, () => toggleActivoBanner(b.id, !b.activo))}

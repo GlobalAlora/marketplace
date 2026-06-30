@@ -56,7 +56,7 @@ export default function CustomSelect({
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className={buttonClassName ?? 'w-full flex items-center justify-between gap-2 bg-[#1a1a2e] border border-white/10 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors'}
+        className={buttonClassName ?? 'w-full min-w-max flex items-center justify-between gap-2 bg-[#1a1a2e] border border-white/10 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#FFC107] transition-colors whitespace-nowrap'}
       >
         <span className={buttonClassName ? '' : (selected ? 'text-white' : 'text-gray-500')}>{selected?.label ?? placeholder}</span>
         <svg className={`w-3.5 h-3.5 shrink-0 text-gray-400 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">

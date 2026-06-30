@@ -131,17 +131,9 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
           />
         </div>
 
-        <div className="w-40">
-          <CustomSelect options={FILTRO_ROL_OPTS} value={filtroRol} onChange={v => setFiltroRol(v as FiltroRol)} />
-        </div>
-
-        <div className="w-40">
-          <CustomSelect options={FILTRO_ESTADO_OPTS} value={filtroEstado} onChange={v => setFiltroEstado(v as FiltroEstado)} />
-        </div>
-
-        <div className="w-44">
-          <CustomSelect options={FILTRO_FECHA_OPTS} value={filtroFecha} onChange={v => setFiltroFecha(v as FiltroFecha)} />
-        </div>
+        <CustomSelect options={FILTRO_ROL_OPTS} value={filtroRol} onChange={v => setFiltroRol(v as FiltroRol)} />
+        <CustomSelect options={FILTRO_ESTADO_OPTS} value={filtroEstado} onChange={v => setFiltroEstado(v as FiltroEstado)} />
+        <CustomSelect options={FILTRO_FECHA_OPTS} value={filtroFecha} onChange={v => setFiltroFecha(v as FiltroFecha)} />
 
         <span className="text-xs text-gray-600">
           {filtered.length} de {usuarios.length} usuarios

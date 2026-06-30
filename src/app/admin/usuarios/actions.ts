@@ -64,7 +64,13 @@ export async function crearUsuario(formData: {
       password: formData.password,
       email_confirm: true,
     })
-    if (authError) return { error: authError.message }
+    if (authError) {
+      const msg = authError.message.toLowerCase()
+      if (msg.includes('already been registered') || msg.includes('already registered') || msg.includes('already exists')) {
+        return { error: 'Ya existe un usuario registrado con ese email' }
+      }
+      return { error: authError.message }
+    }
 
     // Upsert profile
     const { error: profileError } = await admin.from('profiles').upsert({

@@ -5,6 +5,7 @@ import { getPlanLimits, PLAN_FALLBACKS } from '@/lib/plan-config'
 import RoleSelector from './RoleSelector'
 import LimiteOverrideForm from './LimiteOverrideForm'
 import ReactivarPublicacionesButton from './ReactivarPublicacionesButton'
+import EliminarUsuarioButton from './EliminarUsuarioButton'
 
 export default async function UsuarioDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -85,9 +86,12 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Acciones */}
-        <div className="mt-5 pt-5 border-t border-white/6 flex flex-wrap gap-3">
-          <RoleSelector userId={perfil.id} currentRole={perfil.role} />
-          <ReactivarPublicacionesButton userId={perfil.id} count={pausadasPorAdmin} />
+        <div className="mt-5 pt-5 border-t border-white/6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-3">
+            <RoleSelector userId={perfil.id} currentRole={perfil.role} />
+            <ReactivarPublicacionesButton userId={perfil.id} count={pausadasPorAdmin} />
+          </div>
+          <EliminarUsuarioButton userId={perfil.id} />
         </div>
       </div>
 

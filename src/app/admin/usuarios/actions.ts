@@ -20,6 +20,25 @@ async function getAdminClient() {
   return supabase
 }
 
+export async function eliminarUsuario(userId: string): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user: caller } } = await supabase.auth.getUser()
+  if (!caller) return { error: 'No autenticado' }
+  if (caller.id === userId) return { error: 'No podés eliminar tu propia cuenta desde aquí' }
+  const { data: callerProfile } = await supabase.from('profiles').select('role').eq('id', caller.id).single()
+  if (callerProfile?.role !== 'admin') return { error: 'Sin permisos' }
+
+  try {
+    const admin = createAdminClient()
+    const { error } = await admin.auth.admin.deleteUser(userId)
+    if (error) return { error: error.message }
+    revalidatePath('/admin/usuarios')
+    return {}
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Error al eliminar el usuario' }
+  }
+}
+
 export async function crearUsuario(formData: {
   email: string
   password: string

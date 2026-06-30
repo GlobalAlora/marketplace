@@ -72,9 +72,7 @@ export default async function Footer() {
             <Link href="/terminos" className="hover:text-white transition-colors">
               Términos y condiciones
             </Link>
-            <Link href="/contacto" className="hover:text-white transition-colors">
-              Contacto
-            </Link>
+
           </nav>
         </div>
         <p className="mt-6 text-center text-xs text-gray-600">

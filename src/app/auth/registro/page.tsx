@@ -105,7 +105,16 @@ function RegistroForm() {
 
     setLoading(false)
     if (error) {
-      setServerError(error.message)
+      const msg = error.message.toLowerCase()
+      if (msg.includes('invalid format') || msg.includes('unable to validate email') || msg.includes('invalid email')) {
+        setServerError('El formato del email no es válido')
+      } else if (msg.includes('already been registered') || msg.includes('already registered') || msg.includes('already exists')) {
+        setServerError('Este email ya está registrado')
+      } else if (msg.includes('password') && msg.includes('short')) {
+        setServerError('La contraseña es demasiado corta. Debe tener al menos 6 caracteres')
+      } else {
+        setServerError(error.message)
+      }
       return
     }
     // Supabase no devuelve error para emails duplicados cuando la confirmación

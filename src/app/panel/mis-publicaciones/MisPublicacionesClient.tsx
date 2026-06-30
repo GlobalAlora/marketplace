@@ -38,14 +38,29 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados, wh
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [busqueda, setBusqueda] = useState('')
+  const [tab, setTab] = useState<'todos' | 'activos' | 'pausados' | 'vendidos'>('todos')
 
   const destacadosActivos = vehiculos.filter(v => v.destacado && v.activo && !v.vendido).length
 
+  const counts = {
+    todos:    vehiculos.length,
+    activos:  vehiculos.filter(v => v.activo && !v.vendido && !v.pausado_por_admin).length,
+    pausados: vehiculos.filter(v => !v.vendido && (!v.activo || v.pausado_por_admin)).length,
+    vendidos: vehiculos.filter(v => v.vendido).length,
+  }
+
+  const porTab = vehiculos.filter(v => {
+    if (tab === 'activos')  return v.activo && !v.vendido && !v.pausado_por_admin
+    if (tab === 'pausados') return !v.vendido && (!v.activo || v.pausado_por_admin)
+    if (tab === 'vendidos') return v.vendido
+    return true
+  })
+
   const vehiculosFiltrados = busqueda.trim()
-    ? vehiculos.filter(v =>
+    ? porTab.filter(v =>
         `${v.titulo} ${v.marca} ${v.modelo}`.toLowerCase().includes(busqueda.trim().toLowerCase())
       )
-    : vehiculos
+    : porTab
 
   function handleDestacar(id: string, destacado: boolean) {
     setLoadingId(id)
@@ -118,6 +133,13 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados, wh
     })
   }
 
+  const TABS = [
+    { key: 'todos',    label: 'Todos' },
+    { key: 'activos',  label: 'Activos' },
+    { key: 'pausados', label: 'Pausados' },
+    { key: 'vendidos', label: 'Vendidos' },
+  ] as const
+
   return (
     <div className="space-y-3">
       {actionError && (
@@ -125,6 +147,30 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados, wh
           <p className="text-sm text-red-400">{actionError}</p>
         </div>
       )}
+
+      {/* Pestañas */}
+      <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
+        {TABS.map(t => (
+          <button
+            key={t.key}
+            onClick={() => { setTab(t.key); setBusqueda('') }}
+            className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg transition-colors ${
+              tab === t.key
+                ? 'bg-[#FFC107] text-[#0D0F14]'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            {t.label}
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+              tab === t.key ? 'bg-[#0D0F14]/20 text-[#0D0F14]' : 'bg-white/10 text-gray-500'
+            }`}>
+              {counts[t.key]}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Buscador */}
       <div className="relative">
         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -143,7 +189,9 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados, wh
         </p>
       )}
       {vehiculosFiltrados.length === 0 && (
-        <p className="text-sm text-gray-600 text-center py-8">No hay publicaciones que coincidan con &quot;{busqueda}&quot;</p>
+        <p className="text-sm text-gray-600 text-center py-8">
+          {busqueda ? `Sin resultados para "${busqueda}"` : `Sin publicaciones ${tab !== 'todos' ? `en "${TABS.find(t => t.key === tab)?.label}"` : ''}`}
+        </p>
       )}
       {vehiculosFiltrados.map(v => {
         const estado = getEstado(v)

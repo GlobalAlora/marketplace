@@ -63,7 +63,9 @@ function RegistroForm() {
   const [success, setSuccess]   = useState(false)
 
   const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(f => ({ ...f, [key]: e.target.value }))
+    let val = e.target.value
+    if (key === 'telefono') val = val.replace(/[^0-9+\-\s()]/g, '')
+    setForm(f => ({ ...f, [key]: val }))
     setErrors(p => ({ ...p, [key]: undefined }))
   }
 
@@ -74,11 +76,20 @@ function RegistroForm() {
 
   function validate(): boolean {
     const next: FormErrors = {}
-    if (!form.nombre.trim())   next.nombre   = 'Obligatorio'
-    if (!form.apellido.trim()) next.apellido  = 'Obligatorio'
-    if (!form.email.trim())    next.email     = 'Obligatorio'
-    if (!form.telefono.trim()) next.telefono  = 'Obligatorio'
+    if (!form.nombre.trim()) next.nombre = 'Obligatorio'
+    else if (form.nombre.trim().length < 2) next.nombre = 'Mínimo 2 caracteres'
+    else if (form.nombre.length > 50) next.nombre = 'Máximo 50 caracteres'
+    else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(form.nombre.trim())) next.nombre = 'Solo letras y espacios'
+    if (!form.apellido.trim()) next.apellido = 'Obligatorio'
+    else if (form.apellido.trim().length < 2) next.apellido = 'Mínimo 2 caracteres'
+    else if (form.apellido.length > 50) next.apellido = 'Máximo 50 caracteres'
+    else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(form.apellido.trim())) next.apellido = 'Solo letras y espacios'
+    if (!form.email.trim()) next.email = 'Obligatorio'
+    else if (form.email.length > 100) next.email = 'Máximo 100 caracteres'
+    if (!form.telefono.trim()) next.telefono = 'Obligatorio'
+    else if (form.telefono.length > 20) next.telefono = 'Máximo 20 caracteres'
     if (form.password.length < 6) next.password = 'Mínimo 6 caracteres'
+    else if (form.password.length > 72) next.password = 'Máximo 72 caracteres'
     if (form.password !== form.confirm) next.confirm = 'Las contraseñas no coinciden'
     setErrors(next)
     return Object.keys(next).length === 0
@@ -171,6 +182,7 @@ function RegistroForm() {
                 type="text"
                 autoComplete="given-name"
                 placeholder="Juan"
+                maxLength={50}
                 value={form.nombre}
                 onChange={set('nombre')}
                 className={errors.nombre ? INPUT_ERROR : INPUT_BASE}
@@ -184,6 +196,7 @@ function RegistroForm() {
                 type="text"
                 autoComplete="family-name"
                 placeholder="Pérez"
+                maxLength={50}
                 value={form.apellido}
                 onChange={set('apellido')}
                 className={errors.apellido ? INPUT_ERROR : INPUT_BASE}
@@ -228,6 +241,8 @@ function RegistroForm() {
                 type="tel"
                 autoComplete="tel"
                 placeholder="2974 123456"
+                maxLength={20}
+                inputMode="tel"
                 value={form.telefono}
                 onChange={set('telefono')}
                 className={`${errors.telefono ? INPUT_ERROR : INPUT_BASE} pl-10`}

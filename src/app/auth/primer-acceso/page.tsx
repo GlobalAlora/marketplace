@@ -4,7 +4,7 @@ import { useState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import AuthLayout from '@/components/auth/AuthLayout'
 import { createClient } from '@/lib/supabase/client'
-import { cambiarPasswordPrimerAcceso, aceptarTerminos } from './actions'
+import { marcarPasswordCambiado, aceptarTerminos } from './actions'
 
 type Step = 'loading' | 'password' | 'terminos' | 'done'
 
@@ -21,12 +21,12 @@ export default function PrimerAccesoPage() {
   const [showPw, setShowPw]     = useState(false)
   const [showCf, setShowCf]     = useState(false)
   const [pwError, setPwError]   = useState('')
-  const [isPendingPw, startPw]  = useTransition()
+  const [pwLoading, setPwLoading] = useState(false)
 
   // Términos step
-  const [accepted, setAccepted]   = useState(false)
+  const [accepted, setAccepted]     = useState(false)
   const [termsError, setTermsError] = useState('')
-  const [isPendingTerm, startTerm] = useTransition()
+  const [isPendingTerm, startTerm]  = useTransition()
 
   useEffect(() => {
     const supabase = createClient()
@@ -48,32 +48,41 @@ export default function PrimerAccesoPage() {
     })
   }, [router])
 
-  // Once done, redirect
   useEffect(() => {
     if (step === 'done') {
       window.location.href = role === 'admin' ? '/admin' : '/panel'
     }
   }, [step, role])
 
-  function handlePasswordSubmit(e: React.FormEvent) {
+  async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault()
     setPwError('')
     if (password.length < 8) { setPwError('La contraseña debe tener al menos 8 caracteres'); return }
     if (password !== confirm) { setPwError('Las contraseñas no coinciden'); return }
-    startPw(async () => {
-      const result = await cambiarPasswordPrimerAcceso(password)
-      if (result?.error) { setPwError(result.error); return }
-      // Move to next step
+
+    setPwLoading(true)
+    try {
+      // Change password client-side — preserves the session
       const supabase = createClient()
+      const { error: updateError } = await supabase.auth.updateUser({ password })
+      if (updateError) { setPwError(updateError.message); return }
+
+      // Mark flag in DB via server action
+      const result = await marcarPasswordCambiado()
+      if (result?.error) { setPwError(result.error); return }
+
+      // Check if terms step is needed
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user) { setPwError('Sesión expirada, volvé a iniciar sesión'); return }
       const { data: profile } = await supabase
         .from('profiles')
         .select('terminos_aceptados')
         .eq('id', user.id)
         .single()
       setStep(!profile?.terminos_aceptados ? 'terminos' : 'done')
-    })
+    } finally {
+      setPwLoading(false)
+    }
   }
 
   function handleTermsSubmit(e: React.FormEvent) {
@@ -128,9 +137,7 @@ export default function PrimerAccesoPage() {
 
             <form onSubmit={handlePasswordSubmit} noValidate className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
-                  Nueva contraseña
-                </label>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nueva contraseña</label>
                 <div className="relative">
                   <input
                     type={showPw ? 'text' : 'password'}
@@ -147,9 +154,7 @@ export default function PrimerAccesoPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
-                  Confirmar contraseña
-                </label>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Confirmar contraseña</label>
                 <div className="relative">
                   <input
                     type={showCf ? 'text' : 'password'}
@@ -168,11 +173,11 @@ export default function PrimerAccesoPage() {
 
               <button
                 type="submit"
-                disabled={isPendingPw}
+                disabled={pwLoading}
                 className="w-full bg-[#FFC107] text-[#0D0F14] font-extrabold py-3 rounded-xl hover:bg-yellow-400 active:scale-[0.99] transition-all text-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
               >
-                {isPendingPw && <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
-                {isPendingPw ? 'Guardando…' : 'Continuar →'}
+                {pwLoading && <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
+                {pwLoading ? 'Guardando…' : 'Continuar →'}
               </button>
             </form>
           </>
@@ -204,18 +209,9 @@ export default function PrimerAccesoPage() {
             <form onSubmit={handleTermsSubmit} noValidate className="space-y-4">
               <label className="flex items-start gap-3 cursor-pointer group">
                 <div className="relative mt-0.5 shrink-0">
-                  <input
-                    type="checkbox"
-                    checked={accepted}
-                    onChange={e => { setAccepted(e.target.checked); setTermsError('') }}
-                    className="sr-only"
-                  />
+                  <input type="checkbox" checked={accepted} onChange={e => { setAccepted(e.target.checked); setTermsError('') }} className="sr-only" />
                   <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${accepted ? 'bg-[#FFC107] border-[#FFC107]' : 'bg-white/5 border-white/20 group-hover:border-white/40'}`}>
-                    {accepted && (
-                      <svg className="w-3 h-3 text-[#0D0F14]" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                    )}
+                    {accepted && <svg className="w-3 h-3 text-[#0D0F14]" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
                   </div>
                 </div>
                 <span className="text-sm text-gray-300">

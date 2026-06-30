@@ -13,26 +13,43 @@ export default function RecuperarPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email.trim()) {
+    const trimmed = email.trim().toLowerCase()
+    if (!trimmed) {
       setError('Ingresá tu email para continuar')
+      return
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(trimmed)) {
+      setError('El formato del email no es válido')
       return
     }
     setError('')
     setLoading(true)
 
     const supabase = createClient()
-    const redirectTo = `${window.location.origin}/auth/nueva-contrasena`
 
+    // Verificar que el email existe en profiles antes de enviar el link
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', trimmed)
+      .maybeSingle()
+
+    if (!profile) {
+      setLoading(false)
+      setError('No encontramos ninguna cuenta registrada con ese email.')
+      return
+    }
+
+    const redirectTo = `${window.location.origin}/auth/nueva-contrasena`
     const { error: authError } = await supabase.auth.resetPasswordForEmail(
-      email.trim().toLowerCase(),
+      trimmed,
       { redirectTo }
     )
 
     setLoading(false)
 
     if (authError) {
-      // Supabase devuelve error solo para problemas de red/config,
-      // no por emails inexistentes (por seguridad muestra éxito igual)
       setError('No se pudo enviar el email. Intentá de nuevo.')
       return
     }

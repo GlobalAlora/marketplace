@@ -149,19 +149,19 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados, wh
       )}
 
       {/* Pestañas */}
-      <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
+      <div className="flex items-center gap-0.5 bg-white/5 rounded-xl p-1">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => { setTab(t.key); setBusqueda('') }}
-            className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-1 text-[11px] font-semibold py-2 px-1.5 rounded-lg transition-colors ${
               tab === t.key
                 ? 'bg-[#FFC107] text-[#0D0F14]'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
             {t.label}
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+            <span className={`text-[10px] font-bold px-1 py-0.5 rounded-full ${
               tab === t.key ? 'bg-[#0D0F14]/20 text-[#0D0F14]' : 'bg-white/10 text-gray-500'
             }`}>
               {counts[t.key]}
@@ -202,38 +202,40 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados, wh
         return (
           <div
             key={v.id}
-            className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-4 flex gap-4 items-center"
+            className="bg-[#1a1a2e] border border-white/8 rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:flex-row sm:gap-4 sm:items-center"
           >
-            {/* Thumbnail */}
-            <Link href={`/vehiculos/${v.id}`} className="w-20 h-14 rounded-xl bg-white/5 shrink-0 overflow-hidden block">
-              {thumb ? (
-                <img src={thumb} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                  </svg>
+            {/* Fila superior: thumbnail + info */}
+            <div className="flex gap-3 items-center min-w-0">
+              <Link href={`/vehiculos/${v.id}`} className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl bg-white/5 shrink-0 overflow-hidden block">
+                {thumb ? (
+                  <img src={thumb} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                  </div>
+                )}
+              </Link>
+
+              {/* Info */}
+              <Link href={`/vehiculos/${v.id}`} className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-0.5">
+                  <p className="text-sm font-semibold text-white truncate hover:text-[#FFC107] transition-colors">{v.marca} {v.modelo} {v.año}</p>
+                  <span className={`flex items-center gap-1 text-[10px] font-bold shrink-0 ${cfg.text}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                    {cfg.label}
+                  </span>
+                  {v.destacado && <span className="text-[10px] font-bold text-[#FFC107] bg-[#FFC107]/10 px-2 py-0.5 rounded-full shrink-0">★ Destacado</span>}
                 </div>
-              )}
-            </Link>
+                <p className="text-xs text-gray-500">
+                  ${v.precio.toLocaleString('es-AR')} · {v.vistas} vistas
+                </p>
+              </Link>
+            </div>
 
-            {/* Info */}
-            <Link href={`/vehiculos/${v.id}`} className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <p className="text-sm font-semibold text-white truncate hover:text-[#FFC107] transition-colors">{v.marca} {v.modelo} {v.año}</p>
-                <span className={`flex items-center gap-1 text-[10px] font-bold ${cfg.text}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-                  {cfg.label}
-                </span>
-                {v.destacado && <span className="text-[10px] font-bold text-[#FFC107] bg-[#FFC107]/10 px-2 py-0.5 rounded-full shrink-0">★ Destacado</span>}
-              </div>
-              <p className="text-xs text-gray-500">
-                ${v.precio.toLocaleString('es-AR')} · {v.vistas} vistas
-              </p>
-            </Link>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2 shrink-0">
+            {/* Acciones */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 sm:ml-auto">
               {v.vendido ? (
                 /* Vendido: reactivar o eliminar */
                 <>
@@ -279,7 +281,7 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados, wh
                       <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 0 0-9 0v3.75M6.75 10.5h10.5a2.25 2.25 0 0 1 2.25 2.25v6.75a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25v-6.75a2.25 2.25 0 0 1 2.25-2.25z" />
                       </svg>
-                      Pausado por AUTODUX — contactanos
+                      <span className="hidden sm:inline">Pausado por AUTODUX —</span> Contactar
                     </a>
                   ) : (
                     <button onClick={() => handleToggle(v.id, v.activo)} disabled={isLoading} title={v.activo ? 'Pausar' : 'Activar'} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors disabled:opacity-40">

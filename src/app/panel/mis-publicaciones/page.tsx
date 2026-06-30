@@ -55,12 +55,12 @@ export default async function MisPublicacionesPage() {
         </div>
         <Link
           href="/panel/publicar"
-          className="flex items-center gap-2 bg-[#FFC107] hover:bg-[#e6ad00] text-[#0D0F14] text-sm font-bold px-4 py-2.5 rounded-xl transition-colors"
+          className="flex items-center gap-2 bg-[#FFC107] hover:bg-[#e6ad00] text-[#0D0F14] text-sm font-bold px-3 py-2.5 sm:px-4 rounded-xl transition-colors shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Publicar nuevo
+          <span className="hidden sm:inline">Publicar nuevo</span>
         </Link>
       </div>
 

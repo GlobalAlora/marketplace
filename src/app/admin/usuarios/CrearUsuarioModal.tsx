@@ -116,6 +116,23 @@ export default function CrearUsuarioModal() {
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-4">
 
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Rol</label>
+                  <CustomSelect
+                    options={ROL_OPTS}
+                    value={role}
+                    onChange={setRole}
+                    placeholder="Seleccioná un rol"
+                  />
+                </div>
+
+                {esAgencia && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre de agencia</label>
+                    <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)} placeholder="Nombre de la agencia" className={INPUT} />
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre</label>
@@ -142,23 +159,6 @@ export default function CrearUsuarioModal() {
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Teléfono</label>
                   <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Opcional" className={INPUT} />
                 </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Rol</label>
-                  <CustomSelect
-                    options={ROL_OPTS}
-                    value={role}
-                    onChange={setRole}
-                    placeholder="Seleccioná un rol"
-                  />
-                </div>
-
-                {esAgencia && (
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre de agencia</label>
-                    <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)} placeholder="Nombre de la agencia" className={INPUT} />
-                  </div>
-                )}
 
                 {error && (
                   <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-3 py-2.5">

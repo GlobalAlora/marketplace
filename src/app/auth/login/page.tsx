@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import AuthLayout from '@/components/auth/AuthLayout'
@@ -42,6 +42,29 @@ function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(
     searchParams.get('suspendida') ? 'Tu cuenta fue suspendida. Contactanos si creés que es un error.' : null
   )
+  const MAX_INTENTOS = 5
+  const BLOQUEO_SEG = 60
+  const [intentosFallidos, setIntentosFallidos] = useState(0)
+  const [bloqueadoHasta, setBloqueadoHasta] = useState<number | null>(null)
+  const [segundosRestantes, setSegundosRestantes] = useState(0)
+
+  useEffect(() => {
+    if (!bloqueadoHasta) return
+    const interval = setInterval(() => {
+      const restantes = Math.ceil((bloqueadoHasta - Date.now()) / 1000)
+      if (restantes <= 0) {
+        setBloqueadoHasta(null)
+        setIntentosFallidos(0)
+        setSegundosRestantes(0)
+        clearInterval(interval)
+      } else {
+        setSegundosRestantes(restantes)
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [bloqueadoHasta])
+
+  const estaBloqueado = bloqueadoHasta !== null && Date.now() < bloqueadoHasta
 
   function validate(): boolean {
     const next: FormErrors = {}
@@ -53,6 +76,7 @@ function LoginForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (estaBloqueado) return
     if (!validate()) return
     setLoading(true)
     setServerError(null)
@@ -62,15 +86,24 @@ function LoginForm() {
 
     setLoading(false)
     if (error) {
-      if (error.message.toLowerCase().includes('email not confirmed')) {
+      const msg = error.message.toLowerCase()
+      const nuevosIntentos = intentosFallidos + 1
+      setIntentosFallidos(nuevosIntentos)
+      if (nuevosIntentos >= MAX_INTENTOS) {
+        setBloqueadoHasta(Date.now() + BLOQUEO_SEG * 1000)
+        setSegundosRestantes(BLOQUEO_SEG)
+        setServerError(`Demasiados intentos fallidos. Intentá de nuevo en ${BLOQUEO_SEG} segundos o recuperá tu contraseña.`)
+      } else if (msg.includes('email not confirmed')) {
         setServerError('Tenés que confirmar tu email antes de iniciar sesión. Revisá tu bandeja.')
-      } else if (error.message.toLowerCase().includes('invalid login')) {
-        setServerError('Email o contraseña incorrectos')
+      } else if (msg.includes('invalid login')) {
+        const restantes = MAX_INTENTOS - nuevosIntentos
+        setServerError(`Email o contraseña incorrectos. ${restantes > 0 ? `Te quedan ${restantes} intento${restantes !== 1 ? 's' : ''}.` : ''}`)
       } else {
         setServerError(error.message)
       }
       return
     }
+    setIntentosFallidos(0)
     // Fetch role + activo para redirigir y para bloquear cuentas suspendidas
     const { data: profile } = await supabase
       .from('profiles')
@@ -175,15 +208,20 @@ function LoginForm() {
 
           {/* Error del servidor */}
           {serverError && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 space-y-1.5">
               <p className="text-xs text-red-400">{serverError}</p>
+              {estaBloqueado && (
+                <Link href="/auth/recuperar" className="text-xs text-[#FFC107] font-semibold hover:text-yellow-300 transition-colors underline">
+                  Recuperar contraseña →
+                </Link>
+              )}
             </div>
           )}
 
           {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || estaBloqueado}
             className="w-full bg-[#FFC107] text-[#0D0F14] font-extrabold py-3 rounded-xl hover:bg-yellow-400 active:scale-[0.99] transition-all text-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
           >
             {loading && (
@@ -192,7 +230,7 @@ function LoginForm() {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
             )}
-            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {estaBloqueado ? `Bloqueado (${segundosRestantes}s)` : loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
         </form>
 

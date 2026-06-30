@@ -54,10 +54,18 @@ export default function CrearUsuarioModal() {
       setError('Email, contraseña, nombre y apellido son obligatorios')
       return
     }
+    if (nombre.trim().length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
+    if (nombre.length > 50) { setError('El nombre no puede superar los 50 caracteres'); return }
+    if (apellido.trim().length < 2) { setError('El apellido debe tener al menos 2 caracteres'); return }
+    if (apellido.length > 50) { setError('El apellido no puede superar los 50 caracteres'); return }
+    if (email.length > 100) { setError('El email no puede superar los 100 caracteres'); return }
+    if (esAgencia && nombreAgencia.length > 80) { setError('El nombre de agencia no puede superar los 80 caracteres'); return }
+    if (telefono.length > 20) { setError('El teléfono no puede superar los 20 caracteres'); return }
     if (password.length < 6) {
       setError('La contraseña temporal debe tener al menos 6 caracteres')
       return
     }
+    if (password.length > 72) { setError('La contraseña no puede superar los 72 caracteres'); return }
     start(async () => {
       const result = await crearUsuario({
         email, password, nombre, apellido, telefono,
@@ -152,35 +160,35 @@ export default function CrearUsuarioModal() {
                 {esAgencia && (
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre de agencia</label>
-                    <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)} placeholder="Nombre de la agencia" className={INPUT} />
+                    <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)} placeholder="Nombre de la agencia" maxLength={80} className={INPUT} />
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre</label>
-                    <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Juan" className={INPUT} />
+                    <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Juan" maxLength={50} className={INPUT} />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Apellido</label>
-                    <input type="text" value={apellido} onChange={e => setApellido(e.target.value)} placeholder="Pérez" className={INPUT} />
+                    <input type="text" value={apellido} onChange={e => setApellido(e.target.value)} placeholder="Pérez" maxLength={50} className={INPUT} />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Email</label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="usuario@email.com" className={INPUT} />
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="usuario@email.com" maxLength={100} className={INPUT} />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Contraseña temporal</label>
-                  <input type="text" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mín. 6 caracteres" className={INPUT} />
+                  <input type="text" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mín. 6 caracteres" maxLength={72} className={INPUT} />
                   <p className="text-xs text-gray-600 mt-1">El usuario deberá cambiarla en su primer ingreso.</p>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Teléfono</label>
-                  <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Opcional" className={INPUT} />
+                  <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Opcional" maxLength={20} className={INPUT} />
                 </div>
 
                 {error && (

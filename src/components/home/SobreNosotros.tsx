@@ -1,15 +1,18 @@
 import RevealSection from '@/components/ui/RevealSection'
+import type { SiteConfig } from '@/lib/site-config'
 
-const BG_URL = 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1600'
+const DEFAULT_BG = 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1600'
 
-export default function SobreNosotros() {
+export default function SobreNosotros({ config = {} }: { config?: SiteConfig }) {
+  const bgUrl = config.sobre_nosotros_imagen_fondo ?? DEFAULT_BG
+
   return (
     <section id="sobre-nosotros" className="relative overflow-hidden bg-[#0D0F14] -mt-px scroll-mt-20" aria-labelledby="sobre-nosotros-heading">
 
       {/* Fondo con efecto parallax en desktop */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-scroll lg:bg-fixed"
-        style={{ backgroundImage: `url(${BG_URL})` }}
+        style={{ backgroundImage: `url(${bgUrl})` }}
         aria-hidden="true"
       />
       {/* Overlay degradado profundo */}

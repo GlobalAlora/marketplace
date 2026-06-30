@@ -160,7 +160,7 @@ export default async function Home() {
       )}
 
       {/* Sobre Nosotros */}
-      <SobreNosotros />
+      <SobreNosotros config={siteConfig} />
 
       {/* ¿Por qué usar AUTODUX? — rediseñado con carrusel */}
       <SeccionBeneficios config={siteConfig} />

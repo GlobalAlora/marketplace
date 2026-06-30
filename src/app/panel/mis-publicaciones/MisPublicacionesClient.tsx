@@ -32,7 +32,7 @@ function getEstado(v: Vehiculo) {
   return 'activo'
 }
 
-export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: { vehiculos: Vehiculo[]; limiteDestacados: number }) {
+export default function MisPublicacionesClient({ vehiculos, limiteDestacados, whatsappUrl }: { vehiculos: Vehiculo[]; limiteDestacados: number; whatsappUrl: string }) {
   const [pending, startTransition] = useTransition()
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
@@ -221,15 +221,18 @@ export default function MisPublicacionesClient({ vehiculos, limiteDestacados }: 
                     </svg>
                   </Link>
                   {!v.activo && v.pausado_por_admin ? (
-                    <span
-                      title="Este vehículo fue pausado por AUTODUX"
-                      className="flex items-center gap-1.5 text-[11px] font-semibold text-red-400 bg-red-500/10 px-3 py-2 rounded-lg cursor-not-allowed"
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Este vehículo fue pausado por AUTODUX — hacé click para contactarnos"
+                      className="flex items-center gap-1.5 text-[11px] font-semibold text-red-400 bg-red-500/10 px-3 py-2 rounded-lg hover:bg-red-500/20 transition-colors"
                     >
                       <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                       </svg>
                       Pausado por AUTODUX — contactanos
-                    </span>
+                    </a>
                   ) : (
                     <button onClick={() => handleToggle(v.id, v.activo)} disabled={isLoading} title={v.activo ? 'Pausar' : 'Activar'} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors disabled:opacity-40">
                       {v.activo ? (

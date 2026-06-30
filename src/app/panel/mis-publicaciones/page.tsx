@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import MisPublicacionesClient from './MisPublicacionesClient'
 import { getDestacadosLimits, resolveDestacadosLimit } from '@/lib/plan-config'
+import { getSiteConfig } from '@/lib/site-config'
 
 interface Vehiculo {
   id: string
@@ -33,6 +34,10 @@ export default async function MisPublicacionesPage() {
 
   const destacadosLimits = await getDestacadosLimits()
   const limiteDestacados = resolveDestacadosLimit(profile ?? { role: 'particular' }, destacadosLimits)
+
+  const siteConfig = await getSiteConfig()
+  const whatsappNum = siteConfig.whatsapp_num ?? '5492974015243'
+  const whatsappMsg = siteConfig.whatsapp_mensaje ?? 'Hola, quería consultar sobre una publicación pausada en AUTODUX.'
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: vehiculos } = await (supabase
@@ -76,7 +81,7 @@ export default async function MisPublicacionesPage() {
           </Link>
         </div>
       ) : (
-        <MisPublicacionesClient vehiculos={vehiculos} limiteDestacados={limiteDestacados} />
+        <MisPublicacionesClient vehiculos={vehiculos} limiteDestacados={limiteDestacados} whatsappUrl={`https://wa.me/${whatsappNum}?text=${encodeURIComponent(whatsappMsg)}`} />
       )}
     </div>
   )

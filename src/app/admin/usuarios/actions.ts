@@ -53,7 +53,7 @@ export async function crearUsuario(formData: {
       email: formData.email,
       nombre: formData.nombre,
       apellido: formData.apellido,
-      telefono: formData.telefono || null,
+      telefono: formData.telefono || '',
       role: formData.role,
       nombre_agencia: formData.nombre_agencia || null,
       debe_cambiar_password: true,

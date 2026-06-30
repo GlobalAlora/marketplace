@@ -7,7 +7,8 @@ export default async function Footer() {
   const slogan    = config.footer_slogan    ?? 'Conectamos lo que buscas, con lo que se vende'
   const copyright = config.footer_copyright ?? '© 2026 AUTODUX. Todos los derechos reservados.'
 
-  const whatsapp  = config.whatsapp_num  ?? '5492974015243'
+  const whatsapp    = config.whatsapp_num     ?? '5492974015243'
+  const whatsappMsg = config.whatsapp_mensaje ?? 'Hola, me comunico desde AUTODUX. Quería consultarles sobre...'
   const instagram = config.instagram_user ?? 'autoduxpatagonia'
   const facebook  = config.facebook_page  ?? 'AutoDux'
   const email     = config.contact_email  ?? 'grupoautodux@gmail.com'
@@ -29,7 +30,7 @@ export default async function Footer() {
           {/* Redes y contacto */}
           <div className="flex items-center gap-3">
             <a
-              href={`https://wa.me/${whatsapp}`}
+              href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMsg)}`}
               target="_blank"
               rel="noopener noreferrer"
               title="WhatsApp"

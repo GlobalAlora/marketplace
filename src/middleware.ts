@@ -30,37 +30,48 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const isAuthPage = pathname.startsWith('/auth/login') || pathname.startsWith('/auth/registro')
-  const isDashboard = pathname.startsWith('/dashboard')
-  const isAdmin = pathname.startsWith('/admin')
-  const isPanel = pathname.startsWith('/panel')
+  const isAuthPage    = pathname.startsWith('/auth/login') || pathname.startsWith('/auth/registro')
+  const isPrimerAcceso = pathname.startsWith('/auth/primer-acceso')
+  const isDashboard   = pathname.startsWith('/dashboard')
+  const isAdmin       = pathname.startsWith('/admin')
+  const isPanel       = pathname.startsWith('/panel')
+  const isProtected   = isPanel || isAdmin || isPrimerAcceso
 
   if (isDashboard) {
     return NextResponse.redirect(new URL('/admin', request.url))
   }
 
-  if (isPanel && !user) {
-    return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
+  // Redirect unauthenticated users away from protected routes
+  if (isProtected && !user) {
+    const loginUrl = isPrimerAcceso
+      ? '/auth/login'
+      : `/auth/login?redirect=${encodeURIComponent(pathname)}`
+    return NextResponse.redirect(new URL(loginUrl, request.url))
   }
 
-  if ((isPanel || isAdmin) && user) {
+  if (isProtected && user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, activo')
+      .select('role, activo, debe_cambiar_password, terminos_aceptados')
       .eq('id', user.id)
       .single()
 
-    // Cuenta suspendida después de loguearse: cerrar sesión y mandar al login.
+    // Cuenta suspendida: cerrar sesión
     if (profile && profile.activo === false) {
       await supabase.auth.signOut()
       return NextResponse.redirect(new URL('/auth/login?suspendida=1', request.url))
     }
 
+    // Solo admins pueden acceder a /admin
     if (isAdmin && (!profile || profile.role !== 'admin')) {
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }
-  } else if (isAdmin && !user) {
-    return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
+
+    // Primer acceso obligatorio — redirigir si hay pasos pendientes
+    // (excepción: ya estamos en /auth/primer-acceso)
+    if (!isPrimerAcceso && (profile?.debe_cambiar_password || !profile?.terminos_aceptados)) {
+      return NextResponse.redirect(new URL('/auth/primer-acceso', request.url))
+    }
   }
 
   return supabaseResponse

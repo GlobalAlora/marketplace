@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import UsuariosAdminTable from './UsuariosAdminTable'
+import CrearUsuarioModal from './CrearUsuarioModal'
 
 export default async function AdminUsuariosPage() {
   const supabase = await createClient()
@@ -40,6 +41,7 @@ export default async function AdminUsuariosPage() {
             <span className="text-xs text-blue-400">{verificados} verificados</span>
           </div>
         </div>
+        <CrearUsuarioModal />
       </div>
 
       <UsuariosAdminTable usuarios={usuarios} />

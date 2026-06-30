@@ -1,0 +1,169 @@
+'use client'
+
+import { useState, useTransition } from 'react'
+import { crearUsuario } from './actions'
+import CustomSelect from '@/components/ui/CustomSelect'
+
+const ROL_OPTS = [
+  { value: 'particular',       label: 'Particular' },
+  { value: 'agencia_basica',   label: 'Agencia básica' },
+  { value: 'agencia_premium',  label: 'Agencia premium' },
+]
+
+const INPUT = 'w-full bg-[#0D0F14] border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30 transition'
+
+export default function CrearUsuarioModal() {
+  const [open, setOpen]       = useState(false)
+  const [error, setError]     = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+  const [isPending, start]    = useTransition()
+
+  const [email, setEmail]           = useState('')
+  const [password, setPassword]     = useState('')
+  const [nombre, setNombre]         = useState('')
+  const [apellido, setApellido]     = useState('')
+  const [telefono, setTelefono]     = useState('')
+  const [role, setRole]             = useState('particular')
+  const [nombreAgencia, setNombreAgencia] = useState('')
+
+  const esAgencia = role === 'agencia_basica' || role === 'agencia_premium'
+
+  function reset() {
+    setEmail(''); setPassword(''); setNombre(''); setApellido('')
+    setTelefono(''); setRole('particular'); setNombreAgencia('')
+    setError(null); setSuccess(false)
+  }
+
+  function handleClose() { reset(); setOpen(false) }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    if (!email || !password || !nombre || !apellido) {
+      setError('Email, contraseña, nombre y apellido son obligatorios')
+      return
+    }
+    if (password.length < 6) {
+      setError('La contraseña temporal debe tener al menos 6 caracteres')
+      return
+    }
+    start(async () => {
+      const result = await crearUsuario({
+        email, password, nombre, apellido, telefono,
+        role: role as 'particular' | 'agencia_basica' | 'agencia_premium' | 'admin',
+        nombre_agencia: nombreAgencia,
+      })
+      if (result?.error) { setError(result.error); return }
+      setSuccess(true)
+      setTimeout(() => handleClose(), 1800)
+    })
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-2 bg-[#FFC107] text-[#0D0F14] font-bold text-sm px-4 py-2 rounded-xl hover:bg-yellow-400 active:scale-[0.98] transition-all"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Crear usuario
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleClose} />
+
+          <div className="relative z-10 w-full max-w-md bg-[#1a1a2e] border border-white/10 rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-extrabold text-white">Crear usuario</h2>
+              <button onClick={handleClose} className="text-gray-500 hover:text-white transition-colors" aria-label="Cerrar">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            {success ? (
+              <div className="text-center py-6">
+                <div className="w-14 h-14 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <p className="text-white font-bold">Usuario creado</p>
+                <p className="text-xs text-gray-400 mt-1">Al iniciar sesión deberá configurar su contraseña y aceptar los términos.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate className="space-y-4">
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre</label>
+                    <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Juan" className={INPUT} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Apellido</label>
+                    <input type="text" value={apellido} onChange={e => setApellido(e.target.value)} placeholder="Pérez" className={INPUT} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Email</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="usuario@email.com" className={INPUT} />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Contraseña temporal</label>
+                  <input type="text" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mín. 6 caracteres" className={INPUT} />
+                  <p className="text-xs text-gray-600 mt-1">El usuario deberá cambiarla en su primer ingreso.</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Teléfono</label>
+                  <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Opcional" className={INPUT} />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Rol</label>
+                  <CustomSelect
+                    options={ROL_OPTS}
+                    value={role}
+                    onChange={setRole}
+                    placeholder="Seleccioná un rol"
+                  />
+                </div>
+
+                {esAgencia && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre de agencia</label>
+                    <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)} placeholder="Nombre de la agencia" className={INPUT} />
+                  </div>
+                )}
+
+                {error && (
+                  <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-3 py-2.5">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 pt-1">
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="flex-1 bg-[#FFC107] text-[#0D0F14] font-bold text-sm py-2.5 rounded-xl hover:bg-yellow-400 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isPending && <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
+                    {isPending ? 'Creando…' : 'Crear usuario'}
+                  </button>
+                  <button type="button" onClick={handleClose} className="px-4 py-2.5 text-sm text-gray-400 hover:text-white rounded-xl border border-white/10 hover:border-white/20 transition-colors">
+                    Cancelar
+                  </button>
+                </div>
+
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}

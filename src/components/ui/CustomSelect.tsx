@@ -51,7 +51,7 @@ export default function CustomSelect({
   const selected = options.find(o => o.value === value)
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative min-w-max">
       {name && <input type="hidden" name={name} value={value} />}
       <button
         type="button"

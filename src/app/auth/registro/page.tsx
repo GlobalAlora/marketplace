@@ -123,6 +123,8 @@ function RegistroForm() {
         setServerError('Este email ya está registrado')
       } else if (msg.includes('password') && msg.includes('short')) {
         setServerError('La contraseña es demasiado corta. Debe tener al menos 6 caracteres')
+      } else if (msg.includes('rate limit') || msg.includes('email rate limit')) {
+        setServerError('Se alcanzó el límite de envíos para este email. Esperá unos minutos e intentá de nuevo.')
       } else {
         setServerError(error.message)
       }

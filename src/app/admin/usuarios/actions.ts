@@ -36,38 +36,41 @@ export async function crearUsuario(formData: {
   const { data: callerProfile } = await supabase.from('profiles').select('role').eq('id', caller.id).single()
   if (callerProfile?.role !== 'admin') return { error: 'Sin permisos' }
 
-  const admin = createAdminClient()
+  try {
+    const admin = createAdminClient()
 
-  // Create auth user (email_confirm: true skips confirmation email)
-  const { data: newUser, error: authError } = await admin.auth.admin.createUser({
-    email: formData.email,
-    password: formData.password,
-    email_confirm: true,
-  })
-  if (authError) return { error: authError.message }
+    // Create auth user (email_confirm: true skips confirmation email)
+    const { data: newUser, error: authError } = await admin.auth.admin.createUser({
+      email: formData.email,
+      password: formData.password,
+      email_confirm: true,
+    })
+    if (authError) return { error: authError.message }
 
-  // Upsert profile
-  const { error: profileError } = await admin.from('profiles').upsert({
-    id: newUser.user.id,
-    email: formData.email,
-    nombre: formData.nombre,
-    apellido: formData.apellido,
-    telefono: formData.telefono || null,
-    role: formData.role,
-    nombre_agencia: formData.nombre_agencia || null,
-    debe_cambiar_password: true,
-    terminos_aceptados: false,
-    activo: true,
-    verificado: false,
-  })
-  if (profileError) {
-    // Rollback auth user
-    await admin.auth.admin.deleteUser(newUser.user.id)
-    return { error: profileError.message }
+    // Upsert profile
+    const { error: profileError } = await admin.from('profiles').upsert({
+      id: newUser.user.id,
+      email: formData.email,
+      nombre: formData.nombre,
+      apellido: formData.apellido,
+      telefono: formData.telefono || null,
+      role: formData.role,
+      nombre_agencia: formData.nombre_agencia || null,
+      debe_cambiar_password: true,
+      terminos_aceptados: false,
+      activo: true,
+      verificado: false,
+    })
+    if (profileError) {
+      await admin.auth.admin.deleteUser(newUser.user.id)
+      return { error: profileError.message }
+    }
+
+    revalidatePath('/admin/usuarios')
+    return {}
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Error al crear el usuario' }
   }
-
-  revalidatePath('/admin/usuarios')
-  return {}
 }
 
 export async function updateRole(userId: string, role: Role) {

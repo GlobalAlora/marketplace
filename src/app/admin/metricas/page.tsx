@@ -61,7 +61,7 @@ export default async function AdminMetricasPage() {
     supabase.from('metricas_vehiculos').select('*', { count: 'exact', head: true }).eq('tipo', 'view'),
     supabase.from('profiles').select('created_at').gte('created_at', startOf30d.toISOString()),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase.from('profiles').select('id, nombre, avatar_url, role, vehiculos!vehiculos_user_id_fkey(count)').in('role', ['agencia_basica', 'agencia_premium']) as any) as Promise<{ data: AnyRecord[] | null }>,
+    (supabase.from('profiles').select('id, nombre, nombre_agencia, avatar_url, role, vehiculos!vehiculos_user_id_fkey(count)').in('role', ['agencia_basica', 'agencia_premium']) as any) as Promise<{ data: AnyRecord[] | null }>,
   ])
 
   // Top 5 por vistas y por WhatsApp desde metricas_vehiculos
@@ -82,7 +82,7 @@ export default async function AdminMetricasPage() {
   const topAgencias: TopAgencia[] = (agenciasRaw ?? [])
     .map((a: AnyRecord) => ({
       id: a.id,
-      nombre: a.nombre ?? 'Agencia',
+      nombre: a.nombre_agencia || a.nombre || 'Sin nombre',
       avatar_url: a.avatar_url ?? null,
       role: a.role,
       count: Array.isArray(a.vehiculos) ? (a.vehiculos[0]?.count ?? 0) : 0,

@@ -69,6 +69,9 @@ export async function crearUsuario(formData: {
       if (msg.includes('already been registered') || msg.includes('already registered') || msg.includes('already exists')) {
         return { error: 'Ya existe un usuario registrado con ese email' }
       }
+      if (msg.includes('invalid format') || msg.includes('unable to validate email') || msg.includes('invalid email')) {
+        return { error: 'El formato del email no es válido' }
+      }
       return { error: authError.message }
     }
 

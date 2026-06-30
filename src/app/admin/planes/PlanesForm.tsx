@@ -47,6 +47,21 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
     setSuccess(false)
     setError(null)
     const fd = new FormData(e.currentTarget)
+
+    // Validación en español
+    for (const [key, val] of fd.entries()) {
+      const n = Number(val)
+      const isDestacados = key.startsWith('destacados_')
+      if (isNaN(n) || n < (isDestacados ? 0 : 1)) {
+        setError(`El valor mínimo es ${isDestacados ? '0' : '1'}.`)
+        return
+      }
+      if (n > 9999) {
+        setError('El valor máximo permitido es 9999.')
+        return
+      }
+    }
+
     startTransition(async () => {
       const result = await updatePlanLimits(fd)
       if (result?.error) setError(result.error)
@@ -67,10 +82,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
               <input
                 name={key}
                 type="number"
-                min={1}
-                max={9999}
                 defaultValue={limits[key]}
-                required
                 className={`${INPUT} w-20`}
               />
               <span className="text-xs text-gray-500 whitespace-nowrap">publicaciones</span>
@@ -79,10 +91,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
               <input
                 name={`destacados_${key}`}
                 type="number"
-                min={0}
-                max={999}
                 defaultValue={destacadosLimits[key]}
-                required
                 className={`${INPUT} w-20`}
               />
               <span className="text-xs text-gray-500 whitespace-nowrap">destacados</span>

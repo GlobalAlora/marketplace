@@ -65,7 +65,15 @@ export default function PrimerAccesoPage() {
       // Change password client-side — preserves the session
       const supabase = createClient()
       const { error: updateError } = await supabase.auth.updateUser({ password })
-      if (updateError) { setPwError(updateError.message); return }
+      if (updateError) {
+        const msg = updateError.message.toLowerCase()
+        if (msg.includes('different from the old password') || msg.includes('same as the old password') || msg.includes('should be different')) {
+          setPwError('La nueva contraseña debe ser diferente a la contraseña temporal')
+        } else {
+          setPwError(updateError.message)
+        }
+        return
+      }
 
       // Mark flag in DB via server action
       const result = await marcarPasswordCambiado()

@@ -8,7 +8,7 @@ export default async function AdminUsuariosPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: raw } = await (supabase
     .from('profiles')
-    .select('id, email, nombre, apellido, telefono, role, verificado, activo, created_at, avatar_url, vehiculos!vehiculos_user_id_fkey(count)')
+    .select('id, email, nombre, apellido, telefono, role, verificado, activo, created_at, avatar_url, logo_agencia, vehiculos!vehiculos_user_id_fkey(count)')
     .order('created_at', { ascending: false }) as any) as { data: any[] | null }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,7 +22,7 @@ export default async function AdminUsuariosPage() {
     verificado: u.verificado,
     activo: u.activo,
     created_at: u.created_at,
-    avatar_url: u.avatar_url ?? null,
+    avatar_url: u.logo_agencia ?? u.avatar_url ?? null,
     vehiculos_count: Array.isArray(u.vehiculos) ? (u.vehiculos[0]?.count ?? 0) : 0,
   }))
 

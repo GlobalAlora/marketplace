@@ -7,15 +7,15 @@ export default async function AdminAgenciasPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: raw } = await (supabase
     .from('profiles')
-    .select('id, nombre, avatar_url, role, verificado, activo, created_at, vehiculos!vehiculos_user_id_fkey(count)')
+    .select('id, nombre, nombre_agencia, avatar_url, logo_agencia, role, verificado, activo, created_at, vehiculos!vehiculos_user_id_fkey(count)')
     .in('role', ['agencia_basica', 'agencia_premium'])
     .order('created_at', { ascending: false }) as any) as { data: any[] | null }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const agencias = (raw ?? []).map((a: any) => ({
     id: a.id,
-    nombre: a.nombre ?? 'Sin nombre',
-    avatar_url: a.avatar_url ?? null,
+    nombre: a.nombre_agencia || a.nombre || 'Sin nombre',
+    avatar_url: a.logo_agencia ?? a.avatar_url ?? null,
     role: a.role,
     verificado: a.verificado,
     activo: a.activo,

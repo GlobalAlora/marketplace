@@ -16,6 +16,7 @@ export default function CrearUsuarioModal() {
   const [open, setOpen]       = useState(false)
   const [error, setError]     = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [createdCreds, setCreatedCreds] = useState<{ email: string; password: string } | null>(null)
   const [isPending, start]    = useTransition()
 
   const [email, setEmail]           = useState('')
@@ -31,7 +32,7 @@ export default function CrearUsuarioModal() {
   function reset() {
     setEmail(''); setPassword(''); setNombre(''); setApellido('')
     setTelefono(''); setRole('particular'); setNombreAgencia('')
-    setError(null); setSuccess(false)
+    setError(null); setSuccess(false); setCreatedCreds(null)
   }
 
   function handleClose() { reset(); setOpen(false) }
@@ -54,8 +55,8 @@ export default function CrearUsuarioModal() {
         nombre_agencia: nombreAgencia,
       })
       if (result?.error) { setError(result.error); return }
+      setCreatedCreds({ email, password })
       setSuccess(true)
-      setTimeout(() => handleClose(), 1800)
     })
   }
 
@@ -85,12 +86,32 @@ export default function CrearUsuarioModal() {
             </div>
 
             {success ? (
-              <div className="text-center py-6">
-                <div className="w-14 h-14 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="py-2">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </div>
+                  <div>
+                    <p className="text-white font-bold text-sm">Usuario creado</p>
+                    <p className="text-xs text-gray-400">Compartí estas credenciales con el usuario.</p>
+                  </div>
                 </div>
-                <p className="text-white font-bold">Usuario creado</p>
-                <p className="text-xs text-gray-400 mt-1">Al iniciar sesión deberá configurar su contraseña y aceptar los términos.</p>
+                {createdCreds && (
+                  <div className="bg-[#0D0F14] border border-white/10 rounded-xl p-4 space-y-2 mb-4">
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide mb-0.5">Email</p>
+                      <p className="text-sm text-white font-mono">{createdCreds.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide mb-0.5">Contraseña temporal</p>
+                      <p className="text-sm text-[#FFC107] font-mono">{createdCreds.password}</p>
+                    </div>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500">Al iniciar sesión por primera vez, el usuario deberá cambiar su contraseña y aceptar los términos.</p>
+                <button onClick={handleClose} className="mt-4 w-full py-2.5 text-sm font-bold text-[#0D0F14] bg-[#FFC107] rounded-xl hover:bg-yellow-400 transition-colors">
+                  Cerrar
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-4">

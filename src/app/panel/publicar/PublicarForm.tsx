@@ -59,7 +59,7 @@ export default function PublicarForm({ userId }: { userId: string }) {
   const dragIndex = useRef<number | null>(null)
   const [dragOver, setDragOver] = useState<number | null>(null)
   const [tipoVehiculo, setTipoVehiculo] = useState('auto')
-  const esMoto = tipoVehiculo === 'moto'
+  const esMoto = tipoVehiculo === 'moto' || tipoVehiculo === 'cuatriciclo'
   const [provincia, setProvincia] = useState('Chubut')
   const [ciudad, setCiudad] = useState('Comodoro Rivadavia')
   const ciudadOpts = ciudadesDeProvincia(provincia).map(c => ({ value: c, label: c }))

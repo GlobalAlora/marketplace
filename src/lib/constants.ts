@@ -5,12 +5,13 @@ export const MARCAS = [
 ]
 
 export const TIPOS_VEHICULO = [
-  { value: 'auto',        label: 'Auto' },
-  { value: 'pickup',      label: 'Pickup' },
-  { value: 'suv',         label: 'SUV' },
-  { value: 'utilitario',  label: 'Utilitario' },
-  { value: 'moto',        label: 'Moto' },
-  { value: 'monovolumen', label: 'Monovolumen' },
+  { value: 'auto',          label: 'Auto' },
+  { value: 'pickup',        label: 'Pickup' },
+  { value: 'suv',           label: 'SUV' },
+  { value: 'utilitario',    label: 'Utilitario' },
+  { value: 'moto',          label: 'Moto' },
+  { value: 'cuatriciclo',   label: 'Cuatriciclo' },
+  { value: 'monovolumen',   label: 'Monovolumen' },
 ] as const
 
 export const TIPOS_MOTO = [

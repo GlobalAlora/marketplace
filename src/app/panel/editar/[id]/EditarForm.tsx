@@ -85,7 +85,7 @@ export default function EditarForm({ vehiculo, userId }: { vehiculo: VehiculoDat
   const dragIndex = useRef<number | null>(null)
   const [dragOver, setDragOver] = useState<number | null>(null)
   const [tipoVehiculo, setTipoVehiculo] = useState(vehiculo.tipo_vehiculo ?? 'auto')
-  const esMoto = tipoVehiculo === 'moto'
+  const esMoto = tipoVehiculo === 'moto' || tipoVehiculo === 'cuatriciclo'
   const [provincia, setProvincia] = useState(vehiculo.provincia ?? 'Chubut')
   const [ciudad, setCiudad] = useState(vehiculo.ciudad ?? 'Comodoro Rivadavia')
   const ciudadOpts = ciudadesDeProvincia(provincia).map(c => ({ value: c, label: c }))

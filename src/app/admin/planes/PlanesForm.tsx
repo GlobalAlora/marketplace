@@ -71,7 +71,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
                 max={9999}
                 defaultValue={limits[key]}
                 required
-                className={`${INPUT} w-[4.5rem] sm:w-24`}
+                className={`${INPUT} w-20`}
               />
               <span className="text-xs text-gray-500 whitespace-nowrap">publicaciones</span>
             </div>
@@ -83,7 +83,7 @@ export default function PlanesForm({ limits, destacadosLimits }: Props) {
                 max={999}
                 defaultValue={destacadosLimits[key]}
                 required
-                className={`${INPUT} w-16 sm:w-20`}
+                className={`${INPUT} w-20`}
               />
               <span className="text-xs text-gray-500 whitespace-nowrap">destacados</span>
             </div>

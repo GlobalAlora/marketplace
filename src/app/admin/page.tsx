@@ -1,9 +1,10 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { formatPrecio } from '@/lib/format'
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
+  const admin = createAdminClient()
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -19,7 +20,7 @@ export default async function AdminDashboardPage() {
   ] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('vehiculos').select('*', { count: 'exact', head: true }).eq('activo', true).eq('vendido', false),
-    supabase.from('metricas_vehiculos').select('*', { count: 'exact', head: true })
+    admin.from('metricas_vehiculos').select('*', { count: 'exact', head: true })
       .eq('tipo', 'whatsapp_click')
       .gte('created_at', today.toISOString()),
     supabase.from('profiles').select('*', { count: 'exact', head: true })

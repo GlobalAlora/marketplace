@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import MetricasChart from './MetricasChart'
 import ExportarExcelButton from './ExportarExcelButton'
@@ -28,6 +28,7 @@ interface DayData {
 
 export default async function AdminMetricasPage() {
   const supabase = await createClient()
+  const admin = createAdminClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
@@ -57,8 +58,8 @@ export default async function AdminMetricasPage() {
     supabase.from('vehiculos').select('*', { count: 'exact', head: true }).eq('activo', true).eq('vendido', false),
     supabase.from('vehiculos').select('*', { count: 'exact', head: true }).eq('activo', false).eq('vendido', false),
     supabase.from('vehiculos').select('*', { count: 'exact', head: true }).eq('vendido', true),
-    supabase.from('metricas_vehiculos').select('*', { count: 'exact', head: true }).eq('tipo', 'whatsapp_click'),
-    supabase.from('metricas_vehiculos').select('*', { count: 'exact', head: true }).eq('tipo', 'view'),
+    admin.from('metricas_vehiculos').select('*', { count: 'exact', head: true }).eq('tipo', 'whatsapp_click'),
+    admin.from('metricas_vehiculos').select('*', { count: 'exact', head: true }).eq('tipo', 'view'),
     supabase.from('profiles').select('created_at').gte('created_at', startOf30d.toISOString()),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('profiles').select('id, nombre, nombre_agencia, avatar_url, role, vehiculos!vehiculos_user_id_fkey(count)').in('role', ['agencia_basica', 'agencia_premium']) as any) as Promise<{ data: AnyRecord[] | null }>,
@@ -66,8 +67,8 @@ export default async function AdminMetricasPage() {
 
   // Top 5 por vistas y por WhatsApp desde metricas_vehiculos
   const [{ data: topVistasRaw }, { data: topWhatsappRaw }] = await Promise.all([
-    supabase.rpc('admin_top_views', { n: 5 }),
-    supabase.rpc('admin_top_whatsapp', { n: 5 }),
+    admin.rpc('admin_top_views', { n: 5 }),
+    admin.rpc('admin_top_whatsapp', { n: 5 }),
   ])
 
   const topVistas: TopItem[] = (topVistasRaw ?? []).map((v: AnyRecord) => ({
@@ -109,9 +110,9 @@ export default async function AdminMetricasPage() {
   const topAgenciasIds = topAgencias.map(a => a.id)
 
   const [{ data: clicksTopVistasRaw }, { data: vendidosTopAgenciasRaw }, { data: metricas30dRaw }] = await Promise.all([
-    supabase.from('metricas_vehiculos').select('vehiculo_id').in('vehiculo_id', topVistasIds.length ? topVistasIds : ['']).eq('tipo', 'whatsapp_click'),
+    admin.from('metricas_vehiculos').select('vehiculo_id').in('vehiculo_id', topVistasIds.length ? topVistasIds : ['']).eq('tipo', 'whatsapp_click'),
     supabase.from('vehiculos').select('user_id').eq('vendido', true).in('user_id', topAgenciasIds.length ? topAgenciasIds : ['']),
-    supabase.from('metricas_vehiculos').select('created_at, tipo').gte('created_at', startOf30d.toISOString()),
+    admin.from('metricas_vehiculos').select('created_at, tipo').gte('created_at', startOf30d.toISOString()),
   ])
 
   const clicksPorVehiculo = new Map<string, number>()

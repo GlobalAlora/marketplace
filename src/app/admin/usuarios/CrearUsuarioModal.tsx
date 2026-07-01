@@ -59,7 +59,7 @@ export default function CrearUsuarioModal() {
     if (apellido.trim().length < 2) { setError('El apellido debe tener al menos 2 caracteres'); return }
     if (apellido.length > 15) { setError('El apellido no puede superar los 15 caracteres'); return }
     if (email.length > 100) { setError('El email no puede superar los 100 caracteres'); return }
-    if (esAgencia && nombreAgencia.length > 80) { setError('El nombre de agencia no puede superar los 80 caracteres'); return }
+    if (esAgencia && nombreAgencia.length > 30) { setError('El nombre de agencia no puede superar los 30 caracteres'); return }
     if (telefono.length > 20) { setError('El teléfono no puede superar los 20 caracteres'); return }
     if (password.length < 6) {
       setError('La contraseña temporal debe tener al menos 6 caracteres')
@@ -160,7 +160,7 @@ export default function CrearUsuarioModal() {
                 {esAgencia && (
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre de agencia</label>
-                    <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)} placeholder="Nombre de la agencia" maxLength={80} className={INPUT} />
+                    <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)} placeholder="Nombre de la agencia" maxLength={30} className={INPUT} />
                   </div>
                 )}
 

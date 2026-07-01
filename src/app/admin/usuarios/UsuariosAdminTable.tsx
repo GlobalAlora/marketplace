@@ -158,7 +158,7 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
       ) : (
         <>
           {/* Tabla — desktop */}
-          <div className="hidden md:block rounded-2xl border border-white/6 overflow-hidden">
+          <div className="hidden lg:block rounded-2xl border border-white/6 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-white/2 border-b border-white/6">
@@ -178,7 +178,7 @@ export default function UsuariosAdminTable({ usuarios }: { usuarios: Profile[] }
           </div>
 
           {/* Cards — mobile */}
-          <div className="md:hidden space-y-3">
+          <div className="lg:hidden space-y-3">
             {filtered.map(u => <UsuarioCardMobile key={u.id} usuario={u} />)}
           </div>
         </>

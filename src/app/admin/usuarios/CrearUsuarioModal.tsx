@@ -188,7 +188,7 @@ export default function CrearUsuarioModal() {
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Teléfono</label>
-                  <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Opcional" maxLength={20} className={INPUT} />
+                  <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value.replace(/[^0-9+\-\s()]/g, ''))} placeholder="Opcional" maxLength={20} inputMode="tel" className={INPUT} />
                 </div>
 
                 {error && (

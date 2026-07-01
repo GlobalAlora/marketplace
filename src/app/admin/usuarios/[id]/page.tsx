@@ -129,26 +129,34 @@ export default async function UsuarioDetailPage({ params }: { params: Promise<{ 
             </thead>
             <tbody className="divide-y divide-white/5">
               {(vehiculos ?? []).map((v: any) => (
-                <tr key={v.id} className="hover:bg-white/2 transition-colors">
+                <tr key={v.id} className="hover:bg-white/2 transition-colors cursor-pointer group">
                   <td className="px-5 py-3.5">
-                    <p className="font-medium text-white">{v.titulo}</p>
-                    <p className="text-xs text-gray-500">{v.año} · {new Date(v.created_at).toLocaleDateString('es-AR')}</p>
+                    <Link href={`/vehiculos/${v.id}`} target="_blank" className="block">
+                      <p className="font-medium text-white group-hover:text-[#FFC107] transition-colors">{v.titulo}</p>
+                      <p className="text-xs text-gray-500">{v.año} · {new Date(v.created_at).toLocaleDateString('es-AR')}</p>
+                    </Link>
                   </td>
                   <td className="px-5 py-3.5 text-right font-bold text-[#FFC107]">
-                    ${(v.precio / 1_000_000).toFixed(1)}M
+                    <Link href={`/vehiculos/${v.id}`} target="_blank" className="block">
+                      ${(v.precio / 1_000_000).toFixed(1)}M
+                    </Link>
                   </td>
-                  <td className="px-5 py-3.5 text-center text-xs text-gray-400">{v.vistas ?? 0}</td>
+                  <td className="px-5 py-3.5 text-center text-xs text-gray-400">
+                    <Link href={`/vehiculos/${v.id}`} target="_blank" className="block">{v.vistas ?? 0}</Link>
+                  </td>
                   <td className="px-5 py-3.5 text-center">
-                    {v.vendido ? (
-                      <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-gray-500/10 text-gray-500">Vendido</span>
-                    ) : v.activo ? (
-                      <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400">Activo</span>
-                    ) : (
-                      <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-red-500/10 text-red-400">Inactivo</span>
-                    )}
-                    {v.destacado && (
-                      <span className="ml-1.5 text-[10px] font-semibold px-2 py-1 rounded-full bg-[#FFC107]/15 text-[#FFC107]">★ Destacado</span>
-                    )}
+                    <Link href={`/vehiculos/${v.id}`} target="_blank" className="inline-flex flex-wrap gap-1.5 items-center justify-center">
+                      {v.vendido ? (
+                        <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-gray-500/10 text-gray-500">Vendido</span>
+                      ) : v.activo ? (
+                        <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400">Activo</span>
+                      ) : (
+                        <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-red-500/10 text-red-400">Inactivo</span>
+                      )}
+                      {v.destacado && (
+                        <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-[#FFC107]/15 text-[#FFC107]">★ Destacado</span>
+                      )}
+                    </Link>
                   </td>
                 </tr>
               ))}

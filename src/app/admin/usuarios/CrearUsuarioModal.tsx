@@ -55,9 +55,9 @@ export default function CrearUsuarioModal() {
       return
     }
     if (nombre.trim().length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
-    if (nombre.length > 50) { setError('El nombre no puede superar los 50 caracteres'); return }
+    if (nombre.length > 15) { setError('El nombre no puede superar los 15 caracteres'); return }
     if (apellido.trim().length < 2) { setError('El apellido debe tener al menos 2 caracteres'); return }
-    if (apellido.length > 50) { setError('El apellido no puede superar los 50 caracteres'); return }
+    if (apellido.length > 15) { setError('El apellido no puede superar los 15 caracteres'); return }
     if (email.length > 100) { setError('El email no puede superar los 100 caracteres'); return }
     if (esAgencia && nombreAgencia.length > 80) { setError('El nombre de agencia no puede superar los 80 caracteres'); return }
     if (telefono.length > 20) { setError('El teléfono no puede superar los 20 caracteres'); return }
@@ -167,11 +167,11 @@ export default function CrearUsuarioModal() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Nombre</label>
-                    <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Juan" maxLength={50} className={INPUT} />
+                    <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Juan" maxLength={15} className={INPUT} />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Apellido</label>
-                    <input type="text" value={apellido} onChange={e => setApellido(e.target.value)} placeholder="Pérez" maxLength={50} className={INPUT} />
+                    <input type="text" value={apellido} onChange={e => setApellido(e.target.value)} placeholder="Pérez" maxLength={15} className={INPUT} />
                   </div>
                 </div>
 

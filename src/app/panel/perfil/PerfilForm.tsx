@@ -67,10 +67,10 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
     const apellido = (fd.get('apellido') as string ?? '').trim()
     const telefono = (fd.get('telefono') as string ?? '').trim()
     if (nombre.length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
-    if (nombre.length > 50) { setError('El nombre no puede superar los 50 caracteres'); return }
+    if (nombre.length > 15) { setError('El nombre no puede superar los 15 caracteres'); return }
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(nombre)) { setError('El nombre solo puede contener letras'); return }
     if (apellido.length < 2) { setError('El apellido debe tener al menos 2 caracteres'); return }
-    if (apellido.length > 50) { setError('El apellido no puede superar los 50 caracteres'); return }
+    if (apellido.length > 15) { setError('El apellido no puede superar los 15 caracteres'); return }
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(apellido)) { setError('El apellido solo puede contener letras'); return }
     if (telefono && !/^[0-9+\-\s()]+$/.test(telefono)) { setError('El teléfono solo puede contener números'); return }
     if (telefono.length > 20) { setError('El teléfono no puede superar los 20 caracteres'); return }
@@ -158,9 +158,9 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
             required
             defaultValue={profile.nombre}
             minLength={2}
-            maxLength={50}
+            maxLength={15}
             pattern="[A-Za-zÀ-ÿ\s]+"
-            title="Solo letras y espacios, entre 2 y 50 caracteres"
+            title="Solo letras y espacios, entre 2 y 15 caracteres"
             className={INPUT}
           />
         </div>
@@ -171,9 +171,9 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
             required
             defaultValue={profile.apellido}
             minLength={2}
-            maxLength={50}
+            maxLength={15}
             pattern="[A-Za-zÀ-ÿ\s]+"
-            title="Solo letras y espacios, entre 2 y 50 caracteres"
+            title="Solo letras y espacios, entre 2 y 15 caracteres"
             className={INPUT}
           />
         </div>

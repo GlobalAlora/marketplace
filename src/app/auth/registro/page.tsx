@@ -78,11 +78,11 @@ function RegistroForm() {
     const next: FormErrors = {}
     if (!form.nombre.trim()) next.nombre = 'Obligatorio'
     else if (form.nombre.trim().length < 2) next.nombre = 'Mínimo 2 caracteres'
-    else if (form.nombre.length > 50) next.nombre = 'Máximo 50 caracteres'
+    else if (form.nombre.length > 15) next.nombre = 'Máximo 15 caracteres'
     else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(form.nombre.trim())) next.nombre = 'Solo letras y espacios'
     if (!form.apellido.trim()) next.apellido = 'Obligatorio'
     else if (form.apellido.trim().length < 2) next.apellido = 'Mínimo 2 caracteres'
-    else if (form.apellido.length > 50) next.apellido = 'Máximo 50 caracteres'
+    else if (form.apellido.length > 15) next.apellido = 'Máximo 15 caracteres'
     else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(form.apellido.trim())) next.apellido = 'Solo letras y espacios'
     if (!form.email.trim()) next.email = 'Obligatorio'
     else if (form.email.length > 100) next.email = 'Máximo 100 caracteres'
@@ -184,7 +184,7 @@ function RegistroForm() {
                 type="text"
                 autoComplete="given-name"
                 placeholder="Juan"
-                maxLength={50}
+                maxLength={15}
                 value={form.nombre}
                 onChange={set('nombre')}
                 className={errors.nombre ? INPUT_ERROR : INPUT_BASE}
@@ -198,7 +198,7 @@ function RegistroForm() {
                 type="text"
                 autoComplete="family-name"
                 placeholder="Pérez"
-                maxLength={50}
+                maxLength={15}
                 value={form.apellido}
                 onChange={set('apellido')}
                 className={errors.apellido ? INPUT_ERROR : INPUT_BASE}

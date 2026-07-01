@@ -73,6 +73,13 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(apellido)) { setError('El apellido solo puede contener letras'); return }
     if (telefono && !/^[0-9+\-\s()]+$/.test(telefono)) { setError('El teléfono solo puede contener números'); return }
     if (telefono.length > 20) { setError('El teléfono no puede superar los 20 caracteres'); return }
+    if (isAgencia) {
+      const nombreAgencia = (fd.get('nombre_agencia') as string ?? '').trim()
+      const bio = (fd.get('bio') as string ?? '').trim()
+      if (!nombreAgencia) { setError('El nombre de la agencia es obligatorio'); return }
+      if (nombreAgencia.length > 30) { setError('El nombre de la agencia no puede superar los 30 caracteres'); return }
+      if (bio.length > 500) { setError('La descripción no puede superar los 500 caracteres'); return }
+    }
     setUploading(true)
 
     try {
@@ -190,7 +197,7 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
         <>
           <div>
             <label className={LABEL}>Nombre de la agencia *</label>
-            <input name="nombre_agencia" required defaultValue={profile.nombre_agencia ?? ''} placeholder="Automotores del Sur" className={INPUT} />
+            <input name="nombre_agencia" required defaultValue={profile.nombre_agencia ?? ''} placeholder="Automotores del Sur" maxLength={30} className={INPUT} />
           </div>
           <div>
             <label className={LABEL}>Descripción</label>
@@ -199,8 +206,10 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
               rows={3}
               defaultValue={profile.bio ?? ''}
               placeholder="Contanos sobre tu agencia, años de experiencia, especialidad..."
+              maxLength={500}
               className={`${INPUT} resize-none`}
             />
+            <p className="text-[11px] text-gray-600 mt-1">Máximo 500 caracteres</p>
           </div>
         </>
       )}

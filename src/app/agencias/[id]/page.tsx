@@ -145,7 +145,7 @@ export default async function AgenciaPage({ params }: PageProps) {
 
               <div className="max-w-2xl">
                 <div className="flex flex-wrap items-center justify-center gap-3 mb-2">
-                  <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">{nombre}</h1>
+                  <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight break-words max-w-full">{nombre}</h1>
                   {agencia.verificado && (
                     <span className="inline-flex items-center gap-1.5 bg-[#FFC107] text-[#0D0F14] text-xs font-extrabold px-3 py-1.5 rounded-full shrink-0 uppercase tracking-wide">
                       <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>

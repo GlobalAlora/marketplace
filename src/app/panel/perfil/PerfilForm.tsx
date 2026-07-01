@@ -121,7 +121,7 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
   const isLoading = uploading || pending
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
 
       {/* Logo agencia */}
       {isAgencia && (

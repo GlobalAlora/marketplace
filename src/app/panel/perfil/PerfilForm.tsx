@@ -156,10 +156,7 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
             name="nombre"
             required
             defaultValue={profile.nombre}
-            minLength={2}
             maxLength={15}
-            pattern="[A-Za-zÀ-ÿ\s]+"
-            title="Solo letras y espacios, entre 2 y 15 caracteres"
             className={INPUT}
           />
         </div>
@@ -169,10 +166,7 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
             name="apellido"
             required
             defaultValue={profile.apellido}
-            minLength={2}
             maxLength={15}
-            pattern="[A-Za-zÀ-ÿ\s]+"
-            title="Solo letras y espacios, entre 2 y 15 caracteres"
             className={INPUT}
           />
         </div>

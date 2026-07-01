@@ -104,16 +104,22 @@ function LoginForm() {
       return
     }
     setIntentosFallidos(0)
-    // Fetch role + activo para redirigir y para bloquear cuentas suspendidas
+    // Fetch role + activo + flags de primer acceso
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, activo')
+      .select('role, activo, debe_cambiar_password, terminos_aceptados')
       .eq('id', data.user!.id)
       .single()
 
     if (profile && profile.activo === false) {
       await supabase.auth.signOut()
       setServerError('Tu cuenta fue suspendida. Contactanos si creés que es un error.')
+      return
+    }
+
+    // Si el usuario tiene pasos pendientes de primer acceso, redirigir siempre ahí
+    if (profile?.debe_cambiar_password || !profile?.terminos_aceptados) {
+      window.location.href = '/auth/primer-acceso'
       return
     }
 

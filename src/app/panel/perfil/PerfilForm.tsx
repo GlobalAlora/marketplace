@@ -46,8 +46,7 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
     }
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/')
-    router.refresh()
+    window.location.href = '/'
   }
 
   function handleLogoSelect(e: React.ChangeEvent<HTMLInputElement>) {

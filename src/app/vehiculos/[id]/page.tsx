@@ -175,9 +175,14 @@ export default async function VehiculoPage({ params }: PageProps) {
           {/* Layout 3 columnas */}
           <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
 
-            {/* Columna izquierda: info + CTA */}
+            {/* Columna izquierda: info */}
             <div className="w-full lg:w-[360px] xl:w-[400px] lg:shrink-0 flex flex-col gap-4 order-2 lg:order-1">
               <InfoVehiculo vehiculo={vehiculo} />
+            </div>
+
+            {/* Columna central: galería + botón WhatsApp */}
+            <div className="flex-1 min-w-0 order-1 lg:order-2 flex flex-col gap-4">
+              <GaleriaImagenes imagenes={vehiculo.imagenes} titulo={vehiculo.titulo} />
               {vehiculo.profiles?.telefono && (
                 <BotonWhatsApp
                   vehiculoId={vehiculo.id}
@@ -187,11 +192,6 @@ export default async function VehiculoPage({ params }: PageProps) {
                   año={vehiculo.año}
                 />
               )}
-            </div>
-
-            {/* Columna central: galería */}
-            <div className="flex-1 min-w-0 order-1 lg:order-2">
-              <GaleriaImagenes imagenes={vehiculo.imagenes} titulo={vehiculo.titulo} />
             </div>
 
             {/* Columna derecha: banners sidebar */}

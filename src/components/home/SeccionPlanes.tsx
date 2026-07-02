@@ -9,6 +9,13 @@ function buildWhatsappUrl(num: string) {
   return `https://wa.me/${num}?text=${WHATSAPP_MSG}`
 }
 
+function ensureWhatsappMsg(href: string): string {
+  if (href.includes('wa.me') && !href.includes('?text=')) {
+    return `${href}?text=${WHATSAPP_MSG}`
+  }
+  return href
+}
+
 interface Plan {
   nombre: string
   subtitulo: string
@@ -106,7 +113,7 @@ export default function SeccionPlanes({ config, planesHome }: { config?: SiteCon
         destacado: p.destacado,
         features: p.features,
         ctaLabel: p.cta_label,
-        ctaHref: p.cta_href,
+        ctaHref: ensureWhatsappMsg(p.cta_href),
         ctaExterno: p.cta_externo,
       }))
     : buildPlanes(whatsappUrl)

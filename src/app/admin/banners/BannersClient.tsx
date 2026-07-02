@@ -15,9 +15,14 @@ interface Banner {
 }
 
 const POSICIONES = [
-  { value: 'home_top',    label: 'Inicio — Arriba' },
-  { value: 'home_bottom', label: 'Inicio — Abajo' },
-  { value: 'sidebar',     label: 'Sidebar' },
+  { value: 'home_top',          label: 'Inicio — Arriba' },
+  { value: 'home_mid',          label: 'Inicio — Medio' },
+  { value: 'home_bottom',       label: 'Inicio — Abajo' },
+  { value: 'vehiculos_top',     label: 'Vehículos — Arriba' },
+  { value: 'vehiculos_mid',     label: 'Vehículos — Medio' },
+  { value: 'sidebar_derecho_1', label: 'Sidebar derecho 1' },
+  { value: 'sidebar_derecho_2', label: 'Sidebar derecho 2' },
+  { value: 'sidebar_derecho_3', label: 'Sidebar derecho 3' },
 ]
 
 const ESTADOS = [

@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 
 async function getAdminClient() {
   const supabase = await createClient()
@@ -9,7 +9,7 @@ async function getAdminClient() {
   if (!user) return { error: 'No autenticado' } as const
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   if (profile?.role !== 'admin') return { error: 'Sin permisos' } as const
-  return { supabase } as const
+  return { supabase: createAdminClient() } as const
 }
 
 export async function createBanner(formData: FormData): Promise<{ error?: string }> {

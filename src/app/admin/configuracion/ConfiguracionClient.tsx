@@ -61,10 +61,20 @@ function ImageField({
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
+  const MAX_SIZE_MB = 5
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploadError(null)
+
+    if (file.size > MAX_SIZE_BYTES) {
+      setUploadError(`La imagen pesa ${(file.size / 1024 / 1024).toFixed(1)} MB. El máximo permitido es ${MAX_SIZE_MB} MB.`)
+      e.target.value = ''
+      return
+    }
+
     setUploading(true)
     try {
       const supabase = createClient()
@@ -99,7 +109,10 @@ function ImageField({
           {uploading ? 'Subiendo…' : value ? 'Cambiar imagen' : 'Subir imagen…'}
         </span>
       </button>
-      {uploadError && <p className="text-xs text-red-400 mt-1.5">{uploadError}</p>}
+      <p className="text-xs text-gray-600 mt-1.5">
+        Resolución: mín. 1280×720 px · máx. 1920×1080 px · Peso máx. {MAX_SIZE_MB} MB
+      </p>
+      {uploadError && <p className="text-xs text-red-400 mt-1">{uploadError}</p>}
     </div>
   )
 }

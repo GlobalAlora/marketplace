@@ -19,7 +19,7 @@ interface PageProps {
 }
 
 const SELECT_FIELDS =
-  '*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug)'
+  '*, profiles!vehiculos_user_id_fkey(id,nombre,apellido,telefono,role,nombre_agencia,verificado,activo,slug,avatar_url)'
 
 async function getVehiculo(id: string): Promise<Vehiculo | null> {
   const supabase = await createClient()

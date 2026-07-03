@@ -203,9 +203,13 @@ export default function Header() {
                 aria-label="Menú de usuario"
               >
                 {/* Avatar */}
-                <span className="w-7 h-7 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
-                  {getInitials(user.nombre, user.apellido)}
-                </span>
+                {user.avatar_url ? (
+                  <img src={user.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                ) : (
+                  <span className="w-7 h-7 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                    {getInitials(user.nombre, user.apellido)}
+                  </span>
+                )}
                 <span className="text-sm font-semibold text-white leading-none">{user.nombre}</span>
                 <svg
                   className={`w-3.5 h-3.5 text-gray-400 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`}
@@ -360,9 +364,13 @@ export default function Header() {
                 <div className="mt-2 pt-2 border-t border-white/10">
                   {user.role === 'admin' ? (
                     <div className="flex items-center gap-2.5 py-2">
-                      <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
-                        {getInitials(user.nombre, user.apellido)}
-                      </span>
+                      {user.avatar_url ? (
+                        <img src={user.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                      ) : (
+                        <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                          {getInitials(user.nombre, user.apellido)}
+                        </span>
+                      )}
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-white truncate">{user.nombre} {user.apellido}</p>
                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
@@ -375,9 +383,13 @@ export default function Header() {
                       onClick={() => setMenuOpen(false)}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
-                          {getInitials(user.nombre, user.apellido)}
-                        </span>
+                        {user.avatar_url ? (
+                          <img src={user.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                            {getInitials(user.nombre, user.apellido)}
+                          </span>
+                        )}
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-white truncate">{user.nombre} {user.apellido}</p>
                           <p className="text-xs text-gray-500 truncate">{user.email}</p>

@@ -272,11 +272,19 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
         <SectionLabel>Vendedor</SectionLabel>
 
         <div className="flex items-center gap-3">
-          <div className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center font-extrabold text-sm text-white ${
-            esAgencia ? 'bg-[#282F8F]' : 'bg-white/10'
-          }`}>
-            {inicialesVendedor}
-          </div>
+          {vehiculo.profiles?.avatar_url ? (
+            <img
+              src={vehiculo.profiles.avatar_url}
+              alt={nombreVendedor}
+              className="shrink-0 w-11 h-11 rounded-xl object-cover"
+            />
+          ) : (
+            <div className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center font-extrabold text-sm text-white ${
+              esAgencia ? 'bg-[#282F8F]' : 'bg-white/10'
+            }`}>
+              {inicialesVendedor}
+            </div>
+          )}
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">

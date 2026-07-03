@@ -10,6 +10,7 @@ export interface AuthUser {
   nombre: string
   apellido: string
   role: Role
+  avatar_url?: string
 }
 
 interface AuthContextType {
@@ -34,12 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function loadProfile(userId: string, email: string) {
       const { data } = await supabase
         .from('profiles')
-        .select('id, nombre, apellido, role')
+        .select('id, nombre, apellido, role, avatar_url')
         .eq('id', userId)
         .single()
 
       if (data) {
-        setUser({ id: data.id, email, nombre: data.nombre, apellido: data.apellido, role: data.role })
+        setUser({ id: data.id, email, nombre: data.nombre, apellido: data.apellido, role: data.role, avatar_url: data.avatar_url ?? undefined })
       }
     }
 

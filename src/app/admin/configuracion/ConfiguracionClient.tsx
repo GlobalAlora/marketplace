@@ -117,6 +117,8 @@ function ImageField({
   )
 }
 
+const MAX_CHARS = 100
+
 export default function ConfiguracionClient({ config }: { config: SiteConfig }) {
   const [values, setValues] = useState<SiteConfig>({ ...config })
   const [saved, setSaved] = useState(false)
@@ -131,6 +133,13 @@ export default function ConfiguracionClient({ config }: { config: SiteConfig }) 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    const exceeded = FIELDS
+      .filter(f => f.type !== 'image')
+      .find(f => (values[f.key] ?? '').length > MAX_CHARS)
+    if (exceeded) {
+      setError(`El campo "${exceeded.label}" supera los ${MAX_CHARS} caracteres permitidos.`)
+      return
+    }
     startTransition(async () => {
       const result = await updateSiteConfig(values)
       if (result?.error) {
@@ -164,21 +173,33 @@ export default function ConfiguracionClient({ config }: { config: SiteConfig }) 
                       onChange={v => handleChange(field.key, v)}
                     />
                   ) : field.type === 'textarea' ? (
-                    <textarea
-                      value={values[field.key] ?? ''}
-                      onChange={e => handleChange(field.key, e.target.value)}
-                      placeholder={field.placeholder}
-                      rows={3}
-                      className="w-full bg-[#0D0F14] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30 transition resize-none"
-                    />
+                    <>
+                      <textarea
+                        value={values[field.key] ?? ''}
+                        onChange={e => handleChange(field.key, e.target.value)}
+                        placeholder={field.placeholder}
+                        rows={3}
+                        maxLength={MAX_CHARS}
+                        className={`w-full bg-[#0D0F14] border rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-1 transition resize-none ${(values[field.key] ?? '').length >= MAX_CHARS ? 'border-red-500/60 focus:border-red-500 focus:ring-red-500/20' : 'border-white/10 focus:border-[#FFC107]/50 focus:ring-[#FFC107]/30'}`}
+                      />
+                      <p className={`text-xs mt-1 text-right ${(values[field.key] ?? '').length >= MAX_CHARS ? 'text-red-400' : 'text-gray-600'}`}>
+                        {(values[field.key] ?? '').length}/{MAX_CHARS}
+                      </p>
+                    </>
                   ) : (
-                    <input
-                      type="text"
-                      value={values[field.key] ?? ''}
-                      onChange={e => handleChange(field.key, e.target.value)}
-                      placeholder={field.placeholder}
-                      className="w-full bg-[#0D0F14] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30 transition"
-                    />
+                    <>
+                      <input
+                        type="text"
+                        value={values[field.key] ?? ''}
+                        onChange={e => handleChange(field.key, e.target.value)}
+                        placeholder={field.placeholder}
+                        maxLength={MAX_CHARS}
+                        className={`w-full bg-[#0D0F14] border rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-1 transition ${(values[field.key] ?? '').length >= MAX_CHARS ? 'border-red-500/60 focus:border-red-500 focus:ring-red-500/20' : 'border-white/10 focus:border-[#FFC107]/50 focus:ring-[#FFC107]/30'}`}
+                      />
+                      <p className={`text-xs mt-1 text-right ${(values[field.key] ?? '').length >= MAX_CHARS ? 'text-red-400' : 'text-gray-600'}`}>
+                        {(values[field.key] ?? '').length}/{MAX_CHARS}
+                      </p>
+                    </>
                   )}
                 </div>
               ))}

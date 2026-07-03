@@ -234,9 +234,8 @@ export default function Header() {
                         <p className="text-xs font-bold text-white truncate">{user.nombre} {user.apellido}</p>
                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
-                      <span className="flex items-center gap-1 text-[11px] font-semibold text-[#FFC107] shrink-0 group-hover:text-yellow-300 transition-colors">
-                        Perfil
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
+                      <span className="flex items-center text-[#FFC107] shrink-0 group-hover:text-yellow-300 transition-colors">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>
                       </span>

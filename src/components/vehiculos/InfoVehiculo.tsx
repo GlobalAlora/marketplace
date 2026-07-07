@@ -272,9 +272,9 @@ export default function InfoVehiculo({ vehiculo }: InfoVehiculoProps) {
         <SectionLabel>Vendedor</SectionLabel>
 
         <div className="flex items-center gap-3">
-          {vehiculo.profiles?.avatar_url ? (
+          {(vehiculo.profiles?.logo_agencia ?? vehiculo.profiles?.avatar_url) ? (
             <img
-              src={vehiculo.profiles.avatar_url}
+              src={(vehiculo.profiles.logo_agencia ?? vehiculo.profiles.avatar_url)!}
               alt={nombreVendedor}
               className="shrink-0 w-11 h-11 rounded-xl object-cover"
             />

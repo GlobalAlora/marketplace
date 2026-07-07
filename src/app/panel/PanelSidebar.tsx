@@ -12,6 +12,7 @@ interface Profile {
   email: string
   role: Role
   avatar_url?: string | null
+  logo_agencia?: string | null
 }
 
 const ROLE_LABELS: Record<Role, string> = {
@@ -88,6 +89,7 @@ export default function PanelSidebar({ profile }: { profile: Profile }) {
   }
 
   const initials = profile.nombre.charAt(0).toUpperCase()
+  const logoUrl = profile.logo_agencia ?? profile.avatar_url ?? null
 
   return (
     <>
@@ -133,8 +135,8 @@ export default function PanelSidebar({ profile }: { profile: Profile }) {
         <div className="px-3 pb-4 pt-3 border-t border-white/5 space-y-2">
           <div className="flex items-center gap-3 px-3 py-2">
             <div className="w-8 h-8 rounded-full bg-[#282F8F]/30 border border-[#282F8F]/50 flex items-center justify-center shrink-0 overflow-hidden">
-              {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+              {logoUrl ? (
+                <img src={logoUrl} alt="" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-xs font-bold text-[#FFC107]">{initials}</span>
               )}

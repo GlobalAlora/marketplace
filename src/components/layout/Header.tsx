@@ -203,8 +203,8 @@ export default function Header() {
                 aria-label="Menú de usuario"
               >
                 {/* Avatar */}
-                {user.avatar_url ? (
-                  <img src={user.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                {(user.logo_agencia ?? user.avatar_url) ? (
+                  <img src={(user.logo_agencia ?? user.avatar_url)!} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
                 ) : (
                   <span className="w-7 h-7 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
                     {getInitials(user.nombre, user.apellido)}
@@ -383,8 +383,8 @@ export default function Header() {
                       onClick={() => setMenuOpen(false)}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        {user.avatar_url ? (
-                          <img src={user.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                        {(user.logo_agencia ?? user.avatar_url) ? (
+                          <img src={(user.logo_agencia ?? user.avatar_url)!} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                         ) : (
                           <span className="w-8 h-8 rounded-full bg-[#282F8F] text-white text-xs font-extrabold flex items-center justify-center shrink-0">
                             {getInitials(user.nombre, user.apellido)}

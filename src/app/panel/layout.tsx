@@ -10,7 +10,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('nombre, apellido, email, role, avatar_url')
+    .select('nombre, apellido, email, role, avatar_url, logo_agencia')
     .eq('id', user.id)
     .single()
 

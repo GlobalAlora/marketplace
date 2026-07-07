@@ -31,7 +31,17 @@ export default function BotonWhatsApp({ telefono, marca, modelo, año, vehiculoI
     )
   }
 
-  const numero = `549${telefono}`
+  // Normaliza cualquier formato a 549XXXXXXXXXX (Argentina WhatsApp)
+  function normalizarTelefono(tel: string): string {
+    const digits = tel.replace(/\D/g, '') // quitar todo excepto dígitos
+    if (digits.startsWith('549') && digits.length >= 12) return digits      // ya correcto
+    if (digits.startsWith('54') && digits.length >= 11) return `549${digits.slice(2)}`  // +54 → 549
+    if (digits.startsWith('9') && digits.length >= 11)  return `54${digits}`            // 9XXXXXXXXXX
+    if (digits.startsWith('0') && digits.length >= 10)  return `549${digits.slice(1)}`  // 0XXX → quitar 0
+    return `549${digits}`                                                               // solo número local
+  }
+
+  const numero = normalizarTelefono(telefono)
   const mensaje = `Hola, vi tu auto ${marca} ${modelo} ${año} en AUTODUX y me interesa. ¿Está disponible?`
   const href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
 

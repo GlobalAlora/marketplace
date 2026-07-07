@@ -184,12 +184,13 @@ export default function PerfilForm({ profile, userId }: { profile: Profile; user
         <input
           name="telefono"
           defaultValue={profile.telefono}
-          placeholder="+54 297 400-0000"
+          placeholder="3388439736"
           maxLength={20}
           inputMode="tel"
           onChange={e => { e.target.value = e.target.value.replace(/[^0-9+\-\s()]/g, '') }}
           className={INPUT}
         />
+        <p className="text-xs text-gray-500 mt-1">Sin código de país. Ej: 3388439736</p>
       </div>
 
       {/* Datos agencia */}

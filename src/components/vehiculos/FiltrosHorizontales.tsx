@@ -378,6 +378,20 @@ export default function FiltrosHorizontales({ sticky = false, marcas = [], ubica
     tipo:      searchParams.get('tipo')       ?? '',
   })
 
+  // Sincroniza estado local cuando la URL cambia externamente (ej: "Limpiar filtros" del listado)
+  useEffect(() => {
+    setFilters({
+      marca:     searchParams.get('marca')      ?? '',
+      precioMin: searchParams.get('precio_min') ?? '',
+      precioMax: searchParams.get('precio_max') ?? '',
+      año:       searchParams.get('año_desde')  ?? '',
+      km:        searchParams.get('km_max')     ?? '',
+      ubicacion: searchParams.get('ubicacion')  ?? '',
+      condicion: searchParams.get('condicion')  ?? '',
+      tipo:      searchParams.get('tipo')       ?? '',
+    })
+  }, [searchParams])
+
   const hasFilters = Object.values(filters).some(Boolean)
 
   function buildHref(f: Filters): string {

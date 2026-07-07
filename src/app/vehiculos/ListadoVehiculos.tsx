@@ -184,11 +184,6 @@ export default function ListadoVehiculos({ vehiculos, banners }: Props) {
                   <span className="text-sm text-gray-400 font-medium">
                     {filtered.length} {filtered.length === 1 ? 'resultado' : 'resultados'}
                   </span>
-                  {hasFilters && (
-                    <button onClick={handleClearFilters} className="text-xs font-semibold text-[#FFC107] hover:text-white transition-colors underline underline-offset-2">
-                      Limpiar filtros
-                    </button>
-                  )}
                 </div>
                 <SortDropdown value={sort} onChange={handleSortChange} />
               </div>

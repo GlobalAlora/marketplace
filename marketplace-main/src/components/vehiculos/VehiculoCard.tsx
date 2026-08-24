@@ -2,8 +2,6 @@
 
 import Link from 'next/link'
 import type { Vehiculo } from '@/types'
-import { useAuth } from '@/lib/mock-auth'
-
 interface VehiculoCardProps {
   vehiculo: Vehiculo
 }
@@ -20,17 +18,7 @@ function formatKm(km: number): string {
   return new Intl.NumberFormat('es-AR').format(km) + ' km'
 }
 
-function IconLock() {
-  return (
-    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-    </svg>
-  )
-}
-
 export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
-  const { isLoggedIn } = useAuth()
-
   const vendedor = vehiculo.profiles?.nombre_agencia ??
     `${vehiculo.profiles?.nombre ?? ''} ${vehiculo.profiles?.apellido ?? ''}`.trim()
 
@@ -90,15 +78,12 @@ export default function VehiculoCard({ vehiculo }: VehiculoCardProps) {
         </div>
 
         <div className="mt-auto pt-2.5 flex items-center justify-between border-t border-white/8">
-          {isLoggedIn ? (
+          {vehiculo.precio_oculto ? (
+            <p className="text-sm font-bold text-gray-400 tracking-tight leading-none">Consultar precio</p>
+          ) : (
             <p className="text-base font-black text-[#FFC107] tracking-tight leading-none">
               {formatPrecio(vehiculo.precio)}
             </p>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#FFC107]">
-              <IconLock />
-              Ver precio
-            </span>
           )}
 
           <span className="text-xs font-bold text-[#FFC107] flex items-center gap-1 group-hover:gap-2 transition-all duration-200">

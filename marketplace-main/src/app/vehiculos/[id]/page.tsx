@@ -36,9 +36,46 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params
   const vehiculo = await getVehiculo(id)
   if (!vehiculo) return { title: 'Vehículo no encontrado — AUTODUX' }
+
+  const precio = new Intl.NumberFormat('es-AR').format(vehiculo.precio)
+  const km = vehiculo.kilometraje > 0
+    ? `${new Intl.NumberFormat('es-AR').format(vehiculo.kilometraje)} km`
+    : null
+
+  const title = `${vehiculo.marca} ${vehiculo.modelo} ${vehiculo.año} — USD ${precio} | AUTODUX`
+
+  const description = vehiculo.descripcion
+    ? vehiculo.descripcion.slice(0, 155)
+    : [
+        `${vehiculo.titulo}.`,
+        km && `${km}.`,
+        vehiculo.ubicacion && `${vehiculo.ubicacion}.`,
+        'Comprá y vendé autos en AUTODUX, el marketplace de la Patagonia.',
+      ].filter(Boolean).join(' ')
+
+  const imageUrl = vehiculo.imagenes?.[0] ?? null
+  const pageUrl  = `https://autodux.com.ar/vehiculos/${id}`
+
   return {
-    title: `${vehiculo.titulo} — AUTODUX`,
-    description: vehiculo.descripcion ?? undefined,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      siteName: 'AUTODUX',
+      locale: 'es_AR',
+      type: 'website',
+      ...(imageUrl && {
+        images: [{ url: imageUrl, width: 1200, height: 630, alt: vehiculo.titulo }],
+      }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      ...(imageUrl && { images: [imageUrl] }),
+    },
   }
 }
 

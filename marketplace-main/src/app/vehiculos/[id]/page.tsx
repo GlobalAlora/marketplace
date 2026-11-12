@@ -172,8 +172,43 @@ export default async function VehiculoPage({ params }: PageProps) {
     ? `/agencias/${vehiculo.profiles?.id ?? vehiculo.user_id}`
     : `/usuarios/${vehiculo.profiles?.id ?? vehiculo.user_id}`
 
+  const pageUrl = `https://autodux.com.ar/vehiculos/${vehiculo.id}`
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Car',
+    name: vehiculo.titulo,
+    description: vehiculo.descripcion ?? undefined,
+    brand: { '@type': 'Brand', name: vehiculo.marca },
+    model: vehiculo.modelo,
+    vehicleModelDate: String(vehiculo.año),
+    mileageFromOdometer: vehiculo.kilometraje > 0
+      ? { '@type': 'QuantitativeValue', value: vehiculo.kilometraje, unitCode: 'KMT' }
+      : undefined,
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'USD',
+      price: vehiculo.precio,
+      availability: 'https://schema.org/InStock',
+      url: pageUrl,
+    },
+    image: vehiculo.imagenes?.[0] ?? undefined,
+    url: pageUrl,
+    ...(vehiculo.ubicacion && { vehicleLocation: vehiculo.ubicacion }),
+    ...(vehiculo.color && { color: vehiculo.color }),
+    ...(vehiculo.combustible && { fuelType: vehiculo.combustible }),
+    ...(vehiculo.transmision && { vehicleTransmission: vehiculo.transmision }),
+    ...(vehiculo.puertas && { numberOfDoors: vehiculo.puertas }),
+    seller: vehiculo.profiles?.nombre_agencia
+      ? { '@type': 'AutoDealer', name: vehiculo.profiles.nombre_agencia, url: `https://autodux.com.ar/agencias/${vehiculo.profiles.id}` }
+      : undefined,
+  }
+
   return (
     <MainLayout>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="bg-[#0D0F14] min-h-screen">
         <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
 

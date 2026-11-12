@@ -1,0 +1,32 @@
+# AUTODUX
+
+> Marketplace de compra y venta de autos en Comodoro Rivadavia y la región patagónica de Argentina.
+
+AUTODUX es la plataforma líder de vehículos usados y 0km en Comodoro Rivadavia, Chubut, Argentina. Conecta compradores y vendedores (particulares y agencias) en toda la región patagónica.
+
+## Funcionalidades principales
+
+- Listado de vehículos con filtros por marca, modelo, año, precio y ubicación
+- Fichas detalladas de cada vehículo con galería de fotos, precio en USD, kilometraje, transmisión, combustible y datos del vendedor
+- Contacto directo con el vendedor vía WhatsApp desde la ficha del vehículo
+- Publicación de vehículos para particulares y agencias con planes básico y premium
+- Perfil de agencias con todas sus publicaciones activas
+
+## Cobertura geográfica
+
+Comodoro Rivadavia, Caleta Olivia, Rada Tilly, Sarmiento, Puerto Madryn, Trelew y la región patagónica de Argentina.
+
+## Categorías de vehículos
+
+Autos, camionetas, SUVs, pickups, utilitarios, motos y maquinaria.
+
+## Páginas importantes
+
+- Inicio: https://autodux.com.ar
+- Todos los vehículos: https://autodux.com.ar/vehiculos
+- Publicar vehículo: https://autodux.com.ar/panel/publicar
+- Registrarse: https://autodux.com.ar/auth/registro
+
+## Sobre los datos
+
+Los precios están en dólares estadounidenses (USD). El kilometraje está en kilómetros. Los vehículos se actualizan en tiempo real. El sitemap completo está disponible en https://autodux.com.ar/sitemap.xml.

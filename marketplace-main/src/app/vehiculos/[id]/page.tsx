@@ -245,6 +245,7 @@ export default async function VehiculoPage({ params }: PageProps) {
                   marca={vehiculo.marca}
                   modelo={vehiculo.modelo}
                   año={vehiculo.año}
+                  vehiculoId={vehiculo.id}
                 />
               )}
             </div>

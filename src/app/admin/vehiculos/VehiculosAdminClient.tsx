@@ -23,7 +23,45 @@ interface VehiculoAdmin {
   seller_nombre: string
   seller_apellido: string
   seller_role: string
+  seller_telefono: string
   pausado_por_admin: boolean
+  tipo_vehiculo: string
+  condicion: string
+  ciudad: string
+  provincia: string
+  kilometraje: number
+  whatsapp_clicks: number
+}
+
+async function exportExcel(vehiculos: VehiculoAdmin[]) {
+  const XLSX = await import('xlsx')
+  const today = new Date().toLocaleDateString('es-AR')
+  const ws = XLSX.utils.aoa_to_sheet([
+    ['Fecha', 'Fecha de carga', 'Vehículo', 'Precio', 'Moneda', 'Tipo', 'Año', 'Condición', 'Ubicación', 'Kilometraje', 'Vendedor', 'Perfil', 'Contacto', 'Vistas', 'Destacado', 'Activo', 'Vendido', 'Clicks WhatsApp'],
+    ...vehiculos.map(v => [
+      today,
+      new Date(v.created_at).toLocaleDateString('es-AR'),
+      v.titulo,
+      v.precio,
+      v.moneda ?? 'ARS',
+      v.tipo_vehiculo ?? '',
+      v.año,
+      v.condicion ?? '',
+      [v.ciudad, v.provincia].filter(Boolean).join(', '),
+      v.kilometraje ?? 0,
+      `${v.seller_nombre} ${v.seller_apellido}`.trim(),
+      v.seller_role === 'particular' ? 'Particular' : 'Agencia',
+      v.seller_telefono ?? '',
+      v.vistas,
+      v.destacado ? 'Sí' : 'No',
+      v.activo ? 'Sí' : 'No',
+      v.vendido ? 'Sí' : 'No',
+      v.whatsapp_clicks,
+    ]),
+  ])
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Vehículos')
+  XLSX.writeFile(wb, `autodux-vehiculos-${new Date().toISOString().slice(0, 10)}.xlsx`)
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -211,7 +249,16 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
             onChange={v => { setFilterRol(v); resetPage() }}
           />
         </div>
-        <span className="ml-auto text-xs text-gray-600 self-center">{filtered.length} resultados</span>
+        <span className="text-xs text-gray-600 self-center">{filtered.length} resultados</span>
+        <button
+          onClick={() => exportExcel(filtered)}
+          className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-2 rounded-xl transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Excel
+        </button>
       </div>
 
       {paginated.length === 0 ? (
@@ -273,6 +320,8 @@ export default function VehiculosAdminClient({ vehiculos }: { vehiculos: Vehicul
                       )}
                       <span className="text-gray-700 hidden sm:inline">·</span>
                       <span className="text-gray-500">{v.vistas} vistas</span>
+                      <span className="text-gray-700">·</span>
+                      <span className="text-gray-500">{v.whatsapp_clicks} WA</span>
                       <span className="text-gray-700">·</span>
                       <span className="text-gray-500 truncate">{v.seller_nombre} {v.seller_apellido}</span>
                       <span className="text-[10px] text-gray-700 shrink-0">({ROLE_LABEL[v.seller_role] ?? v.seller_role})</span>

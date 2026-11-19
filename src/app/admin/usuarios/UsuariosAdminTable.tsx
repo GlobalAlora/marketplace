@@ -19,6 +19,7 @@ interface Profile {
   created_at: string
   avatar_url: string | null
   vehiculos_count: number
+  whatsapp_clicks: number
 }
 
 // "admin" se excluye deliberadamente de este selector rápido: el cliente
@@ -53,16 +54,18 @@ function formatFecha(iso: string): string {
 }
 
 function exportCSV(usuarios: Profile[]) {
-  const header = ['ID', 'Nombre', 'Apellido', 'Email', 'Rol', 'Verificado', 'Activo', 'Vehículos', 'Registro']
+  const header = ['ID', 'Nombre', 'Apellido', 'Email', 'Teléfono', 'Rol', 'Verificado', 'Activo', 'Vehículos', 'Clicks WhatsApp', 'Registro']
   const rows = usuarios.map(u => [
     u.id,
     u.nombre,
     u.apellido,
     u.email,
+    u.telefono ?? '',
     u.role,
     u.verificado ? 'Sí' : 'No',
     u.activo ? 'Sí' : 'No',
     u.vehiculos_count,
+    u.whatsapp_clicks,
     new Date(u.created_at).toLocaleDateString('es-AR'),
   ])
   const csv = [header, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n')

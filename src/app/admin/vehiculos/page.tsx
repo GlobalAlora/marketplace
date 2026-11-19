@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import VehiculosAdminClient from './VehiculosAdminClient'
 
@@ -21,7 +21,14 @@ interface VehiculoAdmin {
   seller_nombre: string
   seller_apellido: string
   seller_role: string
+  seller_telefono: string
   pausado_por_admin: boolean
+  tipo_vehiculo: string
+  condicion: string
+  ciudad: string
+  provincia: string
+  kilometraje: number
+  whatsapp_clicks: number
 }
 
 export default async function AdminVehiculosPage() {
@@ -29,11 +36,25 @@ export default async function AdminVehiculosPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: raw } = await (supabase
-    .from('vehiculos')
-    .select('*, profiles!vehiculos_user_id_fkey(nombre, apellido, role)')
-    .order('created_at', { ascending: false }) as any) as { data: any[] | null }
+  const adminClient = createAdminClient()
+
+  const [{ data: raw }, { data: clicksData }] = await Promise.all([
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase
+      .from('vehiculos')
+      .select('*, profiles!vehiculos_user_id_fkey(nombre, apellido, role, telefono)')
+      .order('created_at', { ascending: false }) as any) as Promise<{ data: any[] | null }>,
+    adminClient
+      .from('metricas_vehiculos')
+      .select('vehiculo_id')
+      .eq('tipo', 'whatsapp_click')
+      .limit(50000),
+  ])
+
+  const clicksMap = new Map<string, number>()
+  for (const c of (clicksData ?? [])) {
+    clicksMap.set(c.vehiculo_id, (clicksMap.get(c.vehiculo_id) ?? 0) + 1)
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const vehiculos: VehiculoAdmin[] = (raw ?? []).map((v: any) => ({
@@ -53,7 +74,14 @@ export default async function AdminVehiculosPage() {
     seller_nombre: v.profiles?.nombre ?? '',
     seller_apellido: v.profiles?.apellido ?? '',
     seller_role: v.profiles?.role ?? '',
+    seller_telefono: v.profiles?.telefono ?? '',
     pausado_por_admin: v.pausado_por_admin ?? false,
+    tipo_vehiculo: v.tipo_vehiculo ?? '',
+    condicion: v.condicion ?? '',
+    ciudad: v.ciudad ?? '',
+    provincia: v.provincia ?? '',
+    kilometraje: v.kilometraje ?? 0,
+    whatsapp_clicks: clicksMap.get(v.id) ?? 0,
   }))
 
   return (
